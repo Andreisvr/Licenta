@@ -1,13 +1,34 @@
-import React from 'react';
+import React, {useContext}from 'react';
 import { GoogleLogin, googleLogout } from '@react-oauth/google';
-import { useNavigate } from 'react-router-dom';
+import {jwtDecode} from 'jwt-decode'; // cu underscore
+import { AppContext } from './AppContext'; // Importă contextul
+
 
 function LoginPage() {
-    const navigate = useNavigate();
+    
+    const { setName, setEmail, setDecodedToken, setLogined } = useContext(AppContext);
 
     const responseMessage = (response) => {
-        console.log('Login Success:', response);
-        navigate('/main');
+        try {
+            const decodedToken = jwtDecode(response.credential);
+            const firstName = decodedToken.given_name;
+            const lastName = decodedToken.family_name;
+            const email = decodedToken.email;
+
+            setName(`${firstName} ${lastName}`);
+            setEmail(email);
+            setDecodedToken(decodedToken);
+            setLogined(true);
+
+            console.log('Email:', email);
+            console.log('Login Success:', decodedToken);
+            console.log('First Name:', firstName);
+            console.log('Last Name:', lastName);
+
+            
+        } catch (error) {
+            console.error('Error decoding JWT:', error);
+        }
     };
 
     const errorMessage = (error) => {
@@ -16,18 +37,23 @@ function LoginPage() {
 
     const handleLogout = () => {
         googleLogout();
+        setName(`${''} ${''}`);
+        setEmail('');
+        setDecodedToken('');
+        setLogined(false);
+
+        console.log('Email:', 'email');
+        console.log('Login Success:', 'decodedToken');
+        console.log('First Name:', 'firstName');
+        console.log('Last Name:', 'lastName');
+
         console.log('User logged out');
     };
 
     return (
         <div>
-            <h2>React Google Login</h2>
-            <br />
-            <br />
             <GoogleLogin onSuccess={responseMessage} onError={errorMessage} />
-            <br />
-            <br />
-            <button onClick={handleLogout}>Logout</button>
+            <br/>
         </div>
     );
 }
