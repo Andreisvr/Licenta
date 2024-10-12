@@ -21,7 +21,7 @@ function PersonalForm() {
             ) : (
                
                  <div className="enter_form">
-                        <a href="LogIn" className="link">Log in</a>
+                        <a href="login" className="link">Log in</a>
                         <a href="#" className="link">Register</a>
                     
                 </div>

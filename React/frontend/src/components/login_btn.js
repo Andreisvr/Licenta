@@ -4,7 +4,7 @@ import {jwtDecode} from 'jwt-decode';
 import { AppContext } from './AppContext'; 
 
 
-function LoginPage() {
+function Google_btn() {
     
     const { setName, setEmail, setDecodedToken, setLogined } = useContext(AppContext);
 
@@ -58,4 +58,4 @@ function LoginPage() {
     );
 }
 
-export default LoginPage;
+export default Google_btn;

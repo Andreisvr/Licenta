@@ -14,6 +14,19 @@
     z-index: 1000;
 }
 
+
+.logo_box{
+    display: flex; /* Activăm flexbox pentru a alinia iconițele pe stânga */
+    align-items: center;
+   
+    right: 75%;
+   
+
+}
+.logo{
+    width: 23%;
+    height: 23%; 
+}
 .icon {
     
     color: white;

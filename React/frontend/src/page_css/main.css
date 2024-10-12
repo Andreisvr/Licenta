@@ -1,22 +1,17 @@
-  .body_login {
-    height: 100vh;
-    width: 100vw;
-    background-color: rgb(198, 198, 198);
-    display: flex;
-    flex-direction: column;
-    overflow-y: auto;
+html,body{
+  background-color: rgb(206, 206, 206);
+}
+ .body_main {
+  height: 100vh;
+  width: 100vw;
+  background-color: rgb(206, 206, 206);
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Centrează vertical */
+  align-items: center; /* Centrează orizontal */
+  overflow-y: auto;
   }
 
-  .footer {
-    display: fixed  ;
-    top: 90%;
-    background-color: rgb(26, 26, 26);
-    margin-top: auto; 
-    padding: 20px;
-    text-align: center;
-    color: white;
-  }
-  
    
   .form_login{
     display: flex;

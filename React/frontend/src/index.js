@@ -8,11 +8,11 @@ const container = document.getElementById('root');
 const root = createRoot(container); // Creează un "root" folosind createRoot
 
 root.render(
-  <AppProvider>
   <GoogleOAuthProvider clientId="348910342280-ahovt5cldc7vo73v3df1ur9bmhv5q8uh.apps.googleusercontent.com">
     <React.StrictMode>
-      <App />
+      <AppProvider>
+        <App />
+      </AppProvider>
     </React.StrictMode>
   </GoogleOAuthProvider>
-  </AppProvider>
 );
