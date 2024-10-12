@@ -2,7 +2,6 @@ import React,{useState} from "react";
 import "/Users/Andrei_Sviridov/Desktop/React/frontend/src/page_css/UpBar.css";
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import { Grid } from "@mui/material";
 import IconButton from '@mui/material/IconButton';
 import Badge from '@mui/material/Badge';
 import PersonalForm from "./personal_cabinet";
@@ -28,37 +27,36 @@ function UpBar() {
     };
 
     return (
-        <Grid id="upbar" container alignItems="center">
-            <Grid item>
-                <IconButton aria-label={notificationsLabel(100)}>
-                <Badge 
-                        badgeContent={10} 
-                        color="secondary" 
-                        overlap="circular" 
-                        sx={{ 
-                            '.MuiBadge-dot': {
-                                backgroundColor: 'white'
-                            },
-                            '.MuiBadge-badge': {
-                                right: 60, 
-                                top: 10,
-                                backgroundColor: 'white', 
-                                color: 'black'
-                            } 
-                        }}
-                    >
-                        <FavoriteBorderIcon className='icon' />
-                    </Badge>
-                </IconButton>   
-            </Grid>
+        <div className="upbar">
             
-            <Grid item>
-                <IconButton color='white' onClick={handleClickForm}>
-                    <AccountBoxIcon className='icon' />
-                </IconButton>
-            </Grid>
+            <IconButton aria-label={notificationsLabel(100)} className="liked_icon">
+                <Badge 
+                    badgeContent={10} 
+                    color="secondary" 
+                    overlap="circular" 
+                    sx={{ 
+                    '.MuiBadge-dot': {
+                    backgroundColor: 'white'
+                    },
+                    '.MuiBadge-badge': {
+                    right: 25, 
+                    top: 3,
+                    backgroundColor: 'white', 
+                    color: 'black'
+                    } 
+            }}
+            >
+        <FavoriteBorderIcon className='icon' />
+        </Badge>
+        </IconButton>   
+
+        <div item>
+            <IconButton onClick={handleClickForm} className="personal_icon">
+            <AccountBoxIcon className='icon' />
+            </IconButton>
+            </div>
             {showForm && <PersonalForm />}
-        </Grid>
+        </div>
     );
 }
 

@@ -1,8 +1,8 @@
+
 import React from "react";
 import "/Users/Andrei_Sviridov/Desktop/React/frontend/src/page_css/main.css"; // Asigură-te că calea este corectă.
 import "/Users/Andrei_Sviridov/Desktop/React/frontend/src/components/up_bar.js"
-import UpBar from "/Users/Andrei_Sviridov/Desktop/React/frontend/src/components/up_bar.js";
-function Main() {
+function Footer() {
   return (
     <div className="body">
      <UpBar/>
@@ -16,4 +16,4 @@ function Main() {
   );
 }
 
-export default Main;
+export default Footer;

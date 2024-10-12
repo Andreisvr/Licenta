@@ -1,7 +1,7 @@
-import React, {useContext}from 'react';
+import React, {useContext} from 'react';
 import { GoogleLogin, googleLogout } from '@react-oauth/google';
-import {jwtDecode} from 'jwt-decode'; // cu underscore
-import { AppContext } from './AppContext'; // Importă contextul
+import {jwtDecode} from 'jwt-decode'; 
+import { AppContext } from './AppContext'; 
 
 
 function LoginPage() {
