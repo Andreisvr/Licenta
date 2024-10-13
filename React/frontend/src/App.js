@@ -6,7 +6,10 @@ import UpBar from './components/up_bar';
 import Footer from './components/footer';
 import Register from './pages/Register';
 import Type_account from './pages/Type_Acccount_chose';
+
+import RegFormProf from './pages/Regist_Form_Prof';
 function App() {
+
     return (
         <Router>
             <UpBar />
@@ -15,6 +18,7 @@ function App() {
                 <Route path="/login" element={<LogIn />} />
                 <Route path="/reg" element={<Register />} />
                 <Route path="/type" element={<Type_account />} />
+                <Route path="/reg_form" element={<RegFormProf />} />
 
             </Routes>
             <Footer />

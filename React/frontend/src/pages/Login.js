@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate ,Link} from 'react-router-dom';
 import '/Users/Andrei_Sviridov/Desktop/React/frontend/src/page_css/Login.css';
-import Google_btn from '../components/login_btn';
+import GoogleBtn from '../components/login_btn';
 
 function LogIn  () {
   const [email, setEmail] = useState('');
@@ -73,7 +73,7 @@ function LogIn  () {
         </div>
         <br/>
         <div className='google_btn'>
-          <Google_btn/>
+          <GoogleBtn/>
         </div>
         <br />
         <div className={'inputContainer'}>

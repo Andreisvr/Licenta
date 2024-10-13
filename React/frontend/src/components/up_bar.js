@@ -20,14 +20,14 @@ function notificationsLabel(count) {
 
 function UpBar() {
     const [showForm, setShowForm] = useState(false);
-    const navigate = useNavigate(); // Creează o instanță a navigate
+    const navigate = useNavigate(); 
 
     const handleClickForm = () => {
        setShowForm(!showForm);
     };
 
     const handleLogoClick = () => {
-        navigate('/'); // Navighează către pagina principală
+        navigate('/');
     };
 
     return (

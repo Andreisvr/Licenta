@@ -6,10 +6,14 @@ import studentGif from '/Users/Andrei_Sviridov/Desktop/React/frontend/src/images
 
 
 function Type_account() {
-    const navigate = useNavigate(); // Inițializează useNavigate
+    const navigate = useNavigate(); 
 
-    const handleBoxClick = () => {
-        navigate('/'); 
+    const handleClickProf = () => {
+        navigate('/reg_form'); 
+    };
+
+    const handleClickStud = () => {
+        navigate('/reg_form'); 
     };
 
     return (
@@ -21,12 +25,12 @@ function Type_account() {
             <br/>
             <h2>Choose your type of account</h2>
             <div className="types">
-                <div className="profesor" onClick={handleBoxClick}>
+                <div className="profesor" onClick={handleClickProf}>
                     <p>Profesor</p>
                     <img src={profesorGif} alt="Profesor GIF" />
                 </div>
 
-                <div className="student" onClick={handleBoxClick}>
+                <div className="student" onClick={handleClickStud}>
                     <p>Student</p>
                     <img src={studentGif} alt="Student GIF" />
                 </div>

@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import '/Users/Andrei_Sviridov/Desktop/React/frontend/src/page_css/Register.css';
+import '/Users/Andrei_Sviridov/Desktop/React/frontend/src/page_css/Regist_Form_Prof.css';
 import GoogleBtn from '../components/login_btn';
+import ProfList from '../components/Prof_List';
+import FacultyList from '../components/Faculty_List';
 
-function Register() {
+function RegFormProf() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState(''); // Adăugăm un câmp pentru confirmarea parolei
@@ -75,22 +77,24 @@ function Register() {
   };
 
   return (
-    <div className='body_login'>
-      {!showTermsForm ? ( // Afișăm formularul de înregistrare dacă termenii nu sunt încă afișați
-        <form className='form_login'>
-          <h1 className='title'>Register</h1>
+    <div className='body_reg_prof'>
+        <form className='form_reg_prof'>
+          <h1 className='title'>Information</h1>
+          <br />
+          <FacultyList/>
+    
           <br />
           <div className={'field_container'}>
             <input
               value={email}
-              placeholder="Enter your email here"
+              placeholder="Enter your full name"
               onChange={(ev) => setEmail(ev.target.value)}
               className={'inputBox'}
             />
             <label className="errorLabel">{emailError}</label>
           </div>
           <br />
-          <div className={'field_container'}>
+          <div className={'field_container_reg_prof'}>
             <input
               type="password"
               value={password}
@@ -101,7 +105,7 @@ function Register() {
             <label className="errorLabel">{passwordError}</label>
           </div>
           <br />
-          <div className={'field_container'}>
+          <div className={'field_container_reg_prof'}>
             <input
               type="password"
               value={confirmPassword}
@@ -112,7 +116,7 @@ function Register() {
             <label className="errorLabel">{confirmPasswordError}</label>
           </div>
 
-          <div className="links_container">
+          <div className="links_container_reg_prof">
             <Link className="terms" to="/">Terms and conditions</Link>
             <Link className="link_register">Help</Link>
           </div>
@@ -121,23 +125,14 @@ function Register() {
             <GoogleBtn />
           </div>
           <br />
-          <div className={'inputContainer'}>
-            <input className={'Reg_btn'} type="button" onClick={onButtonClick} value={'Register'} />
+          <div className={'inputContainer_reg_prof'}>
+            <input className={'Reg_btn_reg_prof'} type="button" onClick={onButtonClick} value={'Register'} />
           </div>
         </form>
-      ) : ( // Afișăm formularul de termeni și condiții dacă butonul "Register" a fost apăsat
-        <form className="terms_form">
-          <h2>Please accept our terms and conditions</h2>
-          <p>Do you accept the terms and conditions for data processing?</p>
-          <button onClick={() => handleTermsResponse(true)} className='accept_btn'>Accept</button>
-          <button onClick={() => handleTermsResponse(false)} className='reject_btn'>Reject</button>
-          <div className="links_container">
-            <Link className="terms" to="/">Read Terms and conditions</Link>
-          </div>
-        </form>
-      )}
+        
+      
     </div>
   );
 }
 
-export default Register;
+export default RegFormProf;
