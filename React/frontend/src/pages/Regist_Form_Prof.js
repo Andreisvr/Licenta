@@ -120,11 +120,7 @@ function RegFormProf() {
             <Link className="terms" to="/">Terms and conditions</Link>
             <Link className="link_register">Help</Link>
           </div>
-          <br />
-          <div className='google_btn'>
-            <GoogleBtn />
-          </div>
-          <br />
+      
           <div className={'inputContainer_reg_prof'}>
             <input className={'Reg_btn_reg_prof'} type="button" onClick={onButtonClick} value={'Register'} />
           </div>

@@ -15,12 +15,12 @@ function Register() {
   const navigate = useNavigate();
 
   const onButtonClick = () => {
-    // Resetting error messages
+    
     setEmailError('');
     setPasswordError('');
     setConfirmPasswordError('');
    
-    // Email validation
+    
     if ('' === email) {
       setEmailError('Please enter your email');
       return;
@@ -42,7 +42,7 @@ function Register() {
       return;
     }
 
-    // Verificăm dacă parola conține cel puțin o literă mare sau un semn special
+    
     if (!/[A-Z]/.test(password) && !/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
       setPasswordError('The password must contain at least one uppercase letter or one special character');
       return;
@@ -54,7 +54,7 @@ function Register() {
       return;
     }
 
-    // Afișăm formularul pentru acceptarea termenilor
+    
     setShowTermsForm(true);
 
     setEmail('');
@@ -68,15 +68,15 @@ function Register() {
       console.log('Terms accepted');
       navigate('/type')
     } else {
-      // Logic for rejecting terms
+      
       console.log('Terms rejected');
     }
-    setShowTermsForm(false); // Ascunde formularul sau redirecționează dacă este necesar
+    setShowTermsForm(false); 
   };
 
   return (
     <div className='body_login'>
-      {!showTermsForm ? ( // Afișăm formularul de înregistrare dacă termenii nu sunt încă afișați
+      {!showTermsForm ? ( 
         <form className='form_login'>
           <h1 className='title'>Register</h1>
           <br />
@@ -125,7 +125,7 @@ function Register() {
             <input className={'Reg_btn'} type="button" onClick={onButtonClick} value={'Register'} />
           </div>
         </form>
-      ) : ( // Afișăm formularul de termeni și condiții dacă butonul "Register" a fost apăsat
+      ) : ( 
         <form className="terms_form">
           <h2>Please accept our terms and conditions</h2>
           <p>Do you accept the terms and conditions for data processing?</p>

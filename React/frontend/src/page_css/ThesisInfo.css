@@ -1,0 +1,133 @@
+
+body {
+    font-family: 'Roboto', sans-serif;
+}
+.body_thesisinfo {
+    display: flex;
+    justify-content: center;
+    align-items: center; 
+    height: 100vh;
+    width: 100vw;
+}
+
+.form-container {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    padding: 3vw; 
+}
+
+.left-form {
+    height: 85vh;
+    margin-top: 10vh;
+    width: 55%; 
+    padding: 1rem;
+    background-color: #ffffff; 
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; 
+}
+
+.right-form {
+    height: 85vh; 
+    margin-top: 10vh;
+    width: 30%; 
+    padding: 1rem; 
+    background-color: hsl(0, 0%, 100%); 
+    border-radius: 8px; 
+    margin-left: 3vw; 
+    display: flex;
+    flex-direction: column; 
+    justify-content: center; 
+ 
+}
+
+h2 {
+    text-align: center; 
+}
+
+.faculty-name, .study-program {
+   
+    text-align: center;
+    font-size: 1rem; 
+}
+
+.optional-message {
+    
+    margin-top: 10%;
+    margin: 1rem;
+    border-radius: 10px;
+}
+
+.description{
+    font-weight: 300;
+    width: 85%;
+    height: 65%; 
+    margin-top: 2vh;
+    margin-left: 4%;
+    overflow: auto;
+    
+}
+
+
+.apply-button {
+    /* Stiluri existente */
+    padding: 0.5rem 1rem; 
+    border: none;
+    width: 10vw;
+    border-radius: 5px;
+    background-color: #484848; 
+    color: white;
+    font-size: large;
+    cursor: pointer;
+}
+
+.send-button {
+    align-self: center; 
+    padding: 0.5rem 1rem; 
+    border: none;
+    width: 10vw;
+    border-radius: 5px;
+    background-color: #484848; 
+    color: white;
+    font-size: large;
+    cursor: pointer;
+    margin-top: 103%;
+}
+
+.apply-button:hover, .send-button:hover {
+    background-color: #0056b3; 
+}
+
+.in_date,.off_date{
+
+    font-size: small;
+    
+}
+
+.date{
+    width: 100%;
+  
+    display: flex;
+    justify-content: flex-end; 
+    align-items: center; 
+    gap: 1rem;
+}
+
+
+.apply-favorite-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 90%; 
+    padding: 0 2rem; 
+    margin-top: 5vh;
+}
+
+
+.add_favorite {
+    font-size: larger;
+    cursor: pointer;
+    margin-top: 0; 
+}

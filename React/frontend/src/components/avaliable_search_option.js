@@ -6,9 +6,9 @@ import Fade from '@mui/material/Fade';
 import { IconButton } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu'; // Icon for the menu
 
-const facultyPrograms = ["Name Prof 1 ", "Name Prof 2", "Name Prof 3"];
+const facultyPrograms = ["Proposed", "Available", "Blocked"]; // Only 3 options
 
-export default function ProfList() {
+export default function Available() {
   const [anchorElFaculty, setAnchorElFaculty] = React.useState(null);
   const [selectedFaculty, setSelectedFaculty] = React.useState('');
 
@@ -41,7 +41,7 @@ export default function ProfList() {
         <IconButton style={{ padding: 0, marginRight: '8px' }}>
           <MenuIcon style={{ color :'black' }}/> 
         </IconButton>
-        {selectedFaculty ? selectedFaculty : 'Choose professor name'}
+        {selectedFaculty ? selectedFaculty : 'Choose availability of option'}
       </Button>
       <Menu
         id="fade-menu-faculty"
