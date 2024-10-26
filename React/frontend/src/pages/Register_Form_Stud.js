@@ -4,7 +4,7 @@ import '/Users/Andrei_Sviridov/Desktop/React/frontend/src/page_css/Register.css'
 import GoogleBtn from '../components/login_btn';
 import axios from 'axios';
 
-function Register() {
+function RegisterStud() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -13,7 +13,7 @@ function Register() {
   const [confirmPasswordError, setConfirmPasswordError] = useState('');
   const [gmailData, setGmailData] = useState(null);
   const [name, setName] = useState('');
-  const [isProf, setIsProf] = useState(false); // State for distinguishing professor or student
+  const [isProf, setIsProf] = useState(false); 
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -21,10 +21,12 @@ function Register() {
   useEffect(() => {
     if (location.state && location.state.type) {
       console.log("Tipul de cont selectat:", location.state.type);
-      setIsProf(location.state.type === 'prof'); // Set isProf based on the type
+      setIsProf(location.state.type === 'prof');
     }
   }, [location]);
-
+        if(isProf !==''){
+      console.log('tipul',isProf);}
+  
   const handleGmailLogin = async (decodedToken) => {
     setGmailData(decodedToken.name);
     setEmail(decodedToken.email);
@@ -44,7 +46,7 @@ function Register() {
 
     try {
       await axios.post("http://localhost:8081/reg", values);
-      // Redirect to /thesis after registration
+     
       navigate('/login');
     } catch (error) {
       console.log("Eroarea la trimiterea datelor la backend:", error);
@@ -56,7 +58,7 @@ function Register() {
     setPasswordError('');
     setConfirmPasswordError('');
 
-    // Manual registration validations
+    
     if (!gmailData) {
       if (email === '') {
         setEmailError('Please enter your email');
@@ -85,7 +87,7 @@ function Register() {
       password,
       name: name || email, // Fallback to email if no name is provided
       gmail: false,
-      prof: isProf ? 1 : 0, // Set 1 for professors and 0 for students
+      prof: isProf ? 1 : 0, 
       verified: false,
       verify_nr: null,
     };
@@ -99,7 +101,7 @@ function Register() {
       console.log("Eroarea la trimiterea datelor la backend:", error);
     }
 
-    // Clear input fields after registration
+    
     setEmail('');
     setPassword('');
     setConfirmPassword('');
@@ -108,7 +110,7 @@ function Register() {
   return (
     <div className='body_login'>
       <form className='form_login'>
-        <h1 className='title'>Register</h1>
+        <h1 className='title'>Register Student</h1>
         <br />
         <div className={'field_container'}>
           <input
@@ -164,4 +166,4 @@ function Register() {
   );
 }
 
-export default Register;
+export default RegisterStud;

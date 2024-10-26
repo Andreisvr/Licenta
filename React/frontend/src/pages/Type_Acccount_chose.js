@@ -4,16 +4,15 @@ import '/Users/Andrei_Sviridov/Desktop/React/frontend/src/page_css/Type_Account.
 import profesorGif from '/Users/Andrei_Sviridov/Desktop/React/frontend/src/images/teach_12146114.gif';
 import studentGif from '/Users/Andrei_Sviridov/Desktop/React/frontend/src/images/student_12525336.gif';
 
-
 function Type_account() {
     const navigate = useNavigate(); 
 
     const handleClickProf = () => {
-        navigate('/reg_form'); 
+        navigate('/reg', { state: { type: 'prof' } }); 
     };
 
     const handleClickStud = () => {
-        navigate('/reg_form'); 
+        navigate('/reg_form_stud', { state: { type: 'stud' } }); 
     };
 
     return (

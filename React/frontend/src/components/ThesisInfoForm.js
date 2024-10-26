@@ -1,9 +1,23 @@
-import React from "react";
+import React, {useContext} from "react";
 import '/Users/Andrei_Sviridov/Desktop/React/frontend/src/page_css/ThesisInfo.css';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import Footer from "./footer";
 
+import { AppContext } from '/Users/Andrei_Sviridov/Desktop/React/frontend/src/components/AppContext.js';
+
+
 export default function ThesisInfo({ thesisName, facultyName, studyProgram, professorName, professorEmail }) {
+    const { name, email, logined } = useContext(AppContext);
+    if (!logined) {
+        console.log('nu este logat');
+
+    }
+
+    if (logined) {
+        console.log('este logat',name,email);
+        
+    }
+    
     return (
         <div className="body_thesisinfo">
             <div className="form-container">

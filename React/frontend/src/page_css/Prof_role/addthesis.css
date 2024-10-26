@@ -1,0 +1,37 @@
+
+.applied_form {
+    align-items: center;
+    margin: 1vw;
+    width: 27%;
+    height: 45%;
+    border-radius: 20px;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    cursor: pointer;
+    
+   
+    
+}
+.applied_form:hover{
+    
+    box-shadow: 2px 9px 8px rgba(0, 0, 0, 0.1);
+}
+
+.text{
+    
+    font-weight: 300;
+    margin-left: 10px;
+}
+
+.add_date{
+
+    
+    font-size: small;
+    width: 100%;
+    display: flex;
+    justify-content:center; 
+    align-items: center; 
+   
+}

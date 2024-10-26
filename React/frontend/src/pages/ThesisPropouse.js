@@ -1,12 +1,24 @@
-import React from "react";
+import React , {useContext} from "react";
 import '/Users/Andrei_Sviridov/Desktop/React/frontend/src/page_css/ThesisPropouse.css'
 import ThesisBox from "../components/Thesis_box";
 import ProfList from "../components/Prof_List.js";
 import FacultyList from "../components/Faculty_List.js";
 import Available from "../components/avaliable_search_option.js";
+import { AppContext } from '/Users/Andrei_Sviridov/Desktop/React/frontend/src/components/AppContext.js';
+
+
 export default function ThesisPropose() {
 
-  
+    const { name, email, logined } = useContext(AppContext);
+    if (!logined) {
+        console.log('nu este logat');
+
+    }
+
+    if (logined) {
+        console.log('este logat',name,email);
+        
+    }
     
     return (
         <div className="body_thesis">

@@ -8,6 +8,7 @@ import Badge from '@mui/material/Badge';
 import PersonalForm from "./personal_cabinet";
 import Logo from '/Users/Andrei_Sviridov/Desktop/React/frontend/src/images/Logo-UVT-2017-02.ico';
 
+
 function notificationsLabel(count) {
     if (count === 0) {
       return 'no notifications';

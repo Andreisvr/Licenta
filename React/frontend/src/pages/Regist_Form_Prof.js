@@ -1,23 +1,22 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import '/Users/Andrei_Sviridov/Desktop/React/frontend/src/page_css/Regist_Form_Prof.css';
-import GoogleBtn from '../components/login_btn';
-import ProfList from '../components/Prof_List';
+
 import FacultyList from '../components/Faculty_List';
 
 function RegFormProf() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState(''); // Adăugăm un câmp pentru confirmarea parolei
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [confirmPasswordError, setConfirmPasswordError] = useState('');
-  const [showTermsForm, setShowTermsForm] = useState(false); // Înlocuiește formularul principal cu cel pentru termeni
+  const [showTermsForm, setShowTermsForm] = useState(false);
 
   const navigate = useNavigate();
 
   const onButtonClick = () => {
-    // Resetting error messages
+    
     setEmailError('');
     setPasswordError('');
     setConfirmPasswordError('');
@@ -44,7 +43,7 @@ function RegFormProf() {
       return;
     }
 
-    // Verificăm dacă parola conține cel puțin o literă mare sau un semn special
+    
     if (!/[A-Z]/.test(password) && !/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
       setPasswordError('The password must contain at least one uppercase letter or one special character');
       return;
@@ -70,10 +69,10 @@ function RegFormProf() {
       console.log('Terms accepted');
       navigate('/type')
     } else {
-      // Logic for rejecting terms
+    
       console.log('Terms rejected');
     }
-    setShowTermsForm(false); // Ascunde formularul sau redirecționează dacă este necesar
+    setShowTermsForm(false); 
   };
 
   return (

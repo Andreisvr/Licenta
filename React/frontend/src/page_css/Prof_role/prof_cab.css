@@ -1,0 +1,111 @@
+.body_prof {
+    display: flex;
+    height: 100vh; 
+    overflow: auto;
+    
+}
+
+.left_container {
+    width: 20%; 
+    background-color: rgb(235, 235, 235);
+   
+    border: .4px solid black;
+   
+    
+}
+
+.right_container {
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+    height: 100%; 
+    flex: 1; 
+   
+}
+
+
+.bottom_container {
+    background-color: rgb(235, 235, 235);
+    height: 80%;
+    display: flex;
+    flex-wrap: wrap; 
+    justify-content: flex-start; 
+    overflow-y: auto;
+    padding: 2vw;
+    position: relative; 
+}
+
+.add-button-container {
+    position: fixed;
+    bottom: 2vh; 
+    right: 1vw; 
+    background-color: rgb(235, 235, 235);
+    border-radius: 50%; 
+   
+    padding: 10px;
+    cursor: pointer;
+   
+   
+    
+}
+
+.add_buton {
+    font-size: 4rem !important;
+    color: #333;
+   
+}
+
+.add_buton:hover{
+    color: #007BFF;
+}
+
+.top_container {
+    height: 15%;
+    flex: 1;
+    background-color: white;
+    border-bottom: 0.4px solid black;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+}
+
+.button-group {
+    display: flex;
+    gap: 20px;
+}
+
+.button-group button {
+    margin-top: 2vh;
+    /* margin-left: .21vw; */
+    background: none;
+    height: 3vh;
+    width: 10vw;
+    border: none;
+    font-size: 1.5rem; 
+    color: #333;
+    cursor: pointer;
+    
+    padding: 15px 10px; 
+    transition: color 0.3s ease;
+}
+
+.button-group button:hover {
+    color: #007BFF;
+}
+
+.icon-container {
+    margin-top: 5vh;
+    margin-right: 10px;
+}
+
+.icon-container .icon {
+    font-size: 3rem; 
+    color: #333;
+}
+
+.icon-container .icon:hover{
+    transform: scale(1.03);
+    background-color:  rgb(235, 235, 235);
+    
+}

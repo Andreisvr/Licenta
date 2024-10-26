@@ -64,8 +64,7 @@ const facultyPrograms = {
       masterat:["Literatură şi cultură - contexte româneşti, contexte europene", "Tendinţe actuale în studiul limbii române", "Teoria şi practica traducerii (engleză și franceză)", "Studii americane", "Studii romanice culturale şi lingvistice (latină, franceză, italiană, spaniolă)", "Germana în context european - studii interdisciplinare şi multiculturale", "Digital Technologies for Language Research and Applications", "Istorie conceptuală românească în context european", "Teologie Ortodoxă și Misiune Creștină"]
     }
 };
-
-export default function FacultyList() {
+export default function FacultyList({ onSelect }) {
   const [anchorElFaculty, setAnchorElFaculty] = React.useState(null);
   const [anchorElPrograms, setAnchorElPrograms] = React.useState(null);
   const [selectedFaculty, setSelectedFaculty] = React.useState('');
@@ -82,8 +81,9 @@ export default function FacultyList() {
   const handleSelectFaculty = (faculty) => {
     setSelectedFaculty(faculty);
     setPrograms(facultyPrograms[faculty]);
-    setSelectedProgram(''); 
+    setSelectedProgram('');
     setAnchorElFaculty(null);
+    onSelect(faculty, ''); // Reset program on faculty change
   };
 
   const handleCloseFaculty = () => {
@@ -98,26 +98,29 @@ export default function FacultyList() {
 
   const handleSelectProgram = (program) => {
     setSelectedProgram(program);
-    setAnchorElPrograms(null); 
+    setAnchorElPrograms(null);
+    onSelect(selectedFaculty, program); // Send selected faculty and program
   };
 
   const handleClosePrograms = () => {
     setAnchorElPrograms(null);
+    if (!selectedProgram) {
+      onSelect(selectedFaculty, ''); // Send empty if no program is selected
+    }
   };
 
   return (
     <div>
-    
       <Button
         id="fade-button-faculty"
         aria-controls={openFacultyMenu ? 'fade-menu-faculty' : undefined}
         aria-haspopup="true"
         aria-expanded={openFacultyMenu ? 'true' : undefined}
         onClick={handleClickFaculty}
-        style={{ background:'white',color: 'black', border: '1px solid black', display: 'flex', alignItems: 'center' }} // Add styles for text color, border, and flex alignment
+        style={{ background:'white', color: 'black', border: '1px solid black', display: 'flex', alignItems: 'center' }}
       >
         <IconButton style={{ padding: 0, marginRight: '8px' }}>
-          <MenuIcon /> 
+          <MenuIcon />
         </IconButton>
         {selectedFaculty ? selectedFaculty : 'Choose your faculty'}
       </Button>
@@ -137,13 +140,12 @@ export default function FacultyList() {
         }}
       >
         {Object.keys(facultyPrograms).map((faculty) => (
-          <MenuItem key={faculty} onClick={() => handleSelectFaculty(faculty)} style={{ color: 'black' }}> {/* Add text color to MenuItem */}
+          <MenuItem key={faculty} onClick={() => handleSelectFaculty(faculty)} style={{ color: 'black' }}>
             {faculty}
           </MenuItem>
         ))}
       </Menu>
 
-      
       {selectedFaculty && (
         <div style={{ marginTop: '20px' }}>
           <Button
@@ -152,12 +154,12 @@ export default function FacultyList() {
             aria-haspopup="true"
             aria-expanded={openProgramsMenu ? 'true' : undefined}
             onClick={handleClickPrograms}
-            style={{ background:'white',color: 'black', border: '1px solid black', display: 'flex', alignItems: 'center' }} // Add styles for text color, border, and flex alignment
+            style={{ background:'white', color: 'black', border: '1px solid black', display: 'flex', alignItems: 'center' }}
           >
             <IconButton style={{ padding: 0, marginRight: '8px' }}>
               <MenuIcon />
             </IconButton>
-            {selectedProgram ? selectedProgram : 'Choose study program'}
+            {selectedProgram ? selectedProgram : 'Choose your program'}
           </Button>
           <Menu
             id="fade-menu-programs"
@@ -170,21 +172,16 @@ export default function FacultyList() {
             TransitionComponent={Fade}
             PaperProps={{
               style: {
-                border: '1px solid black', 
+                border: '1px solid black',
               },
             }}
           >
-            <MenuItem disabled style={{ color: 'black' }}>Licență Programs</MenuItem>
-            {programs.licenta.map((program, index) => (
-              <MenuItem key={index} onClick={() => handleSelectProgram(program)} style={{ color: 'black' }}>
-                {program}
-              </MenuItem>
-            ))}
-            <MenuItem disabled style={{ color: 'black' }}>Masterat Programs</MenuItem>
-            {programs.masterat.map((program, index) => (
-              <MenuItem key={index} onClick={() => handleSelectProgram(program)} style={{ color: 'black' }}>
-                {program}
-              </MenuItem>
+            {['licenta', 'masterat'].map((level) => (
+              programs[level].map((program) => (
+                <MenuItem key={program} onClick={() => handleSelectProgram(program)} style={{ color: 'black' }}>
+                  {program}
+                </MenuItem>
+              ))
             ))}
           </Menu>
         </div>

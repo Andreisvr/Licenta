@@ -1,12 +1,10 @@
-import React, {useContext} from 'react';
+import React, { useContext } from 'react';
 import { GoogleLogin, googleLogout } from '@react-oauth/google';
-import {jwtDecode} from 'jwt-decode'; 
-import { AppContext } from './AppContext'; 
+import {jwtDecode} from 'jwt-decode';
+import { AppContext } from './AppContext';
 
-
-function GoogleBtn() {
-    
-    const { setName, setEmail, setDecodedToken, setLogined } = useContext(AppContext);
+function GoogleBtn({ onSuccessLogin }) {  
+    const { setName, setEmail, setDecodedToken, setLogined, type, setType, handleLogin } = useContext(AppContext);
 
     const responseMessage = (response) => {
         try {
@@ -20,40 +18,19 @@ function GoogleBtn() {
             setDecodedToken(decodedToken);
             setLogined(true);
 
-            console.log('Email:', email);
-            console.log('Login Success:', decodedToken);
-            console.log('First Name:', firstName);
-            console.log('Last Name:', lastName);
-
             
+            handleLogin(`${firstName} ${lastName}`, email, type);
+
+            console.log('Login Success:', decodedToken);
+            onSuccessLogin(decodedToken); 
         } catch (error) {
             console.error('Error decoding JWT:', error);
         }
     };
 
-    const errorMessage = (error) => {
-        console.log('Login Failed:', error);
-    };
-
-    const handleLogout = () => {
-        googleLogout();
-        setName(`${''} ${''}`);
-        setEmail('');
-        setDecodedToken('');
-        setLogined(false);
-
-        console.log('Email:', 'email');
-        console.log('Login Success:', 'decodedToken');
-        console.log('First Name:', 'firstName');
-        console.log('Last Name:', 'lastName');
-
-        console.log('User logged out');
-    };
-
     return (
         <div>
-            <GoogleLogin onSuccess={responseMessage} onError={errorMessage} />
-            <br/>
+            <GoogleLogin onSuccess={responseMessage} onError={(error) => console.log('Login Failed:', error)} />
         </div>
     );
 }
