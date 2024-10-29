@@ -11,6 +11,7 @@ import ThesisInfo from './components/ThesisInfoForm';
 import ProfCabinet from './pages/Prof_role/Prof_Cabinet';
 import RegisterStud from './pages/Register_Form_Stud';
 import ThesisProposalForm from './pages/Prof_role/add_thesis_form';
+import RegFormStudent from './pages/student-role/register_student';
 
 function App() {
 
@@ -19,7 +20,7 @@ function App() {
             <UpBar />
             <Routes>
                 <Route path="/" element={<Main />} />
-                
+                <Route path="/reg_stud" element={<RegFormStudent />} />
                 <Route path="/login" element={<LogIn />} />
                 <Route path="/reg" element={<Register />} />
                 <Route path="/type" element={<Type_account />} />

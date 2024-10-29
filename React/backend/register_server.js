@@ -76,12 +76,11 @@ app.post('/login', (req, res) => {
 });
 
 app.post('/add_form', (req, res) => {
-    console.log("Database values: ", req.body);
 
-    const { title, faculty, study_program, prof_id, description, requirements, start_date, end_date, state } = req.body;
+    const { title, faculty, study_program, prof_id, description, requirements, start_date, end_date, state,prof_name } = req.body;
    
-    const sql = "INSERT INTO theses (title, faculty, study_program, prof_id, description, requirements, start_date, end_date, state) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-    const values = [title, faculty, study_program, prof_id, description, requirements, start_date, end_date, state];
+    const sql = "INSERT INTO theses (title, faculty, study_program, prof_id, description, requirements, start_date, end_date, state,professor_name) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?)";
+    const values = [title, faculty, study_program, prof_id, description, requirements, start_date, end_date, state,prof_name ];
 
     db.query(sql, values, (err, result) => {
         if (err) {
@@ -92,6 +91,37 @@ app.post('/add_form', (req, res) => {
     });
 });
 
+
+app.post('/prof', (req, res) => {
+    const { email } = req.body;
+    const sql = "SELECT * FROM users WHERE email = ?";
+
+    db.query(sql, [email], (err, results) => {
+        if (err) {
+            console.error("Database Error: ", err);
+            return res.status(500).json({ error: "Database Error" });
+        }
+        if (results.length === 0) {
+            return res.status(404).json({ error: "User not found" });
+        }
+        
+        const userInfo = results[0];
+        return res.json(userInfo);
+    });
+});
+
+
+
+app.get("/prof", (req, res) => {
+    const query = "SELECT * FROM theses"; 
+    db.query(query, (err, results) => {
+        if (err) {
+            console.error("Eroare la obținerea lucrărilor:", err);
+            return res.status(500).json({ error: "Eroare la obținerea lucrărilor." });
+        }
+        res.json(results); 
+    });
+});
 
 
 

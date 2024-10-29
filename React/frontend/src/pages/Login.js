@@ -13,6 +13,7 @@ function LogIn() {
   const [password, setPassword] = useState('');
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
+  const [loginSuccess, setLoginSuccess] = useState(false);
 
   const navigate = useNavigate();
   const { handleLogin } = useContext(AppContext); 
@@ -59,52 +60,61 @@ function LogIn() {
   const onButtonClick = async () => {
     setEmailError('');
     setPasswordError('');
+    console.log("Log cu buton");
 
     // Validate email
     if (email === '') {
-      setEmailError('Please enter your email');
-      return;
+        setEmailError('Please enter your email');
+        return;
     }
 
     if (!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)) {
-      setEmailError('Please enter a valid email');
-      return;
+        setEmailError('Please enter a valid email');
+        return;
     }
 
     // Validate password
     if (password === '') {
-      setPasswordError('Please enter a password');
-      return;
+        setPasswordError('Please enter a password');
+        return;
     }
 
     if (password.length < 8) {
-      setPasswordError('The password must be 8 characters or longer');
-      return;
+        setPasswordError('The password must be 8 characters or longer');
+        return;
     }
 
     // Send login request to the server
     try {
-      const response = await axios.post('http://localhost:8081/login', {
-        email,
-        password,
-      });
+        const response = await axios.post('http://localhost:8081/login', {
+            email,
+            password,
+        });
+
+        if (response.data.success) {
+         
       
-      if (response.data.success) {
-        
-        navigate('/prof');
-      } else {
-        
-        if (response.data.message) {
-          setEmailError(response.data.message);
-        } else {
-          setEmailError('Invalid credentials');
-        }
-      }
+            const { name, email, prof } = response.data.user;
+            const userType = prof === 1 ? 'professor' : 'student'; 
+            handleLogin(name, email, userType); 
+            console.log('este prof:  ',prof);
+            console.log('cu butonul ',email);
+            navigate('/prof');
+          } else{
+            setLoginSuccess(true);
+            setTimeout(() => {
+                navigate('/prof');
+            }, 2000); 
+            
+            setEmailError(response.data.message || 'Invalid credentials');
+
+        } 
+
     } catch (error) {
-      console.log("Error logging in:", error);
-      setEmailError('An error occurred. Please try again later.');
+        console.log("Error logging in:", error);
+        setEmailError('An error occurred. Please try again later.');
     }
-  };
+};
 
   return (
     <div className='body_login'>

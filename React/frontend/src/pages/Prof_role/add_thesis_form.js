@@ -13,21 +13,27 @@ function ThesisForm() {
     } else {
         console.log('este logat', name, email, type);  
     }
+   const userInfo = localStorage.getItem('userInfo');
+
+   const user_info = JSON.parse(userInfo);
+    console.log('userinfo',user_info);
+
 
     const initialFormData = {
         title: '',
         faculty: '',
         studyProgram: '',
-        prof_id: '12',
+        prof_id: user_info.id || '12',
         description: '',
         requirements: '',
         start_date: '',
         end_date: '',
-        state: 'open'
+        state: 'open',
+        prof_name: user_info.name
     };
 
     const [formData, setFormData] = useState(initialFormData);
-
+    console.log('userinfo',user_info.name);
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData((prevData) => ({
@@ -49,6 +55,7 @@ function ThesisForm() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         console.log('Form data submitted:', formData);
+        console.log('Name',formData.name);
 
         const adjustedData = {
             title: formData.title,
@@ -60,6 +67,8 @@ function ThesisForm() {
             start_date: formData.start_date,
             end_date: formData.end_date || null,
             state: formData.state,
+            prof_name: formData.prof_name 
+
         };
 
         try {

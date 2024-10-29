@@ -1,53 +1,60 @@
-import React, {useContext} from "react";
+import React, { useEffect, useState } from "react";
 import '/Users/Andrei_Sviridov/Desktop/React/frontend/src/page_css/ThesisInfo.css';
-import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import Footer from "./footer";
 
-import { AppContext } from '/Users/Andrei_Sviridov/Desktop/React/frontend/src/components/AppContext.js';
+export default function ThesisInfo() {
+    const [thesisData, setThesisData] = useState(null);
 
+    useEffect(() => {
+        const savedThesis = localStorage.getItem('selectedThesis');
+        if (savedThesis) {
+            setThesisData(JSON.parse(savedThesis));
+            console.log(savedThesis);
+        }
+    }, []);
 
-export default function ThesisInfo({ thesisName, facultyName, studyProgram, professorName, professorEmail }) {
-    const { name, email, logined } = useContext(AppContext);
-    if (!logined) {
-        console.log('nu este logat');
-
-    }
-
-    if (logined) {
-        console.log('este logat',name,email);
+    function formatDate(isoDateString) {
+        const date = new Date(isoDateString);
         
+       
+        if (date.getTime() === 0) {
+            return ''; 
+        }
+    
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0'); 
+        const year = date.getFullYear();
+        
+        return `${day}/${month}/${year}`;
     }
     
+
+    if (!thesisData) return <p>Loading...</p>;
+
     return (
         <div className="body_thesisinfo">
             <div className="form-container">
-
                 <form className="left-form">
-                    <h2 className="thesisName">{"Povesti cu Zmǎu"}</h2>
-                    
+                    <h2 className="thesisName">{thesisData.title}</h2>
                     <div className="date">
-                    <p className="in_date">{"20/10/2024"}</p>
-                    <p className="off_date">{"32/10/2024"}</p>
+                        <p className="in_date">{formatDate(thesisData.start_date)}</p>
+                        <p className="off_date">{formatDate(thesisData.end_date)}</p>
                     </div>
-                    <p className="faculty-name">{"Faculty Name"}</p>
-                    <p className="study-program">{"Study Program"}</p>
-                    <p placeholder="Description" className="description" >{"PWith these adjustments, all the text elements in the left column should align at the top and maintain their intended positions without moving down. This should give you the desired layout where all text is consistentddldsmskskly positioned. If you still experience issues, ensure there are no external CSS rules affecting the layout PWith these adjustments, all the text elements in the left column should align at the top and maintain their intended positions without moving down. This should give you the desired layout where all text is consistently positioned. If you still experience issues, ensure there are no external CSS rules affecting the layoutPWith these adjustments, all the text elements in the left column should align at the top and maintain their intended positions without moving down. This should give you the desired layout where all text is consistently positioned. If you still experience issues, ensure there are no external CSS rules affecting the layoutPWith these adjustments, all the text elements in the left column should align at the top and maintain their intended positions without moving down. This should give you the desired layout where all text is consistently positioned. If you still experience issues, ensure there are no external CSS rules affecting the layoutPWith these adjustments, all the text elements in the left column should align at the top and maintain their intended positions without moving down. This should give you the desired layout where all text is consistently positioned. If you still experience issues, ensure there are no external CSS rules affecting the layoutPWith these adjustments, all the text elements in the left column should align at the top and maintain their intended positions without moving down. This should give you the desired layout where all text is consistently positioned. If you still experience issues, ensure there are no external CSS rules affecting the layoutPWith these adjustments, all the text elements in the left column should align at the top and maintain their intended positions without moving down. This should give you the desired layout where all text is consistently positioned. If you still experience issues, ensure there are no external CSS rules affecting the layout "}</p>
+                    <p className="faculty-name">{thesisData.faculty}</p>
+                    <p className="study-program">{thesisData.study_program}</p>
+                    <p className="description">{thesisData.description}</p>
                     <div className="apply-favorite-container">
                         <button type="submit" className="apply-button">Apply</button>
-                        <FavoriteBorderIcon fontSize="large" className="add_favorite" />
                     </div>
                 </form>
-               
+                
                 <form className="right-form">
-                    <h2>{"Professor Name"}</h2>
-                    <p>Email: {"professorEmail"}</p>
-                    <p>Facultatea: {"facultyName"}</p>
+                    <h2>{thesisData.professor_name}</h2>
+                    <p>Email: {thesisData.professor_email}</p>
+                    <p>Facultatea: {thesisData.faculty}</p>
                     <textarea placeholder="Mesaj opțional..." className="optional-message" />
                     <button type="submit" className="send-button">Send</button>
                 </form>
             </div>
-            <Footer/>
         </div>
-       
     );
 }

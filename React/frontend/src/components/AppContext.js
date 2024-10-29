@@ -8,18 +8,24 @@ export const AppProvider = ({ children }) => {
     const [decodedToken, setDecodedToken] = useState(null);
     const [logined, setLogined] = useState(false);
     const [type, setType] = useState('');
+    const [userInfo, setUserInfo] = useState(null); // Adăugăm userInfo
 
     useEffect(() => {
         const storedName = localStorage.getItem('userName');
         const storedEmail = localStorage.getItem('userEmail');
         const storedLogined = localStorage.getItem('isLoggedIn') === 'true';
         const storedType = localStorage.getItem('userType'); 
+        const storedUserInfo = localStorage.getItem('userInfo'); // Verificăm dacă avem userInfo în localStorage
 
         if (storedLogined) {
             setName(storedName);
             setEmail(storedEmail);
             setLogined(true);
-            setType(storedType); 
+            setType(storedType);
+            
+            if (storedUserInfo) {
+                setUserInfo(JSON.parse(storedUserInfo)); // Setăm userInfo din localStorage
+            }
         }
     }, []);
 
@@ -41,11 +47,13 @@ export const AppProvider = ({ children }) => {
         setLogined(false);
         setDecodedToken(null);
         setType(''); 
+        setUserInfo(null); // Resetăm userInfo la logout
 
         localStorage.removeItem('userName');
         localStorage.removeItem('userEmail');
         localStorage.removeItem('isLoggedIn');
         localStorage.removeItem('userType');
+        localStorage.removeItem('userInfo'); // Ștergem userInfo din localStorage
     };
 
     return (
@@ -55,6 +63,7 @@ export const AppProvider = ({ children }) => {
             decodedToken, setDecodedToken, 
             logined, setLogined, 
             type, setType,  
+            userInfo, // Expunem userInfo
             handleLogin, 
             handleLogout 
         }}>
