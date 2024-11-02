@@ -23,6 +23,7 @@ function GoogleBtn({ onSuccessLogin }) {
 
             console.log('Login Success:', decodedToken);
             onSuccessLogin(decodedToken); 
+        
         } catch (error) {
             console.error('Error decoding JWT:', error);
         }

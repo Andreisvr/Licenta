@@ -3,14 +3,14 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Main from './pages/main';
 import LogIn from './pages/Login';
 import UpBar from './components/up_bar';
-import Register from './pages/Register';
+import Register from '/Users/Andrei_Sviridov/Desktop/React/frontend/src/pages/Prof_role/Register.js';
 import Type_account from './pages/Type_Acccount_chose';
 import ThesisPropose from './pages/ThesisPropouse';
 import RegFormProf from './pages/Regist_Form_Prof';
-import ThesisInfo from './components/ThesisInfoForm';
-import ProfCabinet from './pages/Prof_role/Prof_Cabinet';
+import ThesisInfo from '/Users/Andrei_Sviridov/Desktop/React/frontend/src/pages/Cards/ThesisInfoForm.js';
+import Cabinet from '/Users/Andrei_Sviridov/Desktop/React/frontend/src/pages/Cards/MainPage.js';
 import RegisterStud from './pages/Register_Form_Stud';
-import ThesisProposalForm from './pages/Prof_role/add_thesis_form';
+import ThesisProposalForm from '/Users/Andrei_Sviridov/Desktop/React/frontend/src/pages/Cards/add_thesis_form.js';
 import RegFormStudent from './pages/student-role/register_student';
 
 function App() {
@@ -28,7 +28,7 @@ function App() {
                 <Route path="/reg_form_stud" element={<RegisterStud/>} />
                 <Route path="/thesis" element={<ThesisPropose />} />
                 <Route path="/thesisinfo" element={<ThesisInfo />} />
-                <Route path="/prof" element={<ProfCabinet/>} />
+                <Route path="/prof" element={<Cabinet/>} />
                 <Route path="/add_form" element={<ThesisProposalForm/>} />
             </Routes>
             

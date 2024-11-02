@@ -11,11 +11,15 @@
     padding: 9px;
     height: 60%; 
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); 
-    transition: transform 0.2s; 
+    transition:box-shadow 0.3s ease;
 }
 
+
+
+
 .applied_form:hover {
-    transform: scale(1.02);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3); 
+
 }
 
 .text {
@@ -46,4 +50,18 @@
     font-size: 0.9em; 
     color: #555;
     margin: 5px 0; 
+}
+
+.withdraw_btn{
+    width: 40%;
+    height: 10%;
+    border-radius: 10px;
+    border: none;
+    background-color: #489cd8;
+    color: white;
+    cursor: pointer;
+}
+.withdraw_btn:hover{
+ 
+    transform: scale(1.03);
 }

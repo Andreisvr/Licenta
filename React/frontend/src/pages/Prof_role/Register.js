@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import GoogleBtn from '../../components/login_btn';
 import '/Users/Andrei_Sviridov/Desktop/React/frontend/src/page_css/student_role/reg_stud.css';
 import FacultyList from '/Users/Andrei_Sviridov/Desktop/React/frontend/src/components/Faculty_List.js';
-import { AppContext } from '/Users/Andrei_Sviridov/Desktop/React/frontend/src/components/AppContext.js';
+
 
 function RegFormStudent() {
   const [email, setEmail] = useState('');
@@ -59,10 +59,10 @@ function RegFormStudent() {
       email: email,
       code: code 
     };
-   
+    
 
     try {
-      const response = await fetch('http://localhost:5002/reg_stud', {
+      const response = await fetch('http://localhost:5002/reg', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -173,7 +173,7 @@ function RegFormStudent() {
     setUserData({
       program: program,
       faculty: faculty,
-      fullName: fullName,
+      name: fullName,
       email: email,
       password: password,
     });
@@ -182,45 +182,48 @@ function RegFormStudent() {
 
   const handleVerification = async (event) => {
     event.preventDefault();
-    
+  
     if (verificationCode === generatedCode) {
-        
-        const userDataToSend = {
-            name: UserData.fullName,
-            email: UserData.email,
-            pass: password,
-            gmail_pass: UserData.gmailPass,
-            faculty: UserData.faculty,
-            program: UserData.program,
-        };
-        
-        //console.log('Date trimitse',userDataToSend);
+      const userDataToSend = {
+        name: UserData.name,
+        email: UserData.email,
+        password: UserData.password || null, 
+        gmail_password: UserData.gmailPass || null, 
+        faculty: UserData.faculty,
+        cv_link: null,
+      };
+      //console.log('Date trimise:', userDataToSend);
+  
+      try {
+        const response = await fetch('http://localhost:8081/reg', {
+            method: 'POST', 
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(userDataToSend),
 
-        try {
-            const response = await fetch('http://localhost:8081/reg_stud', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(userDataToSend),
-            }); 
-
-            if (response.ok) {
-                const data = await response.json();
-                console.log(data.message);
-                navigate('/login'); 
-            } else {
-                const errorData = await response.json();
-                alert(`Eroare la înregistrare: ${errorData.message}`);
-            }
-        } catch (error) {
-            console.error('Eroare la trimiterea datelor:', error);
-            alert('A apărut o eroare la înregistrare. Vă rugăm să încercați din nou.');
-        }
-    } else {
-        alert('Codul de verificare este incorect. Vă rugăm să încercați din nou.');
-    }
+        });
+    
+        if (response.ok) {
+          const data = await response.json();
+          console.log(data.message);
+          navigate('/login');
+      } else if (response.status === 409) {
+          const errorData = await response.json();
+          alert(`Eroare la înregistrare: ${errorData.message}`);
+      } else {
+          const errorData = await response.json();
+          alert(`Eroare la înregistrare: ${errorData.message}`);
+      }
+  } catch (error) {
+      console.error('Eroare la trimiterea datelor:', error);
+      alert('A apărut o eroare la înregistrare. Vă rugăm să încercați din nou.');
+  }
+} else {
+  alert('Codul de verificare este incorect. Vă rugăm să încercați din nou.');
+}
 };
+
 
 
   const handleSelection = (faculty, program) => {

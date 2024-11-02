@@ -69,23 +69,6 @@ body {
     color: black;
 }
 
-.favorite-button {
-    background-color: transparent;
-    border: none;
-    cursor: pointer;
-}
-
-.icon-border {
-    color: black; 
-    opacity: 0.8; 
-}
-.icon-border:hover{
-    color: red;
-}
-.icon-clicked {
-    color: red; 
-}
-
 .circles-container {
     display: flex;
     gap: 10px;

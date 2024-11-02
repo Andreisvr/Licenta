@@ -83,7 +83,7 @@ export default function FacultyList({ onSelect }) {
     setPrograms(facultyPrograms[faculty]);
     setSelectedProgram('');
     setAnchorElFaculty(null);
-    onSelect(faculty, ''); // Reset program on faculty change
+    onSelect(faculty, '');
   };
 
   const handleCloseFaculty = () => {
@@ -99,7 +99,7 @@ export default function FacultyList({ onSelect }) {
   const handleSelectProgram = (program) => {
     setSelectedProgram(program);
     setAnchorElPrograms(null);
-    onSelect(selectedFaculty, program); // Send selected faculty and program
+    onSelect(selectedFaculty, program); 
   };
 
   const handleClosePrograms = () => {

@@ -12,7 +12,7 @@ function Type_account() {
     };
 
     const handleClickStud = () => {
-        navigate('/reg_form_stud', { state: { type: 'stud' } }); 
+        navigate('/reg_stud', { state: { type: 'stud' } }); 
     };
 
     return (

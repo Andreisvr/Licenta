@@ -1,3 +1,4 @@
+
 import React, { createContext, useEffect, useState } from 'react';
 
 export const AppContext = createContext();
@@ -8,37 +9,47 @@ export const AppProvider = ({ children }) => {
     const [decodedToken, setDecodedToken] = useState(null);
     const [logined, setLogined] = useState(false);
     const [type, setType] = useState('');
-    const [userInfo, setUserInfo] = useState(null); // Adăugăm userInfo
+    const [userInfo, setUserInfo] = useState(null); 
+    const [program, setProgram] = useState(''); 
+    const [faculty, setFaculty] = useState(''); 
 
     useEffect(() => {
         const storedName = localStorage.getItem('userName');
         const storedEmail = localStorage.getItem('userEmail');
         const storedLogined = localStorage.getItem('isLoggedIn') === 'true';
         const storedType = localStorage.getItem('userType'); 
-        const storedUserInfo = localStorage.getItem('userInfo'); // Verificăm dacă avem userInfo în localStorage
+        const storedUserInfo = localStorage.getItem('userInfo'); 
+        const storedProgram = localStorage.getItem('userProgram'); 
+        const storedFaculty = localStorage.getItem('userFaculty'); 
 
         if (storedLogined) {
             setName(storedName);
             setEmail(storedEmail);
             setLogined(true);
             setType(storedType);
+            setProgram(storedProgram); 
+            setFaculty(storedFaculty); 
             
             if (storedUserInfo) {
-                setUserInfo(JSON.parse(storedUserInfo)); // Setăm userInfo din localStorage
+                setUserInfo(JSON.parse(storedUserInfo)); 
             }
         }
     }, []);
 
-    const handleLogin = (userName, userEmail, userType) => {
+    const handleLogin = (userName, userEmail, userType, userProgram, userFaculty) => {
         setName(userName);
         setEmail(userEmail);
         setLogined(true);
         setType(userType); 
+        setProgram(userProgram);
+        setFaculty(userFaculty); 
 
         localStorage.setItem('userName', userName);
         localStorage.setItem('userEmail', userEmail);
         localStorage.setItem('isLoggedIn', 'true');
         localStorage.setItem('userType', userType);
+        localStorage.setItem('userProgram', userProgram); 
+        localStorage.setItem('userFaculty', userFaculty); 
     };
 
     const handleLogout = () => {
@@ -47,13 +58,17 @@ export const AppProvider = ({ children }) => {
         setLogined(false);
         setDecodedToken(null);
         setType(''); 
-        setUserInfo(null); // Resetăm userInfo la logout
+        setUserInfo(null); 
+        setProgram('');
+        setFaculty('');
 
         localStorage.removeItem('userName');
         localStorage.removeItem('userEmail');
         localStorage.removeItem('isLoggedIn');
         localStorage.removeItem('userType');
-        localStorage.removeItem('userInfo'); // Ștergem userInfo din localStorage
+        localStorage.removeItem('userInfo'); 
+        localStorage.removeItem('userProgram'); 
+        localStorage.removeItem('userFaculty');
     };
 
     return (
@@ -63,7 +78,9 @@ export const AppProvider = ({ children }) => {
             decodedToken, setDecodedToken, 
             logined, setLogined, 
             type, setType,  
-            userInfo, // Expunem userInfo
+            userInfo, 
+            program, setProgram, 
+            faculty, setFaculty, 
             handleLogin, 
             handleLogout 
         }}>
@@ -71,3 +88,5 @@ export const AppProvider = ({ children }) => {
         </AppContext.Provider>
     );
 };
+
+
