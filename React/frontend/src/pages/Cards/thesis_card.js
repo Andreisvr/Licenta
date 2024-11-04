@@ -3,16 +3,21 @@ import '/Users/Andrei_Sviridov/Desktop/React/frontend/src/page_css/Prof_role/add
 
 export default function AddThesis({ 
     thesisName, 
-    date_start, 
-    date_end, 
     faculty, 
     study_program, 
-    description, 
+    description,
+    requirements,
+    date_start,
+    date_end,
     professor_name, 
-    requirements, 
+    student_name,
+    applied_data, 
+    onAccept,
+    onDecline,
     onClick, 
-    onWithdraw, 
-    isAll 
+    onWithdraw,
+    onWithdrawApplication, 
+    viewType 
 }) {
     
     function formatDate(isoDateString) {
@@ -29,9 +34,12 @@ export default function AddThesis({
     return (
         <form className="applied_form" onClick={onClick}>
             <p className="text title">Title: {thesisName}</p>
-            <p className="text">Faculty: {faculty} {study_program && `(Program: ${study_program})`}</p>
-            {!isAll ? (
+
+            {viewType === "ALL" && (
                 <>
+                    <p className="text">Faculty: {faculty} {study_program && `(Program: ${study_program})`}</p>
+                    <p className="text">Professor: {professor_name}</p>
+                    
                     <p className="text description">Description: {description}</p>
                     {requirements && (
                         <p className="text requirements">Requirements: {requirements}</p>
@@ -41,11 +49,47 @@ export default function AddThesis({
                         <p className="text">{formatDate(date_start)}</p>
                         <p className="text">{formatDate(date_end)}</p>
                     </div>
+                
                 </>
-            ) : (
+            )}
+
+            {viewType === "Applied" && (
                 <>
-                    <p className="text">Professor: {professor_name}</p>
-                    <p style={{fontWeight: 300}}>Waiting for Answer</p>
+                    <p className="text">Student: {student_name}</p>
+                    <p className="text">Faculty: {faculty} {study_program && `(Program: ${study_program})`}</p>
+                    <p className="text">appliedDate: {formatDate(applied_data)}</p>
+                    <div class="button-container">
+                        <button 
+                            class="chose_btn" 
+                            type="button" 
+                            onClick={(e) => {
+                            e.stopPropagation(); 
+                            onAccept(); 
+                            }}
+                            >
+                            Accept
+                        </button>
+
+                        <button   
+                                class="chose_btn decline" 
+                                type="button" 
+                                onClick={(e) => {
+                                e.stopPropagation(); 
+                                onDecline(); 
+                                }}
+                                    >
+                                Decline
+                        </button>
+                    </div>
+
+                </>
+            )}
+
+            {viewType === "MyThesis" && (
+                <>
+                    <p className="text">Faculty: {faculty} {study_program && `(Program: ${study_program})`}</p>
+                    
+                    <p className="text description">Description: {description}</p>
                     <button 
                         className="withdraw_btn" 
                         type="button" 
@@ -54,12 +98,35 @@ export default function AddThesis({
                             onWithdraw(); 
                         }}
                     >
-                        Withdraw Application
+                        Withdraw Thesis
                     </button>
                     <div className="add_date">
                         <p className="text">{formatDate(date_start)}</p>
                         <p className="text">{formatDate(date_end)}</p>
                     </div>
+                </>
+            )}
+
+            {viewType === "MyApplies" && (
+                <>
+                    <p className="text">Professor: {professor_name}</p>
+                    <p className="text">Faculty: {faculty} {study_program && `(Program: ${study_program})`}</p>
+                    <p className="text description">Description: {description}</p>
+                    {requirements && (
+                        <p className="text requirements">Requirements: {requirements}</p>
+                    )}
+                    <button 
+                        className="chose_btn decline" 
+                        type="button" 
+                        onClick={(e) => {
+                            e.stopPropagation(); 
+                            onWithdrawApplication(); 
+                        }}
+                    >
+                        Withdraw Application
+                    </button>
+                    <p className="text">appliedDate: {formatDate(applied_data)}</p>
+                    
                 </>
             )}
         </form>

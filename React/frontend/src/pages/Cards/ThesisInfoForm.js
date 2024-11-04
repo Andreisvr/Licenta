@@ -50,6 +50,7 @@ export default function ThesisInfo() {
 
     
     const handleBack = () => {
+        
         navigate("/prof");
     };
 
@@ -69,6 +70,7 @@ export default function ThesisInfo() {
             applied_data: new Date().toISOString() 
         };
         console.log(appliedData);
+       
         try {
             const response = await fetch('http://localhost:8081/thesisinfo', { 
                 method: 'POST',

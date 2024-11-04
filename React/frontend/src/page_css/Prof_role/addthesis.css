@@ -52,16 +52,67 @@
     margin: 5px 0; 
 }
 
-.withdraw_btn{
-    width: 40%;
-    height: 10%;
+/* Stil pentru butoane */
+.button-container {
+    display:flex;
+    justify-content: space-between;
+    width: 80%;
+    gap: 2%;
+    margin-top: 10vh;
+}
+
+.chose_btn {
+   
+  
+    padding: 3%;
+    width: 45%;
     border-radius: 10px;
     border: none;
+    font-weight: bold;
     background-color: #489cd8;
     color: white;
     cursor: pointer;
+    transition: transform 0.2s ease, background-color 0.2s ease;
 }
-.withdraw_btn:hover{
- 
-    transform: scale(1.03);
+
+.chose_btn:hover {
+    transform: scale(1.02);
+}
+
+.chose_btn:active {
+    background-color: #004085;
+}
+
+
+.chose_btn.decline {
+    background-color: #dc3545;
+}
+
+.chose_btn.decline:hover {
+    background-color: #c82333;
+}
+
+.chose_btn.decline:active {
+    background-color: #bd2130;
+}
+
+
+.withdraw_btn {
+    width: 40%;
+    padding: 10px;
+    border-radius: 10px;
+    border: none;
+    background-color: #dc3545;
+    color: white;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background-color 0.2s ease;
+}
+
+.withdraw_btn:hover {
+    background-color: #c82333;
+}
+
+.withdraw_btn:active {
+    background-color: #bd2130;
 }

@@ -93,7 +93,7 @@ app.post('/reg_stud', async (req, res) => {
 
 app.post('/login', (req, res) => {
     const { email, password,pass } = req.body;
-    console.log(req.body);
+    
    
     const sqlStudent = "SELECT * FROM studentii WHERE email = ?";
     db.query(sqlStudent, [email], (err, studentResults) => {
@@ -104,9 +104,7 @@ app.post('/login', (req, res) => {
 
         if (studentResults.length > 0) {
             const user = studentResults[0];
-            console.log('Verificare student password:', user.pass, password);
-            console.log('Verificare student gmail_pass:', user.gmail_pass,email,user.email);
-
+           
            
             if (pass) {
                 if (email === user.email) {
@@ -148,9 +146,7 @@ app.post('/login', (req, res) => {
 
             if (professorResults.length > 0) {
                 const user = professorResults[0];
-                console.log('Verificare profesor password:', user.password, password);
-                console.log('Verificare prof gmail_pass:', user.gmail_pass,email,user.email);
-
+               
                 
                 if (pass) {
                     if (email === user.email) {
@@ -205,63 +201,13 @@ app.post('/add_form', (req, res) => {
 });
 
 
-app.post('/prof', (req, res) => {
-    const { email } = req.body;
-   
-    const sqlStudents = "SELECT * FROM studentii WHERE email = ?";
-    const sqlProfessors = "SELECT * FROM profesorii_neverificati WHERE email = ?";
 
-   
-    db.query(sqlStudents, [email], (err, results) => {
-        if (err) {
-            console.error("Database Error: ", err);
-            return res.status(500).json({ error: "Database Error" });
-        }
-
-        
-        if (results.length > 0) {
-            const userInfo = results[0];
-            return res.json(userInfo);
-        }
-
-        
-        db.query(sqlProfessors, [email], (err, results) => {
-            if (err) {
-                console.error("Database Error: ", err);
-                return res.status(500).json({ error: "Database Error" });
-            }
-
-            
-            if (results.length > 0) {
-                const userInfo = results[0];
-                return res.json(userInfo);
-            }
-
-            // If neither student nor professor is found, return an error
-            return res.status(404).json({ error: "User not found" });
-        });
-    });
-});
-
-
-
-
-app.get("/prof", (req, res) => {
-    const query = "SELECT * FROM theses"; 
-    db.query(query, (err, results) => {
-        if (err) {
-            console.error("Eroare la obținerea lucrărilor:", err);
-            return res.status(500).json({ error: "Eroare la obținerea lucrărilor." });
-        }
-        res.json(results); 
-    });
-});
 
 
 
 app.get('/thesisinfo', (req, res) => {
     const id_stud = req.query.id_stud; 
-    console.log(id_stud);
+    
 
     if (!id_stud) {
         return res.status(400).json({ error: "id_stud is required" });
@@ -301,7 +247,7 @@ app.post('/thesisinfo', (req, res) => {
     const formattedDate = `${appliedDate.getFullYear()}-${String(appliedDate.getMonth() + 1).padStart(2, '0')}-${String(appliedDate.getDate()).padStart(2, '0')} ${String(appliedDate.getHours()).padStart(2, '0')}:${String(appliedDate.getMinutes()).padStart(2, '0')}:${String(appliedDate.getSeconds()).padStart(2, '0')}`;
 
 
-   
+   console.log(id_stud,id_thesis);
     const checkSql = `SELECT COUNT(*) as count FROM Applies WHERE id_stud = ? AND id_thesis = ?`;
     db.query(checkSql, [id_stud, id_thesis], (err, results) => {
         if (err) {
@@ -310,6 +256,7 @@ app.post('/thesisinfo', (req, res) => {
         }
 
         const applicationCount = results[0].count;
+        console.log(results[0].count);
         if (applicationCount > 0) {
             return res.status(400).json({ error: 'You have already applied for this thesis.' });
         }
@@ -323,7 +270,7 @@ app.post('/thesisinfo', (req, res) => {
                 console.error('Error inserting data:', err);
                 return res.status(500).json({ error: 'Database error' });
             }
-            console.log('Application submitted:', result);
+           
             res.status(201).json({ message: 'Application submitted successfully', id: result.insertId });
         });
     });
@@ -331,19 +278,183 @@ app.post('/thesisinfo', (req, res) => {
 
 
 
+//----------------------------------------------------MainPage request to backend---------------------
+//----------------------------------------------------MainPage request to backend---------------------
+//----------------------------------------------------MainPage request to backend---------------------
+
+
+app.post('/prof', (req, res) => {
+    const { email } = req.body;
+   
+    const sqlStudents = "SELECT * FROM studentii WHERE email = ?";
+    const sqlProfessors = "SELECT * FROM profesorii_neverificati WHERE email = ?";
+
+    db.query(sqlStudents, [email], (err, results) => {
+        if (err) {
+            console.error("Database Error: ", err);
+            return res.status(500).json({ error: "Database Error" });
+        }
+
+        
+        if (results.length > 0) {
+            const userInfo = results[0];
+            return res.json(userInfo);
+        }
+
+       
+        db.query(sqlProfessors, [email], (err, results) => {
+            if (err) {
+                console.error("Database Error: ", err);
+                return res.status(500).json({ error: "Database Error" });
+            }
+
+           
+            if (results.length > 0) {
+                const userInfo = results[0];
+                return res.json(userInfo);
+            }
+
+            
+            return res.status(404).json({ error: "User not found" });
+        });
+    });
+});
+
+
+app.get("/prof", (req, res) => {
+    const query = "SELECT * FROM theses"; 
+    db.query(query, (err, results) => {
+        if (err) {
+            console.error("Eroare la obținerea lucrărilor:", err);
+            return res.status(500).json({ error: "Eroare la obținerea lucrărilor." });
+        }
+        res.json(results); 
+    });
+});
+
+
+app.get("/applies", (req, res) => {
+    const query = "SELECT * FROM Applies";
+    db.query(query, (err, results) => {
+        if (err) {
+            console.error("Error fetching applications:", err);
+            return res.status(500).json({ error: "Error fetching applications." });
+        }
+        res.json(results);  
+    });
+});
+
+
 app.delete('/prof/:id', (req, res) => {
     const thesisId = parseInt(req.params.id);
-    console.log(thesisId);
-    const sql = 'DELETE FROM Applies WHERE id_thesis = ?';
+   
+    const sql = 'DELETE FROM theses WHERE id = ?';
     db.query(sql, [thesisId], (err, result) => {
         if (err) {
+            console.error("Error deleting thesis:", err);
             return res.status(500).json({ message: 'Error deleting thesis' });
         }
+
         if (result.affectedRows === 0) {
             return res.status(404).json({ message: 'Thesis not found' });
         }
+
+        
         res.status(200).json({ message: 'Thesis withdrawn successfully' });
     });
 });
 
 
+app.delete('/accept/:id', (req, res) => {
+    const thesisId = parseInt(req.params.id);
+   
+
+    const sql = 'DELETE FROM Applies WHERE id = ?';
+    db.query(sql, [thesisId], (err, result) => {
+        if (err) {
+            console.error("Error deleting thesis:", err);
+            return res.status(500).json({ message: 'Error deleting thesis' });
+        }
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: 'Thesis not found' });
+        }
+
+        
+        res.status(200).json({ message: 'Thesis withdrawn successfully' });
+    });
+});
+
+app.post('/acceptedApplications', (req, res) => {
+    const acceptedApplication = req.body;
+
+    
+    const {
+        id_thesis,
+        faculty,
+        title,
+        id_prof,
+        prof_name,
+        prof_email,
+        stud_id,
+        stud_email,
+        stud_name,
+        stud_program,
+        date
+    } = acceptedApplication;
+
+   
+    if (!id_thesis || !faculty || !title || !id_prof || !prof_name || !prof_email || !stud_id || !stud_email || !stud_name || !stud_program || !date) {
+        return res.status(400).json({ error: 'Toate câmpurile sunt necesare!' });
+    }
+
+   
+    const sql = `INSERT INTO AcceptedApplication (id_thesis, faculty, title, id_prof, prof_name, prof_email, stud_id, stud_email, stud_name, stud_program, data) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+    const values = [id_thesis, faculty, title, id_prof, prof_name, prof_email, stud_id, stud_email, stud_name, stud_program, date];
+
+    db.query(sql, values, (error, results) => {
+        if (error) {
+            console.error('Error inserting into AcceptedApplication:', error);
+            return res.status(500).json({ error: 'Eroare la inserare în baza de date.' });
+        }
+
+        res.status(201).json({ message: 'Aplicația a fost acceptată cu succes!', id: results.insertId });
+    });
+});
+
+
+
+
+
+
+app.delete('/delMyAplication/:id', (req, res) => {
+    const thesisId = parseInt(req.params.id);
+   
+
+    const sql = 'DELETE FROM Applies WHERE id_thesis = ?';
+    db.query(sql, [thesisId], (err, result) => {
+        if (err) {
+            console.error("Error deleting thesis:", err);
+            return res.status(500).json({ message: 'Error deleting thesis' });
+        }
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: 'Thesis not found' });
+        }
+
+        
+        res.status(200).json({ message: 'Thesis withdrawn successfully' });
+    });
+});
+
+app.get('/AcceptedApplication', async (req, res) => {
+    
+        const query = "SELECT * FROM AcceptedApplication";
+        db.query(query, (err, results) => {
+            if (err) {
+                console.error("Error fetching applications:", err);
+                return res.status(500).json({ error: "Error fetching applications." });
+            }
+            res.json(results);  
+        });
+});
