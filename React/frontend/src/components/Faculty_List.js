@@ -105,7 +105,7 @@ export default function FacultyList({ onSelect }) {
   const handleClosePrograms = () => {
     setAnchorElPrograms(null);
     if (!selectedProgram) {
-      onSelect(selectedFaculty, ''); // Send empty if no program is selected
+      onSelect(selectedFaculty, ''); 
     }
   };
 
@@ -159,7 +159,7 @@ export default function FacultyList({ onSelect }) {
             <IconButton style={{ padding: 0, marginRight: '8px' }}>
               <MenuIcon />
             </IconButton>
-            {selectedProgram ? selectedProgram : 'Choose your program'}
+            {selectedProgram ? selectedProgram : 'Choose your program*'}
           </Button>
           <Menu
             id="fade-menu-programs"

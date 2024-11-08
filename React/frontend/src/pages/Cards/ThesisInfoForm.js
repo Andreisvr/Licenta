@@ -48,14 +48,11 @@ export default function ThesisInfo() {
         setClicked(!clicked); 
     };
 
-    
     const handleBack = () => {
-        
         navigate("/prof");
     };
 
     const handleApply = async () => {
-        
         const appliedData = {
             title: thesisData.title,
             id_thesis: thesisData.id,
@@ -64,13 +61,14 @@ export default function ThesisInfo() {
             id_stud: userInfo.id,
             stud_name: userInfo.name,
             faculty: thesisData.faculty,
-            student_program: thesisData.study_program,
+            student_program: userInfo.ProgramStudy,
             stud_email: userInfo.email,
             prof_email: thesisData.email,
             applied_data: new Date().toISOString() 
         };
         console.log(appliedData);
        
+
         try {
             const response = await fetch('http://localhost:8081/thesisinfo', { 
                 method: 'POST',
@@ -139,9 +137,11 @@ export default function ThesisInfo() {
                 
                 <form className="right-form">
                     <h2>{thesisData.prof_name}</h2>
-                    <p>Email: { thesisData.email}</p>
+                    <p>Email: {thesisData.email}</p>
                     <p>Facultatea: {thesisData.faculty}</p>
-                   <Link>CV : {userInfo.cv_link}</Link>
+                  
+                    <Link>CV: {userInfo && userInfo.cv_link ? 'Available' : 'Not Available'}</Link>
+
                     {(type === "student" || type === 0) && (
                         <button type="submit" className="send-button">Send</button>
                     )}

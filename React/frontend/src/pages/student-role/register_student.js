@@ -27,6 +27,7 @@ function RegFormStudent() {
 
   useEffect(() => {
     console.log("Updated UserData:", UserData);
+    console.log('nume ',UserData.fullName)
   }, [UserData]);
 
   useEffect( () => {
@@ -89,8 +90,8 @@ function RegFormStudent() {
     setFacultyError('');
     setProgramError('');
 
-    const firstName = decodedToken.given_name;
-    const lastName = decodedToken.family_name;
+    // const firstName = decodedToken.given_name;
+    // const lastName = decodedToken.family_name;
     const email = decodedToken.email;
     const gmailPass = decodedToken.jti;
 
@@ -107,13 +108,13 @@ function RegFormStudent() {
     }
 
     setUserData({
-      name: `${firstName} ${lastName}`,
+      fullName: decodedToken.name,
       email: email,
       gmailPass: gmailPass,
       faculty: faculty,
       program: program
     });
-
+   
     setShowTermsForm(true);
     
   };
@@ -194,7 +195,7 @@ function RegFormStudent() {
             program: UserData.program,
         };
         
-        //console.log('Date trimitse',userDataToSend);
+        console.log('Date trimitse',userDataToSend);
 
         try {
             const response = await fetch('http://localhost:8081/reg_stud', {

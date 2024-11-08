@@ -65,7 +65,7 @@ app.post('/reg', async (req, res) => {
 app.post('/reg_stud', async (req, res) => {
 
     const { name, email, pass, gmail_pass, faculty, program } = req.body;
-
+    console.log('numeee ',name);
     try {
         
         await db.query('INSERT INTO studentii SET ?', {
@@ -365,6 +365,26 @@ app.delete('/prof/:id', (req, res) => {
 });
 
 
+app.delete('/myaply/:id', (req, res) => {
+    const thesisId = parseInt(req.params.id);
+   
+    const sql = 'DELETE FROM Applies WHERE id_thesis = ?';
+    db.query(sql, [thesisId], (err, result) => {
+        if (err) {
+            console.error("Error deleting thesis:", err);
+            return res.status(500).json({ message: 'Error deleting thesis' });
+        }
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: 'Thesis not found' });
+        }
+
+        
+        res.status(200).json({ message: 'Thesis withdrawn successfully' });
+    });
+});
+
+
 app.delete('/accept/:id', (req, res) => {
     const thesisId = parseInt(req.params.id);
    
@@ -402,7 +422,7 @@ app.post('/acceptedApplications', (req, res) => {
         stud_program,
         date
     } = acceptedApplication;
-
+    console.log(acceptedApplication);
    
     if (!id_thesis || !faculty || !title || !id_prof || !prof_name || !prof_email || !stud_id || !stud_email || !stud_name || !stud_program || !date) {
         return res.status(400).json({ error: 'Toate câmpurile sunt necesare!' });
@@ -447,14 +467,45 @@ app.delete('/delMyAplication/:id', (req, res) => {
     });
 });
 
-app.get('/AcceptedApplication', async (req, res) => {
+app.get('/Responses/:id', async (req, res) => {
+    const studentId = parseInt(req.params.id); 
+    const query = "SELECT * FROM AcceptedApplication WHERE stud_id = ?";  
     
-        const query = "SELECT * FROM AcceptedApplication";
-        db.query(query, (err, results) => {
-            if (err) {
-                console.error("Error fetching applications:", err);
-                return res.status(500).json({ error: "Error fetching applications." });
-            }
-            res.json(results);  
-        });
+    db.query(query, [studentId], (err, results) => { 
+        if (err) {
+            console.error("Error fetching applications:", err);
+            return res.status(500).json({ error: "Error fetching applications." });
+        }
+        res.json(results); 
+    });
+});
+
+
+
+app.get('/Accepted/:id', async (req, res) => {
+    const studentId = parseInt(req.params.id); 
+    const query = "SELECT * FROM AcceptedApplication WHERE id_prof = ?";  
+    
+    db.query(query, [studentId], (err, results) => { 
+        if (err) {
+            console.error("Error fetching applications:", err);
+            return res.status(500).json({ error: "Error fetching applications." });
+        }
+        res.json(results); 
+    });
+});
+
+  
+app.get('/aplies/:id', async (req, res) => {
+    const studentId = parseInt(req.params.id); 
+    console.log(studentId);
+    const query = "SELECT * FROM Applies WHERE id_prof = ?";  
+    
+    db.query(query, [studentId], (err, results) => { 
+        if (err) {
+            console.error("Error fetching applications:", err);
+            return res.status(500).json({ error: "Error fetching applications." });
+        }
+        res.json(results); 
+    });
 });

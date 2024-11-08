@@ -3,294 +3,232 @@ import { useNavigate } from "react-router";
 import '/Users/Andrei_Sviridov/Desktop/React/frontend/src/page_css/Prof_role/prof_cab.css';
 import AddThesis from "./thesis_card.js";
 import { AppContext } from '/Users/Andrei_Sviridov/Desktop/React/frontend/src/components/AppContext.js';
-import PersonIcon from '@mui/icons-material/Person'; 
-import SchoolIcon from '@mui/icons-material/School'; 
+import PersonIcon from '@mui/icons-material/Person';
+import SchoolIcon from '@mui/icons-material/School';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+
+import AddResponse from "./responsed_card.js";
+import MyApplied from "./my_aplies.js";
+import Applied from "./applied_students.js";
+import Accepted from "./accepted_thesis.js";
+import MyThesis from "./my_thesis_card.js";
+
 
 export default function Cabinet() {
     const { name, email, logined, type } = useContext(AppContext);
     const navigate = useNavigate();
-    const [theses, setTheses] = useState([]); 
-    const [allTheses, setAllTheses] = useState([]); 
-    const [allAplies, setAllAplies] = useState([]);
+    const [theses, setTheses] = useState([]);
+    const [allTheses, setAllTheses] = useState([]);
+    const [allApplications, setAllApplications] = useState([]);
     const [viewType, setViewType] = useState("ALL");
     const [acceptedResponses, setAcceptedResponses] = useState([]);
 
+    const[AppliedList,setAppliedList] = useState([]);
+    const[MyThesisList,setMyThesisList] = useState([]);
+    const[AcceptedList,setAccepdedList] = useState([]);
 
+    const[MyAppliedList,setMyAppliedList] = useState([]);
+    const[MyResponsedList,setMyResponsedList] = useState([]);
+
+    const [id,setId] = useState('');
     const handleClickThesis = (thesis) => {
         localStorage.setItem('selectedThesis', JSON.stringify(thesis));
-        console.log('Teza actuală ', thesis);
+        
     };
 
+  
     useEffect(() => {
-      
         fetch("http://localhost:8081/prof", {
             method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-            }
+            headers: { "Content-Type": "application/json" },
         })
         .then((response) => response.json())
         .then((data) => {
             setTheses(data);
-            setAllTheses(data); 
+            setAllTheses(data);
         })
-        .catch((error) => {
-            console.error("Error fetching theses:", error);
-        });
+        .catch((error) => console.error("Error fetching theses:", error));
 
-        
         if (logined) {
-           
-            
             fetch("http://localhost:8081/prof", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ email: email }),
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email }),
             })
             .then((response) => response.json())
             .then((userInfo) => {
                 localStorage.setItem('userInfo', JSON.stringify(userInfo));
+                setId(userInfo.id);
+               
                 console.log('user info', userInfo);
             })
-            .catch((error) => {
-                console.error("Error fetching user info:", error);
-            });
-            //ALll Aplication
+            .catch((error) => console.error("Error fetching user info:", error));
 
             fetch("http://localhost:8081/applies", {
                 method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                },
+                headers: { "Content-Type": "application/json" },
             })
             .then((response) => response.json())
             .then((data) => {
-                setAllAplies(data); 
-                console.log("All Applications Data:", data);
+                setAllApplications(data);
+                
             })
-            .catch((error) => {
-                console.error("Error fetching applications:", error);
-            });
+            .catch((error) => console.error("Error fetching applications:", error));
         }
-
-       
-        
+    
     }, [logined, email]);
 
-    const handleClickAdd = () => {
-        navigate('/add_form');
-    };
+
+    useEffect(() => {
+        if (id && allTheses.length > 0 && allApplications.length > 0) {
+            handleShowMyThesis();
+            handleShowApplied();
+            handleShowAccepted();
+            handleSeeApplies();
+            handleSeeResponses();
+           
+        }
+    }, [id, allTheses, allApplications]);
+
+
+    const handleClickAdd = () => navigate('/add_form');
 
     const handleAllClick_All = () => {
         setTheses(allTheses);
         setViewType("ALL");
     };
 
-    const handleSeeAplies = () => {
+    const handleSeeApplies = () => {
+        setViewType("MyApplies");
         const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-        const studentId = userInfo ? userInfo.id : null;
+        const studentId = userInfo?.id;
 
         if (!studentId) {
-            console.error("Student ID not found");
+            // console.error("Student ID not found");
+            //alert("Not Logined")
             return;
         }
 
-        
         const matchedTheses = allTheses.filter(thesis =>
-            allAplies.some(applied => applied.id_thesis === thesis.id && applied.id_stud === studentId)
+            allApplications.some(application => application.id_thesis === thesis.id && application.id_stud === studentId)
         );
-        console.log(matchedTheses);
-        setTheses(matchedTheses); 
+        setTheses(matchedTheses);
+        setAppliedList(matchedTheses);
+        console.log('MyAplied List ',AppliedList);
+
         setViewType("MyApplies");
     };
 
-    function handleWithdraw(id) {
+    const handleWithdraw = (id) => {
         fetch(`http://localhost:8081/prof/${id}`, { 
             method: "DELETE",
-            headers: {
-                "Content-Type": "application/json",
-            }
+            headers: { "Content-Type": "application/json" },
         })
-        
         .then(response => {
-            if (!response.ok) {
-                throw new Error("Failed to withdraw thesis");
-            }
+            if (!response.ok) throw new Error("Failed to withdraw thesis");
             setTheses(prevTheses => prevTheses.filter(thesis => thesis.id !== id));
         })
-        .catch(error => {
-            console.error("Error withdrawing thesis:", error);
-        });
-
+        .catch(error => console.error("Error withdrawing thesis:", error));
         window.location.reload();
-       
-        
-    }
-    
+    };
 
-    function handleShowMyThesis() {
-    
+    const handleShowMyThesis = () => {
         const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-        const profId = userInfo ? userInfo.id : null; 
-
-        const myTheses = allTheses.filter(thesis => thesis.prof_id === profId); 
-        setTheses(myTheses);
+        const profId = userInfo?.id;
+        setTheses(allTheses.filter(thesis => thesis.prof_id === profId));
+        
+        setMyThesisList(allTheses.filter(thesis => thesis.prof_id === profId));
+        console.log('my thesis',MyThesisList);
+        
         setViewType("MyThesis");
-    }
-    
-    function handleShowApplied() {
+    };
+
+    const handleShowApplied = () => {
         const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-        const profId = userInfo ? userInfo.id : null;
-       
-        console.log('user id:', profId);
-        
+        const profId = userInfo?.id;
+
         if (!profId) {
             console.error("Professor ID not found");
             return;
         }
-    
-        
-        const appliedTheses = allAplies.filter(application => application.id_prof === profId);
-        
-        console.log('Filtered Applied Theses:', appliedTheses);
-        setTheses(appliedTheses);
+
+        setTheses(allApplications.filter(application => application.id_prof === profId));
+        setMyAppliedList(allApplications.filter(application => application.id_prof === profId));
+        //console.log('my aplies',MyAppliedList);
+
         setViewType("Applied");
-    }
+    };
 
-
-
-    function handleAplication_delet(id) {
-        
-        fetch(`http://localhost:8081/accept/${id}`, { 
-            method: "DELETE",
-            headers: {
-                "Content-Type": "application/json",
-            }
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error("Failed to withdraw thesis");
-            }
-            setTheses(prevTheses => prevTheses.filter(thesis => thesis.id !== id));
-        })
-        .catch(error => {
-            console.error("Error withdrawing thesis:", error);
-        });
-
-        window.location.reload();
+    const handleSeeResponses = () => {
        
+       
+        const userInfo = localStorage.getItem('userInfo');
         
-    }
-
-
-
-    function handleAcceptStudent(thesisId) {
-     
-        const matchedApplication = allAplies.find(application => application.id === thesisId);
-        
-        if (!matchedApplication) {
-            console.error("No matching application found for thesis id:", thesisId);
+        if (!userInfo) {
+            console.error("Student ID not found, userInfo is missing");
+            alert("Not logined")
             return;
         }
+        const parsedUserInfo = JSON.parse(userInfo);
+
+        if (!parsedUserInfo || !parsedUserInfo.id) {
+            console.error("Student ID not found in userInfo");
+            //alert('Not logined');
+            return;
+        }
+        setViewType("response");
+
+    
+        const studentId = parsedUserInfo.id; 
+       
+        fetch(`http://localhost:8081/Responses/${studentId}`, {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+        })
+        .then(response => response.json())
+        .then(data => {
+            setAcceptedResponses(data);
+            setMyResponsedList(data);
+           // console.log('responses',MyResponsedList);
+            setTheses(data);  
+        })
+        .catch(error => console.error("Error fetching accepted applications:", error));
+    };
+    
+
+
+
+    const handleShowAccepted = () => {
+
+
+       
+        if (!id ) {
+            console.error("Student ID not found in userInfo");
+            alert('Not logined');
+            return;
+        }
+        setViewType("Accept");
     
        
-        const acceptedApplicationData = {
-            id_thesis: matchedApplication.id_thesis,
-            faculty: matchedApplication.faculty,
-            title: matchedApplication.title,
-            id_prof: matchedApplication.id_prof,
-            prof_name: matchedApplication.prof_name,
-            prof_email: matchedApplication.prof_email,
-            stud_id: matchedApplication.id_stud,
-            stud_email: matchedApplication.stud_email,
-            stud_name: matchedApplication.stud_name,
-            stud_program: matchedApplication.student_program,
-            date: new Date().toISOString().split('T')[0] 
-        };
-        console.log(acceptedApplicationData);
-        
-        fetch("http://localhost:8081/acceptedApplications", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(acceptedApplicationData),
-        }) 
-        .then(response => {
-            if (!response.ok) {
-                throw new Error("Failed to accept application");
-            }
-            
-            console.log("Application accepted successfully:", acceptedApplicationData);
-            handleAplication_delet(thesisId)
-            
-        })
-        .catch(error => {
-            console.error("Error accepting application:", error);
-        });
-    }
-
-
-   function handleMyAplication_delet(id){
-
-     
-    fetch(`http://localhost:8081/delMyAplication/${id}`, { 
-        method: "DELETE",
-        headers: {
-            "Content-Type": "application/json",
-        }
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error("Failed to withdraw thesis");
-        }
-        setTheses(prevTheses => prevTheses.filter(thesis => thesis.id !== id));
-    })
-    .catch(error => {
-        console.error("Error withdrawing thesis:", error);
-    });
-
-
-    window.location.reload();
-   
-
-    }
-  
-    const handleSeeResponses = () => {
-        const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-        const studentId = userInfo ? userInfo.id : null;
-
-        if (!studentId) {
-            console.error("Student ID not found");
-            return;
-        }
-
-        fetch("http://localhost:8081/AcceptedApplication", {
-            
+        console.log(id);
+       const Profid= id;
+        fetch(`http://localhost:8081/Accepted/${Profid}`, {
             method: "GET",
-             headers:  { "Content-Type": "application/json" } })
-            
-            .then((response) => response.json())
-            .then((data) => {
-                const matchedResponses = data.filter(response => response.stud_id === studentId);
-                setAcceptedResponses(matchedResponses);
-                setTheses(matchedResponses); 
-                //setViewType("Responsed");
-                console.log('dsd',data);
-            })
-            .catch((error) => console.error("Error fetching accepted applications:", error));
+            headers: { "Content-Type": "application/json" },
+        })
+        .then(response => response.json())
+        .then(data => {
+            setAcceptedResponses(data);
+            setAccepdedList(data);
+            //console.log('acceptedList',AcceptedList);
+            setTheses(data);  
+        })
+        .catch(error => console.error("Error fetching accepted applications:", error));
     };
-   
 
-
-    const getShortDescription = (desc) => {
-        if (!desc) return ""; 
-        const shortDesc = desc.substring(0, 100);
-        return shortDesc + (desc.length > 100 ? "..." : "");
-    };
+  
+    
+    const getShortDescription = (desc) => (desc ? `${desc.substring(0, 100)}${desc.length > 100 ? "..." : ""}` : "");
 
     return (
         <div className="body_prof">
@@ -303,13 +241,13 @@ export default function Cabinet() {
                                 <button onClick={handleAllClick_All}>ALL</button>
                                 <button onClick={handleShowMyThesis}>MyThesis</button>
                                 <button onClick={handleShowApplied}>Applied</button>
-                                <button>Accepted</button>
+                                <button onClick={handleShowAccepted}>Accepted</button>
                             </>
                         ) : (
                             <>
                                 <button onClick={handleAllClick_All}>ALL</button>
-                                <button>MyPropouse</button>
-                                <button onClick={handleSeeAplies}>MyAplies</button>
+                                <button>MyPropose</button>
+                                <button onClick={handleSeeApplies}>MyApplies</button>
                                 <button onClick={handleSeeResponses}>Responsed</button>
                             </>
                         )}
@@ -318,42 +256,129 @@ export default function Cabinet() {
                         {type === "professor" ? <PersonIcon className="icon" /> : <SchoolIcon className="icon" />}
                     </div>
                 </div>
+               
                 <div className="bottom_container">
-                    {theses.map(thesis => (
-                        <AddThesis 
-                        key={thesis.id} 
-                        onClick={(e) => {
-                            e.stopPropagation(); 
-                            handleClickThesis(thesis);
-                            navigate('/thesisinfo'); 
-                            handleAcceptStudent(thesis.id) ;
-                            handleAplication_delet(thesis.id);
-                            handleMyAplication_delet(thesis.id);
-                        }}
-                        onWithdraw={() => handleWithdraw(thesis.id)} 
-                        onAccept={()=> handleAcceptStudent(thesis.id)}
-                        onDecline={()=>handleAplication_delet(thesis.id)}
-                        onWithdrawApplication={()=>handleMyAplication_delet(thesis.id)}
-                        thesisName={thesis.title}
-                        date_start={thesis.start_date}
-                        date_end={thesis.end_date}
-                        faculty={thesis.faculty}
-                        study_program={thesis.study_program}
-                        description={getShortDescription(thesis.description)}
-                        requirements={getShortDescription(thesis.requirements)}
-                        professor_name={thesis.prof_name}
-                        isAll={theses === allTheses ? false : true}
-                        viewType={viewType} 
-                        applied_date={viewType === "Applied" || viewType === "MyApplies" ? thesis.applied_date : undefined}
-                    />
-                    
-                    ))}
-                    {type === "professor" && (
-                        <div className="add-button-container">
-                            <AddCircleOutlineIcon onClick={handleClickAdd} className="add_button" />
-                        </div>
-                    )}
-                </div>
+    {viewType === "ALL" && theses.map((thesis) =>(
+        <AddThesis
+            key={thesis.id}
+            onClick={(e) => {
+                e.stopPropagation();
+                handleClickThesis(thesis);
+                navigate('/thesisinfo');
+            }}
+            onWithdraw={() => handleWithdraw(thesis.id)}
+            thesisName={thesis.title}
+            date_start={thesis.start_date}
+            date_end={thesis.end_date}
+            faculty={thesis.faculty}
+            study_program={thesis.study_program}
+            description={getShortDescription(thesis.description)}
+            requirements={getShortDescription(thesis.requirements)}
+            professor_name={thesis.prof_name}
+            viewType={viewType}
+            id={thesis.id}
+           
+            
+        />
+    ))}
+
+    {viewType === "response" && MyResponsedList.map((respons) => (
+        <AddResponse
+            key={respons.id}
+           
+         
+            thesisName={respons.title}
+            data={respons.data}
+            faculty={respons.faculty}
+            study_program={respons.stud_program}
+            student_name={respons.stud_name}
+            professor_name={respons.prof_name}
+            viewType={viewType}
+            id={respons.id}
+        />
+    ))}
+
+{viewType === "MyApplies" && AppliedList.length > 0 && AppliedList.map((aply) => (
+        <MyApplied
+            key={aply.id}
+           
+            thesisName={aply.title}
+            date_start={aply.start_date}
+            date_end={aply.end_date}
+            faculty={aply.faculty}
+            study_program={aply.study_program}
+            stud_name={aply.stud_name}
+            professor_name={aply.prof_name}
+            viewType={viewType}
+            id={aply.id}
+            
+        />
+    ))}
+
+
+    {viewType === "Applied" && MyAppliedList.length > 0 && MyAppliedList.map((aply) => (
+        <Applied
+            key={aply.id}
+           
+          
+            thesisName={aply.title}
+            applied_data={aply.applied_data}
+          
+            faculty={aply.faculty}
+            study_program={aply.study_program}
+            student_program={aply.student_program}
+            stud_email={aply.stud_email}
+            stud_name={aply.stud_name}
+            professor_name={aply.prof_name}
+            viewType={viewType}
+            id={aply.id}
+            
+        />
+    ))}
+
+    {viewType === "Accept" && AcceptedList.length > 0 && AcceptedList.map((aply) => (
+        <Accepted
+            key={aply.id}
+            
+           
+            thesisName={aply.title}
+            applied_data={aply.data}
+          
+            faculty={aply.faculty}
+            study_program={aply.study_program}
+            student_program={aply.student_program}
+            stud_email={aply.stud_email}
+            stud_name={aply.stud_name}
+            professor_name={aply.prof_name}
+            viewType={viewType}
+            id={aply.id}
+            
+        />
+    ))}
+
+{viewType === "MyThesis" && MyThesisList.length > 0 && MyThesisList.map((aply) => (
+        <MyThesis
+            key={aply.id}
+            thesisName={aply.title}
+            date_start={aply.start_date}
+            date_end={aply.end_date}
+            faculty={aply.faculty}
+            study_program={aply.study_program}
+            student_program={aply.student_program}
+            stud_email={aply.stud_email}
+            stud_name={aply.stud_name}
+            professor_name={aply.prof_name}
+            viewType={viewType}
+            id={aply.id}
+            
+        />
+    ))}
+    {type === "professor" && (
+        <div className="add-button-container">
+            <AddCircleOutlineIcon onClick={handleClickAdd} className="add_button" />
+        </div>
+    )}
+</div>
             </div>
         </div>
     );

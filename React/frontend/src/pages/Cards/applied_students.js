@@ -1,58 +1,27 @@
+// AddApplies.js
 import React, { useContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router";
-import '/Users/Andrei_Sviridov/Desktop/React/frontend/src/page_css/Prof_role/addthesis.css';
-import { AppContext } from '/Users/Andrei_Sviridov/Desktop/React/frontend/src/components/AppContext.js';
 
-export default function AddThesis({ 
+export default function Applied({ 
     thesisName, 
     faculty, 
     study_program, 
-    description,
-    requirements,
-    date_start,
-    date_end,
+    applied_data,
+    stud_email,
+    student_program,
     professor_name,
-    onWithdraw,
-    viewType,
-    onClick,
+
+    stud_name,
+  
     id, 
-    
-}) { 
-    
-    
-        
-    const { name, email, logined, type } = useContext(AppContext);
+ }) {
+
 
     const [allAplies, setAllAplies] = useState([]);
     const [theses, setTheses] = useState([]); 
-    
-    const [allApplications, setAllApplications] = useState([]);
    
-    const [match, setMatch] = useState(null); 
-
-    const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-   
- 
-  
-
-    function handleMyAplication_delet(id) {
-       
-        fetch(`http://localhost:8081/delMyAplication/${id}`, { 
-            method: "DELETE",
-            headers: { "Content-Type": "application/json" }
-        })
-        .then(response => {
-            if (!response.ok) throw new Error("Failed to withdraw thesis");
-            setTheses(prevTheses => prevTheses.filter(thesis => thesis.id !== id));
-        })
-        .catch(error => console.error("Error withdrawing thesis:", error));
-      
-        window.location.reload();
-    }
-
     function handleAplication_delet(id) {
        
-
+        console.log(id);
         fetch(`http://localhost:8081/accept/${id}`, { 
             method: "DELETE",
             headers: { "Content-Type": "application/json" }
@@ -64,6 +33,7 @@ export default function AddThesis({
         .catch(error => console.error("Error withdrawing thesis:", error));
        
         window.location.reload();
+        
     }
 
     async function handleAcceptStudent(thesisId) {
@@ -141,6 +111,7 @@ export default function AddThesis({
     }
     
    
+
     function formatDate(isoDateString) {
         const date = new Date(isoDateString);
         if (date.getTime() === 0) return ''; 
@@ -149,30 +120,47 @@ export default function AddThesis({
         const year = date.getFullYear();
         return `${day}/${month}/${year}`;
     }
-
    
     return (
-        <form className="applied_form" onClick={onClick}>
+        <form className="applied_form">
             <p className="text title">Title: {thesisName}</p>
     
-           
+    
             
-                    <p className="text">Faculty: {faculty} {study_program && `Program: ${study_program}`}</p>
-                    <p className="text">Professor: {professor_name}</p>
-                    <p className="text description">Description: {description}</p>
-                    {requirements && (
-                        <p className="text requirements">Requirements: {requirements}</p>
-                    )}
-                    <div className="add_date">
-                        <p className="text">{formatDate(date_start)}</p>
-                        <p className="text">{formatDate(date_end)}</p>
+                    <p className="text ">Prof Name: {professor_name}</p>
+                    <p className="text">Student: {stud_name || "Loading..."}</p>
+                    <p className="text">Student Email: {stud_email || "Loading..."}</p>
+                    {/* <p className="text">Faculty: {faculty} {study_program && `Program: ${study_program}`}</p>
+                  */}
+                        <p className="text">Applied Data: {formatDate(applied_data)}</p>
+                    
+                        <div className="button-container">
+                        <button 
+                            className="chose_btn" 
+                            type="button" 
+                            onClick={(e) => {
+                                e.stopPropagation(); 
+                                handleAcceptStudent(id); 
+                            }}
+                        >
+                            Accept
+                        </button>
+    
+                        <button 
+                            className="chose_btn decline" 
+                            type="button" 
+                            onClick={(e) => { 
+                                e.stopPropagation(); 
+                                handleAplication_delet(id); 
+                            }}
+                        >
+                            Decline
+                        </button>
                     </div>
-              
+               
             
     
-            
-    
-        
+           
         </form>
     );
-}    
+}

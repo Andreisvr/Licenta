@@ -17,6 +17,7 @@ function GoogleBtn({ onSuccessLogin }) {
             setEmail(email);
             setDecodedToken(decodedToken);
             setLogined(true);
+            
 
             
             handleLogin(`${firstName} ${lastName}`, email, type);
