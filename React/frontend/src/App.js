@@ -12,6 +12,7 @@ import Cabinet from '/Users/Andrei_Sviridov/Desktop/React/frontend/src/pages/Car
 import RegisterStud from './pages/Register_Form_Stud';
 import ThesisProposalForm from '/Users/Andrei_Sviridov/Desktop/React/frontend/src/pages/Cards/add_thesis_form.js';
 import RegFormStudent from './pages/student-role/register_student';
+import MyPropouseAdd from './pages/student-role/MyPropouseAdd';
 
 function App() {
 
@@ -30,6 +31,7 @@ function App() {
                 <Route path="/thesisinfo" element={<ThesisInfo />} />
                 <Route path="/prof" element={<Cabinet/>} />
                 <Route path="/add_form" element={<ThesisProposalForm/>} />
+                <Route path="/MyPropouseAdd" element={<MyPropouseAdd/>} />
             </Routes>
             
         </Router>

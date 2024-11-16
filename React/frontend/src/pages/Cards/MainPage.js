@@ -6,12 +6,14 @@ import { AppContext } from '/Users/Andrei_Sviridov/Desktop/React/frontend/src/co
 import PersonIcon from '@mui/icons-material/Person';
 import SchoolIcon from '@mui/icons-material/School';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-
+import MyConfirmed from "./MyConfiremd_thesis.js";
 import AddResponse from "./responsed_card.js";
 import MyApplied from "./my_aplies.js";
 import Applied from "./applied_students.js";
 import Accepted from "./accepted_thesis.js";
 import MyThesis from "./my_thesis_card.js";
+import FacultyList from '/Users/Andrei_Sviridov/Desktop/React/frontend/src/components/Faculty_List.js';
+import MyPropouses from "../student-role/MyPropouse.js";
 
 
 export default function Cabinet() {
@@ -22,20 +24,33 @@ export default function Cabinet() {
     const [allApplications, setAllApplications] = useState([]);
     const [viewType, setViewType] = useState("ALL");
     const [acceptedResponses, setAcceptedResponses] = useState([]);
-
+   
+    //listele de date pentru cards 
     const[AppliedList,setAppliedList] = useState([]);
     const[MyThesisList,setMyThesisList] = useState([]);
     const[AcceptedList,setAccepdedList] = useState([]);
-
     const[MyAppliedList,setMyAppliedList] = useState([]);
     const[MyResponsedList,setMyResponsedList] = useState([]);
+    const [MyConfirmedthesis,setMyConfirmed] = useState([]);
+    const[MyPropouse,setMyPropouses]= useState([]);
+   
+    const [searchTitle, setSearchTitle] = useState("");
+    const [searchStartDate, setSearchStartDate] = useState("");
+    const [searchEndDate, setSearchEndDate] = useState("");
+    const [searchProfessor, setSearchProfessor] = useState("");
+    const [selectedFaculty, setSelectedFaculty] = useState("");
+    const [selectedProgram, setSelectedProgram] = useState("");
 
+    const [formData, setFormData] = useState('');
     const [id,setId] = useState('');
+
+
     const handleClickThesis = (thesis) => {
         localStorage.setItem('selectedThesis', JSON.stringify(thesis));
         
     };
 
+    
   
     useEffect(() => {
         fetch("http://localhost:8081/prof", {
@@ -46,6 +61,7 @@ export default function Cabinet() {
         .then((data) => {
             setTheses(data);
             setAllTheses(data);
+            setViewType("ALL");  
         })
         .catch((error) => console.error("Error fetching theses:", error));
 
@@ -79,16 +95,16 @@ export default function Cabinet() {
     }, [logined, email]);
 
 
-    useEffect(() => {
-        if (id && allTheses.length > 0 && allApplications.length > 0) {
-            handleShowMyThesis();
-            handleShowApplied();
-            handleShowAccepted();
-            handleSeeApplies();
-            handleSeeResponses();
-           
-        }
-    }, [id, allTheses, allApplications]);
+    // useEffect(() => {
+    //     if (id && allTheses.length > 0 && allApplications.length > 0) {
+    //         handleShowMyThesis();
+    //         handleShowApplied();
+    //         handleShowAccepted();
+    //         handleSeeApplies();
+    //         handleSeeResponses();
+    //        
+    //     }
+    // }, [id, allTheses, allApplications]);
 
 
     const handleClickAdd = () => navigate('/add_form');
@@ -114,7 +130,7 @@ export default function Cabinet() {
         );
         setTheses(matchedTheses);
         setAppliedList(matchedTheses);
-        console.log('MyAplied List ',AppliedList);
+        //console.log('MyAplied List ',AppliedList);
 
         setViewType("MyApplies");
     };
@@ -189,17 +205,39 @@ export default function Cabinet() {
         .then(data => {
             setAcceptedResponses(data);
             setMyResponsedList(data);
-           // console.log('responses',MyResponsedList);
+           console.log('responses',MyResponsedList);
             setTheses(data);  
         })
         .catch(error => console.error("Error fetching accepted applications:", error));
     };
-    
+
+
+
+ async function hanleSeeThesisConfirmed(){
+
+        if (!id ) {
+            console.error("Student ID not found in userInfo");
+            alert('Not logined');
+            return;
+        }
+        setViewType("MyChose");
+        console.log('id' ,id);
+        fetch(`http://localhost:8081/confirmedThesis?id_stud=${id}`, {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+        })
+        .then(response => response.json())
+        .then(data => {
+            setMyConfirmed(data);
+            console.log('my thesis', data); 
+        })
+        .catch(error => console.error("Error fetching accepted applications:", error));
+        
+    }
 
 
 
     const handleShowAccepted = () => {
-
 
        
         if (!id ) {
@@ -226,13 +264,110 @@ export default function Cabinet() {
         .catch(error => console.error("Error fetching accepted applications:", error));
     };
 
-  
+   async function handleMyPropouse()
+        {
+           
+            try {
+                const response = await fetch(`http://localhost:8081/getProposals/${id}`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch proposals');
+                }
+    
+                const data = await response.json();
+                setMyPropouses(data);
+            } catch (error) {
+                console.error('Error fetching proposals:', error);
+            }
+        
+        console.log('lista my propouse',MyPropouse)
+
+        setViewType("MyPropouse");
+        
+    }
+
+
+    function handleMyPropouseAdd(){
+
+            navigate('/MyPropouseAdd');
+
+        }
+
+    const handleSelection = (faculty, program) => {
+        setSelectedFaculty(faculty);
+        setSelectedProgram(program);
+    };
+    
+
+    const handleSearch = () => {
+        const filteredTheses = allTheses.filter((thesis) => {
+            return (
+                (!searchTitle || thesis.title.toLowerCase().includes(searchTitle.toLowerCase())) &&
+                (!searchStartDate || new Date(thesis.start_date) >= new Date(searchStartDate)) &&
+                (!searchEndDate || new Date(thesis.end_date) <= new Date(searchEndDate)) &&
+                (!searchProfessor || thesis.prof_name.toLowerCase().includes(searchProfessor.toLowerCase())) &&
+                (!selectedFaculty || thesis.faculty === selectedFaculty) &&
+                (!selectedProgram || thesis.study_program === selectedProgram)
+            );
+        });
+        setViewType('ALL');
+        setTheses(filteredTheses);
+    };
+    
+    function handleReset() {
+       
+       window.location.reload();
+        
+        setViewType('ALL');
+        setTheses(theses); 
+    }
     
     const getShortDescription = (desc) => (desc ? `${desc.substring(0, 100)}${desc.length > 100 ? "..." : ""}` : "");
 
     return (
         <div className="body_prof">
-            <div className="left_container"></div>
+             <div className="left_container">
+        <h3 className="section_title">Search Thesis</h3>
+       
+        <label className="search_label">Title</label>
+
+        <input
+                    type="text"
+                    className="search_input"
+                    placeholder="Caută după titlu..."
+                    value={searchTitle}
+                    onChange={(e) => setSearchTitle(e.target.value)}
+                />
+             <label className="search_label">Date interval</label>
+                <input
+                    type="date"
+                    className="date_input"
+                    placeholder="Data Start"
+                    value={searchStartDate}
+                    onChange={(e) => setSearchStartDate(e.target.value)}
+                />
+                <input
+                    type="date"
+                    className="date_input"
+                    placeholder="Data End"
+                    value={searchEndDate}
+                    onChange={(e) => setSearchEndDate(e.target.value)}
+                />
+                 <label className="search_label">Profesor</label>
+                <input
+                    type="text"
+                    className="search_input"
+                    placeholder="Caută după profesor..."
+                    value={searchProfessor}
+                    onChange={(e) => setSearchProfessor(e.target.value)}
+                    />
+            <label className="search_label">Faculty/Study Program</label>
+       
+        <FacultyList onSelect={handleSelection} />
+        
+        <button className="search_button" onClick={handleSearch}>Caută</button>
+        <button className="search_button" onClick={handleReset}>Rest</button>
+
+    </div>
             <div className="right_container">
                 <div className="top_container">
                     <div className="button-group">
@@ -246,9 +381,11 @@ export default function Cabinet() {
                         ) : (
                             <>
                                 <button onClick={handleAllClick_All}>ALL</button>
-                                <button>MyPropose</button>
+                                <button onClick={handleMyPropouse}>MyPropose</button>
                                 <button onClick={handleSeeApplies}>MyApplies</button>
                                 <button onClick={handleSeeResponses}>Responsed</button>
+                                <button onClick={hanleSeeThesisConfirmed}>MyThesis</button>
+
                             </>
                         )}
                     </div>
@@ -258,126 +395,153 @@ export default function Cabinet() {
                 </div>
                
                 <div className="bottom_container">
-    {viewType === "ALL" && theses.map((thesis) =>(
-        <AddThesis
-            key={thesis.id}
-            onClick={(e) => {
-                e.stopPropagation();
-                handleClickThesis(thesis);
-                navigate('/thesisinfo');
-            }}
-            onWithdraw={() => handleWithdraw(thesis.id)}
-            thesisName={thesis.title}
-            date_start={thesis.start_date}
-            date_end={thesis.end_date}
-            faculty={thesis.faculty}
-            study_program={thesis.study_program}
-            description={getShortDescription(thesis.description)}
-            requirements={getShortDescription(thesis.requirements)}
-            professor_name={thesis.prof_name}
-            viewType={viewType}
-            id={thesis.id}
-           
-            
-        />
-    ))}
+                {
+  viewType === "ALL" && theses.length > 0 ? (
+    theses.map((thesis) => (
+      <AddThesis
+        key={thesis.id}
+        onClick={(e) => {
+          e.stopPropagation();
+          handleClickThesis(thesis);
+          navigate('/thesisinfo');
+        }}
+        onWithdraw={() => handleWithdraw(thesis.id)}
+        thesisName={thesis.title}
+        date_start={thesis.start_date}
+        date_end={thesis.end_date}
+        faculty={thesis.faculty}
+        study_program={thesis.study_program}
+        description={getShortDescription(thesis.description)}
+        requirements={getShortDescription(thesis.requirements)}
+        professor_name={thesis.prof_name}
+        viewType={viewType}
+        id={thesis.id}
+      />
+    ))
+  ) : viewType === "response" && MyResponsedList.length > 0 ? (
+    MyResponsedList.map((respons) => (
+      <AddResponse
+        key={respons.id}
+        id_thesis={respons.id_thesis}
+        id_prof={respons.id_prof}
+        id_stud={respons.stud_id}
+        thesisName={respons.title}
+        data={respons.data}
+        faculty={respons.faculty}
+        study_program={respons.stud_program}
+        student_name={respons.stud_name}
+        professor_name={respons.prof_name}
+        viewType={viewType}
+        id={respons.id}
+      />
+    ))
+  ) : viewType === "MyApplies" && AppliedList.length > 0 ? (
+    AppliedList.map((aply) => (
+      <MyApplied
+        key={aply.id}
+        thesisName={aply.title}
+        date_start={aply.start_date}
+        date_end={aply.end_date}
+        faculty={aply.faculty}
+        study_program={aply.study_program}
+        stud_name={aply.stud_name}
+        professor_name={aply.prof_name}
+        viewType={viewType}
+        id={aply.id}
+      />
+    ))
+  ) : viewType === "Applied" && MyAppliedList.length > 0 ? (
+    MyAppliedList.map((aply) => (
+      <Applied
+        key={aply.id}
+        thesisName={aply.title}
+        applied_data={aply.applied_data}
+        faculty={aply.faculty}
+        study_program={aply.study_program}
+        student_program={aply.student_program}
+        stud_email={aply.stud_email}
+        stud_name={aply.stud_name}
+        professor_name={aply.prof_name}
+        viewType={viewType}
+        id={aply.id}
+      />
+    ))
+  ) : viewType === "Accept" && AcceptedList.length > 0 ? (
+    AcceptedList.map((aply) => (
+      <Accepted
+        key={aply.id}
+        thesisName={aply.title}
+        applied_data={aply.data}
+        faculty={aply.faculty}
+        study_program={aply.study_program}
+        student_program={aply.student_program}
+        stud_email={aply.stud_email}
+        stud_name={aply.stud_name}
+        professor_name={aply.prof_name}
+        viewType={viewType}
+        id={aply.id}
+      />
+    ))
+  ) : viewType === "MyThesis" && MyThesisList.length > 0 ? (
+    MyThesisList.map((aply) => (
+      <MyThesis
+        key={aply.id}
+        thesisName={aply.title}
+        date_start={aply.start_date}
+        date_end={aply.end_date}
+        faculty={aply.faculty}
+        study_program={aply.study_program}
+        student_program={aply.student_program}
+        stud_email={aply.stud_email}
+        stud_name={aply.stud_name}
+        professor_name={aply.prof_name}
+        viewType={viewType}
+        id={aply.id}
+      />
+    ))
+  ) : viewType === "MyChose" && MyConfirmedthesis.length > 0 ? (
+    MyConfirmedthesis.map((aply) => (
+      <MyConfirmed
+        key={aply.id}
+         id={aply.id}
+         id_prof={aply.id_prof}
+         id_thesis={aply.id_thesis}
+         date={aply.date}
+         id_stud={aply.id_stud}
+       
+      />
+    ))
+  ): viewType === "MyPropouse" && MyPropouse.length > 0 ? (
+    MyPropouse.map((application) => (
+        <MyPropouses
+        key={application.id}
+        thesisName={application.title}
+        professor_name={application.prof_name}
+        professor_id={application.professor_id}
+        stud_id={application.user_id}
+        applied_data={application.created_at} 
+        stud_name={application.stud_name}
+        id={application.id}
+    />
+    ))
+  ) : (
+    <p>No available content for this link</p> 
+    //null
+  )
+}
 
-    {viewType === "response" && MyResponsedList.map((respons) => (
-        <AddResponse
-            key={respons.id}
-           
-         
-            thesisName={respons.title}
-            data={respons.data}
-            faculty={respons.faculty}
-            study_program={respons.stud_program}
-            student_name={respons.stud_name}
-            professor_name={respons.prof_name}
-            viewType={viewType}
-            id={respons.id}
-        />
-    ))}
 
-{viewType === "MyApplies" && AppliedList.length > 0 && AppliedList.map((aply) => (
-        <MyApplied
-            key={aply.id}
-           
-            thesisName={aply.title}
-            date_start={aply.start_date}
-            date_end={aply.end_date}
-            faculty={aply.faculty}
-            study_program={aply.study_program}
-            stud_name={aply.stud_name}
-            professor_name={aply.prof_name}
-            viewType={viewType}
-            id={aply.id}
-            
-        />
-    ))}
-
-
-    {viewType === "Applied" && MyAppliedList.length > 0 && MyAppliedList.map((aply) => (
-        <Applied
-            key={aply.id}
-           
-          
-            thesisName={aply.title}
-            applied_data={aply.applied_data}
-          
-            faculty={aply.faculty}
-            study_program={aply.study_program}
-            student_program={aply.student_program}
-            stud_email={aply.stud_email}
-            stud_name={aply.stud_name}
-            professor_name={aply.prof_name}
-            viewType={viewType}
-            id={aply.id}
-            
-        />
-    ))}
-
-    {viewType === "Accept" && AcceptedList.length > 0 && AcceptedList.map((aply) => (
-        <Accepted
-            key={aply.id}
-            
-           
-            thesisName={aply.title}
-            applied_data={aply.data}
-          
-            faculty={aply.faculty}
-            study_program={aply.study_program}
-            student_program={aply.student_program}
-            stud_email={aply.stud_email}
-            stud_name={aply.stud_name}
-            professor_name={aply.prof_name}
-            viewType={viewType}
-            id={aply.id}
-            
-        />
-    ))}
-
-{viewType === "MyThesis" && MyThesisList.length > 0 && MyThesisList.map((aply) => (
-        <MyThesis
-            key={aply.id}
-            thesisName={aply.title}
-            date_start={aply.start_date}
-            date_end={aply.end_date}
-            faculty={aply.faculty}
-            study_program={aply.study_program}
-            student_program={aply.student_program}
-            stud_email={aply.stud_email}
-            stud_name={aply.stud_name}
-            professor_name={aply.prof_name}
-            viewType={viewType}
-            id={aply.id}
-            
-        />
-    ))}
     {type === "professor" && (
         <div className="add-button-container">
             <AddCircleOutlineIcon onClick={handleClickAdd} className="add_button" />
         </div>
     )}
+    {viewType === "MyPropouse" && (
+        <div className="add-button-container">
+            <AddCircleOutlineIcon onClick={handleMyPropouseAdd} className="add_button" />
+        </div>
+    )}
+
 </div>
             </div>
         </div>

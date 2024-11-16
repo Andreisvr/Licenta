@@ -1,65 +1,70 @@
-import * as React from 'react';
-import Button from '@mui/material/Button';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import Fade from '@mui/material/Fade';
-import { IconButton } from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu'; // Icon for the menu
+import React, { useState, useEffect } from 'react';
+import { Menu, MenuItem, Button, Fade } from '@mui/material';
 
-const facultyPrograms = ["Name Prof 1 ", "Name Prof 2", "Name Prof 3"];
+export default function ProfessorList({ faculty, onSelect }) {
+    const [professors, setProfessors] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [selectedProfessor, setSelectedProfessor] = useState(null);
+    const [anchorEl, setAnchorEl] = useState(null);
+    const open = Boolean(anchorEl);
 
-export default function ProfList() {
-  const [anchorElFaculty, setAnchorElFaculty] = React.useState(null);
-  const [selectedFaculty, setSelectedFaculty] = React.useState('');
+    useEffect(() => {
+        if (faculty) {
+            setLoading(true); // Indică începutul încărcării
+            const fetchProfessors = async () => {
+                try {
+                    const response = await fetch(`http://localhost:8081/get-professors?faculty=${faculty}`);
+                    if (!response.ok) throw new Error('Failed to fetch professors');
+                    const data = await response.json();
+                    setProfessors(data);
+                } catch (error) {
+                    console.error('Error fetching professors:', error);
+                    setProfessors([]); // Golește lista dacă eșuează
+                } finally {
+                    setLoading(false); // Încărcarea s-a încheiat
+                }
+            };
 
-  const openFacultyMenu = Boolean(anchorElFaculty);
+            fetchProfessors();
+        }
+    }, [faculty]);
 
-  const handleClickFaculty = (event) => {
-    setAnchorElFaculty(event.currentTarget);
-  };
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
 
-  const handleSelectFaculty = (faculty) => {
-    setSelectedFaculty(faculty);
-    setAnchorElFaculty(null);
-  };
+    const handleSelectProfessor = (professor) => {
+        setSelectedProfessor(professor);
+        setAnchorEl(null);
+        onSelect(professor); 
+    };
 
-  const handleCloseFaculty = () => {
-    setAnchorElFaculty(null);
-  };
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
 
-  return (
-    <div>
-    
-      <Button
-        id="fade-button-faculty"
-        aria-controls={openFacultyMenu ? 'fade-menu-availability' : undefined}
-        aria-haspopup="true"
-        aria-expanded={openFacultyMenu ? 'true' : undefined}
-        onClick={handleClickFaculty}
-        style={{ background:'white',color: 'black', border: '1px solid black', display: 'flex', alignItems: 'center' }} 
-      >
-        <IconButton style={{ padding: 0, marginRight: '8px' }}>
-          <MenuIcon style={{ color :'black' }}/> 
-        </IconButton>
-        {selectedFaculty ? selectedFaculty : 'Choose professor name'}
-      </Button>
-      <Menu
-        id="fade-menu-faculty"
-        MenuListProps={{
-          'aria-labelledby': 'fade-button-faculty',
-        }}
-        anchorEl={anchorElFaculty}
-        open={openFacultyMenu}
-        onClose={handleCloseFaculty}
-        TransitionComponent={Fade}
-        
-      >
-        {facultyPrograms.map((faculty) => (
-          <MenuItem key={faculty} onClick={() => handleSelectFaculty(faculty)} style={{ color: 'black' }}>
-            {faculty}
-          </MenuItem>
-        ))}
-      </Menu>
-    </div>
-  );
+    return (
+        <div>
+            <Button
+                onClick={handleClick}
+                disabled={loading || professors.length === 0}
+                variant="outlined"
+                style={{ margin: '10px 0' }}
+            >
+                {selectedProfessor ? selectedProfessor.name : loading ? 'Loading professors...' : 'Select Professor Name'}
+            </Button>
+            <Menu
+                anchorEl={anchorEl}
+                open={open}
+                onClose={handleClose}
+                TransitionComponent={Fade}
+            >
+                {professors.map((professor) => (
+                    <MenuItem key={professor.id} onClick={() => handleSelectProfessor(professor)}>
+                        {professor.name}
+                    </MenuItem>
+                ))}
+            </Menu>
+        </div>
+    );
 }

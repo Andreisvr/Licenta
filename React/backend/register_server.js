@@ -186,10 +186,10 @@ app.post('/login', (req, res) => {
 
 
 app.post('/add_form', (req, res) => {
-    const { title, faculty, study_program, prof_id, prof_name, description, requirements, start_date, end_date, state, cv_link, email } = req.body;
+    const { title, faculty, study_program, prof_id, prof_name, description, requirements, start_date, end_date, state, cv_link, email,limita } = req.body;
 
-    const sql = "INSERT INTO theses (title, faculty, study_program, prof_id, prof_name, description, requirements, start_date, end_date, state, cv_link, email) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-    const values = [title, faculty, study_program, prof_id, prof_name, description, requirements, start_date, end_date, state, cv_link, email];
+    const sql = "INSERT INTO theses (title, faculty, study_program, prof_id, prof_name, description, requirements, start_date, end_date, state, cv_link, email,limita) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)";
+    const values = [title, faculty, study_program, prof_id, prof_name, description, requirements, start_date, end_date, state, cv_link, email, limita];
    
     db.query(sql, values, (err, result) => {
         if (err) {
@@ -322,7 +322,7 @@ app.post('/prof', (req, res) => {
 
 
 app.get("/prof", (req, res) => {
-    const query = "SELECT * FROM theses"; 
+    const query = "SELECT * FROM theses WHERE limita > 0";
     db.query(query, (err, results) => {
         if (err) {
             console.error("Eroare la obținerea lucrărilor:", err);
@@ -507,5 +507,222 @@ app.get('/aplies/:id', async (req, res) => {
             return res.status(500).json({ error: "Error fetching applications." });
         }
         res.json(results); 
+    });
+});
+
+
+app.get('/confirmedThesis', (req, res) => {
+   // console.log("ddd", req.query.id_stud);
+    const id_stud = req.query.id_stud; 
+    if (!id_stud) {
+        return res.status(400).json({ error: "id_stud is required" });
+    }
+
+    const sql = 'SELECT * FROM confirmed WHERE id_stud = ?';
+
+    db.query(sql, [id_stud], (error, results) => {
+        if (error) {
+            console.error("Error fetching applied theses:", error);
+            return res.status(500).json({ error: "Database error" });
+        }
+        res.json(results);
+    });
+});
+
+
+
+
+//-----------------------------------------------------------------Confirmation from responsed_card-----------
+
+app.post('/confirmation', (req, res) => {
+    const { id_thesis, id_prof, id_stud, date } = req.body;
+
+   // console.log(id_prof, id_stud, id_thesis);
+
+    
+    const checkLimitQuery = `SELECT limita FROM theses WHERE id = ?`;
+    db.query(checkLimitQuery, [id_thesis], (err, result) => {
+        if (err) {
+            console.error("Error fetching thesis limit:", err);
+            return res.status(500).json({ message: "Internal server error" });
+        }
+
+        if (result.length === 0) {
+            return res.status(404).json({ message: "Thesis not found" });
+        }
+
+        const thesisLimit = result[0].limita;
+       
+        if (thesisLimit > 0) {
+            
+            const insertConfirmedQuery = `INSERT INTO confirmed (id_thesis, id_prof, id_stud, date) VALUES (?, ?, ?, ?)`;
+            db.query(insertConfirmedQuery, [id_thesis, id_prof, id_stud, date], (err, result) => {
+                if (err) {
+                    console.error("Error adding confirmed application:", err);
+                    return res.status(500).json({ message: "Internal server error" });
+                }
+
+               
+                const updateLimitQuery = `UPDATE theses SET limita = limita - 1 WHERE id = ?`;
+                db.query(updateLimitQuery, [id_thesis], (err, result) => {
+                    if (err) {
+                        console.error("Error updating thesis limit:", err);
+                        return res.status(500).json({ message: "Internal server error" });
+                    }
+
+                    
+                    const updateStateQuery = `UPDATE theses SET state = 'closed' WHERE limita = 0 AND id = ?`;
+                    db.query(updateStateQuery, [id_thesis], (err, result) => {
+                        if (err) {
+                            console.error("Error updating thesis state:", err);
+                            return res.status(500).json({ message: "Internal server error" });
+                        }
+
+                      
+                        res.status(201).json({ message: "Application confirmed successfully" });
+                    });
+                });
+            });
+        } else {
+            res.status(400).json({ message: "Limit has been reached for this thesis" });
+        }
+    });
+});
+
+
+app.delete('/response/:id', (req, res) => {
+    const thesisId = parseInt(req.params.id);
+   
+
+    const sql = 'DELETE FROM AcceptedApplication WHERE stud_id = ?';
+    db.query(sql, [thesisId], (err, result) => {
+        if (err) {
+            console.error("Error deleting thesis:", err);
+            return res.status(500).json({ message: 'Error deleting thesis' });
+        }
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: 'Thesis not found' });
+        }
+
+        
+        res.status(200).json({ message: 'Thesis withdrawn successfully' });
+    });
+});
+
+
+//--------------------------------------------------MyPropuse--------------------------------------------------
+//--------------------------------------------------MyPropuse--------------------------------------------------
+
+app.get('/get-professors', (req, res) => {
+    const faculty = req.query.faculty;
+
+    if (!faculty) {
+        return res.status(400).json({ error: 'Faculty parameter is required' });
+    }
+    //console.log('faculta',faculty);
+    const query = `
+        SELECT *
+        FROM profesorii_neverificati 
+        WHERE faculty = ?;
+    `;
+
+    db.query(query, [faculty], (err, results) => {
+        if (err) {
+            console.error('Error fetching professors:', err);
+            return res.status(500).json({ error: 'Failed to fetch professors' });
+        }
+
+        if (results.length === 0) {
+            return res.status(404).json({ message: 'No professors available for the specified faculty' });
+        }
+
+        res.json(results);
+    });
+});
+
+
+
+app.post('/addProposal', (req, res) => {
+    const {
+        title,
+        description,
+        additional_info,
+        professor_id,
+        motivation,
+        user_faculty,
+        user_study_program,
+        user_id,
+        user_name,
+        prof_name
+    } = req.body;
+    console.log(req.body);
+
+    const query = `
+        INSERT INTO proposals 
+        (title, description, additional_info, professor_id, argumets, user_faculty, user_study_program, user_id,stud_name,prof_name) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?,?,?)
+    `;
+
+    db.query(
+        query,
+        [title, description, additional_info, professor_id, motivation, user_faculty, user_study_program, user_id, user_name, prof_name],
+        (err, results) => {
+            if (err) {
+                console.error('Error inserting proposal:', err);
+                res.status(500).json({ message: 'Failed to insert proposal.' });
+                return;
+            }
+            res.status(201).json({ message: 'Proposal submitted successfully!', proposalId: results.insertId });
+        }
+    );
+});
+
+
+app.get('/getProposals/:userId', async (req, res) => {
+    const id_stud = req.params.userId; 
+    console.log(id_stud);
+    
+    if (!id_stud) {
+         return res.status(400).json({ error: "id_stud is required" });
+    }
+
+    const sql = 'SELECT * FROM proposals WHERE user_id = ?';
+
+    db.query(sql, [id_stud], (error, results) => {
+        if (error) {
+            console.error("Error fetching applied theses:", error);
+            return res.status(500).json({ error: "Database error" });
+        }
+        res.json(results);
+    });
+});
+
+
+
+app.delete('/withdrawApplication/:id', (req, res) => {
+    const { id } = req.params; 
+
+   
+    if (!id) {
+        return res.status(400).json({ error: 'ID is required' });
+    }
+
+    
+    const query = 'DELETE FROM proposals WHERE id = ?';
+
+    db.query(query, [id], (err, result) => {
+        if (err) {
+            console.error('Error deleting proposal:', err);
+            return res.status(500).json({ error: 'Failed to withdraw thesis' });
+        }
+
+       
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: 'Proposal not found' });
+        }
+
+        
+        res.status(200).json({ message: 'Thesis withdrawn successfully.' });
     });
 });

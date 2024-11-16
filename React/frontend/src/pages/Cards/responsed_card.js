@@ -8,103 +8,71 @@ export default function AddResponse({
     student_name,
    data,
     professor_name,
-   
+   id_thesis,
+   id_prof,
+   id_stud,
     viewType,
   
     id, 
  }) {
 
     
-    function handleAplication_delet(id) {
-       
+    function handleResponse_delet(id) {
+        console.log(id);
 
-        fetch(`http://localhost:8081/accept/${id}`, { 
+        fetch(`http://localhost:8081/response/${id}`, { 
             method: "DELETE",
             headers: { "Content-Type": "application/json" }
         })
         .then(response => {
             if (!response.ok) throw new Error("Failed to withdraw thesis");
-            //setTheses(prevTheses => prevTheses.filter(thesis => thesis.id !== id));
+           
         })
         .catch(error => console.error("Error withdrawing thesis:", error));
        
         window.location.reload();
     }
 
+
     async function handleAcceptStudent(thesisId) {
         try {
             const userInfo = JSON.parse(localStorage.getItem('userInfo'));
             const studentId = userInfo.id;
             
-            if (!studentId) {
-                console.error("Student ID not found");
-                return;
-            }
-           // console.log(studentId);
-    
-
-            const response = await fetch(`http://localhost:8081/aplies/${studentId}`, {
-                method: "GET",
-                headers: { "Content-Type": "application/json" },
-            });
-    
-            if (!response.ok) {
-                throw new Error("Failed to fetch applications");
-            }
-    
-            const data = await response.json();
-            //setAllAplies(data);  
-    
-          
-            const matchedApplication = data.find(application => application.id === thesisId);
             
-           
     
-            if (!matchedApplication) {
-                console.error("No matching application found for thesis id:", thesisId);
-                return;
-            }
-    
-          
-          
-            
             const acceptedApplicationData = {
-                id_thesis: matchedApplication.id_thesis,
-                faculty: matchedApplication.faculty,
-                title: matchedApplication.title,
-                id_prof: matchedApplication.id_prof,
-                prof_name: matchedApplication.prof_name,
-                prof_email: matchedApplication.prof_email,
-                stud_id: matchedApplication.id_stud,
-                stud_email: matchedApplication.stud_email,
-                stud_name: matchedApplication.stud_name,
-                stud_program: matchedApplication.student_program,
-                date: new Date().toISOString().split('T')[0]
+                id_thesis: id_thesis,
+                id_prof: id_prof,
+                id_stud: id_stud,
+                date: new Date().toISOString().split('T')[0] 
             };
+            console.log('data accepted ',acceptedApplicationData);
+
     
-            
-    
-        
-            const acceptResponse = await fetch("http://localhost:8081/acceptedApplications", {
+            const confirmResponse = await fetch("http://localhost:8081/confirmation", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(acceptedApplicationData)
             });
     
-            if (!acceptResponse.ok) {
-                throw new Error("Failed to accept application");
+            if (confirmResponse.status === 400) {
+                alert("Limita de locuri disponibile a fost completată.");
+                return;
             }
     
-            console.log("Application accepted successfully:", acceptedApplicationData);
+            if (!confirmResponse.ok) {
+                throw new Error("Failed to confirm application");
+            }
     
-           
-             handleAplication_delet(thesisId);
+            console.log("Application confirmed successfully:", acceptedApplicationData);
+            console.log('id thes',id_thesis);
+            handleResponse_delet(id_stud);
     
         } catch (error) {
             console.error("Error in handleAcceptStudent:", error);
         }
     }
-
 
     
     function formatDate(isoDateString) {
@@ -123,29 +91,29 @@ export default function AddResponse({
                     <p className="text">Student: {student_name || "Loading..."}</p>
                     <p className="text">Faculty: {faculty} {study_program && `Program: ${study_program}`}</p>
                     <p className="text">Applied Date: {formatDate(data)}</p>
-                    <div className="button-container">
+                   <br/>
                         <button 
                             className="chose_btn" 
                             type="button" 
                             onClick={(e) => {
                                 e.stopPropagation(); 
-                                //handleAcceptStudent(id); 
+                                handleAcceptStudent(id); 
                             }}
                         >
-                            Accept
+                            Confirm
                         </button>
-    
-                        <button 
-                            className="chose_btn decline" 
-                            type="button" 
-                            onClick={(e) => { 
-                                e.stopPropagation(); 
-                               // handleAplication_delet(id); 
-                            }}
-                        >
-                            Decline
-                        </button>
-                    </div>
+                            
+                        <p style={{
+                                fontSize: '14px',
+                                color: '#888',
+                                fontStyle: 'italic',
+                                textAlign: 'center',
+                                marginTop: '10px'
+                            }}>
+ You can confirm only one thesis. After confirmation, other responses will be deleted.
+</p>
+
+                  
                
             
     

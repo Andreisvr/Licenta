@@ -8,6 +8,7 @@ function ThesisForm() {
     const { name, email, logined, type } = useContext(AppContext);
     const navigate = useNavigate();
 
+    
     if (!logined) {
         console.log('nu este logat');
     } else {
@@ -30,10 +31,12 @@ function ThesisForm() {
         state: 'open',
         prof_name: user_info.name,
         cv_link: user_info.cv_link || null,
-        email: user_info.email
+        email: user_info.email,
+        limita:'',
     };
-
+    
     const [formData, setFormData] = useState(initialFormData);
+    
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -80,9 +83,12 @@ function ThesisForm() {
             state: formData.state,
             prof_name: formData.prof_name,
             cv_link: formData.cv_link || null,
-            email: formData.email
-        };
+            email: formData.email,
+            limita: formData.limita,
 
+        };
+        console.log(adjustedData);
+        
         try {
             const response = await fetch('http://localhost:8081/add_form', {
                 method: 'POST',
@@ -143,7 +149,18 @@ function ThesisForm() {
                     onChange={handleChange} 
                 />
             </label>
-
+            <label>
+                Limită de locuri:
+                    <input
+                    type="number"
+                    name="limita"
+                    value={formData.limita}
+                    onChange={handleChange}
+                    required
+                    min="1"
+                    step="1"
+                    />
+            </label>
             <label>
                 Start Date:
                 <input 
