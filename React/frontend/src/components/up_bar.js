@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom"; // Importă useNavigate
+import React, { useState, useEffect, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import "/Users/Andrei_Sviridov/Desktop/React/frontend/src/page_css/UpBar.css";
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
@@ -7,29 +7,73 @@ import IconButton from '@mui/material/IconButton';
 import Badge from '@mui/material/Badge';
 import PersonalForm from "./personal_cabinet";
 import Logo from '/Users/Andrei_Sviridov/Desktop/React/frontend/src/images/Logo-UVT-2017-02.ico';
-
+import { AppContext } from "./AppContext";
 
 function notificationsLabel(count) {
     if (count === 0) {
-      return 'no notifications';
+        return 'no notifications';
     }
     if (count > 99) {
-      return 'more than 99 notifications';
+        return 'more than 99 notifications';
     }
     return `${count} notifications`;
 }
 
 function UpBar() {
+
+const {  logined} = useContext(AppContext);
+
     const [showForm, setShowForm] = useState(false);
-    const navigate = useNavigate(); 
+    const [favoriteCount, setFavoriteCount] = useState(0); 
+    const navigate = useNavigate();
 
+    
     const handleClickForm = () => {
-       setShowForm(!showForm);
+        setShowForm(!showForm);
     };
 
+    
     const handleLogoClick = () => {
-        navigate('/');
+        navigate('/prof');
     };
+    //console.log('logaat',logined);
+    
+    useEffect(() => {
+        if (logined) {
+            const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+            if (userInfo && userInfo.id) {
+                const fetchFavorites = async () => {
+                    try {
+                        const response = await fetch(
+                            `http://localhost:8081/count?userId=${userInfo.id}`, 
+                            {
+                                method: 'GET',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                            }
+                        );
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+
+                        const result = await response.json();
+                        
+                        setFavoriteCount(result.count);  
+                    } catch (error) {
+                        console.error('Error fetching favorite count:', error);
+                        setFavoriteCount(0); 
+                    }
+                };
+
+                fetchFavorites();
+               
+            }
+        } else {
+            setFavoriteCount(0); 
+        }
+       
+    }, [logined]); 
 
     return (
         <div className="upbar">
@@ -37,9 +81,9 @@ function UpBar() {
                 <img src={Logo} alt="Logo" className="logo" />
             </IconButton>
 
-            <IconButton aria-label={notificationsLabel(100)} className="liked_icon">
+            <IconButton aria-label={notificationsLabel(favoriteCount)} className="liked_icon">
                 <Badge 
-                    badgeContent={10} 
+                    badgeContent={favoriteCount} 
                     color="secondary" 
                     overlap="circular" 
                     sx={{ 

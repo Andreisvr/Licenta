@@ -95,17 +95,7 @@ export default function Cabinet() {
     }, [logined, email]);
 
 
-    // useEffect(() => {
-    //     if (id && allTheses.length > 0 && allApplications.length > 0) {
-    //         handleShowMyThesis();
-    //         handleShowApplied();
-    //         handleShowAccepted();
-    //         handleSeeApplies();
-    //         handleSeeResponses();
-    //        
-    //     }
-    // }, [id, allTheses, allApplications]);
-
+   
 
     const handleClickAdd = () => navigate('/add_form');
 

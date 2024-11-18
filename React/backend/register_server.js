@@ -21,6 +21,8 @@ app.listen(8081, () => {
     console.log("Listening on port 8081");
 });
 
+
+
 db.connect(err => {
     if (err) {
         console.error("Database connection failed: ", err.stack);
@@ -65,7 +67,7 @@ app.post('/reg', async (req, res) => {
 app.post('/reg_stud', async (req, res) => {
 
     const { name, email, pass, gmail_pass, faculty, program } = req.body;
-    console.log('numeee ',name);
+    //console.log('numeee ',name);
     try {
         
         await db.query('INSERT INTO studentii SET ?', {
@@ -247,7 +249,7 @@ app.post('/thesisinfo', (req, res) => {
     const formattedDate = `${appliedDate.getFullYear()}-${String(appliedDate.getMonth() + 1).padStart(2, '0')}-${String(appliedDate.getDate()).padStart(2, '0')} ${String(appliedDate.getHours()).padStart(2, '0')}:${String(appliedDate.getMinutes()).padStart(2, '0')}:${String(appliedDate.getSeconds()).padStart(2, '0')}`;
 
 
-   console.log(id_stud,id_thesis);
+   //console.log(id_stud,id_thesis);
     const checkSql = `SELECT COUNT(*) as count FROM Applies WHERE id_stud = ? AND id_thesis = ?`;
     db.query(checkSql, [id_stud, id_thesis], (err, results) => {
         if (err) {
@@ -256,7 +258,7 @@ app.post('/thesisinfo', (req, res) => {
         }
 
         const applicationCount = results[0].count;
-        console.log(results[0].count);
+        
         if (applicationCount > 0) {
             return res.status(400).json({ error: 'You have already applied for this thesis.' });
         }
@@ -422,7 +424,7 @@ app.post('/acceptedApplications', (req, res) => {
         stud_program,
         date
     } = acceptedApplication;
-    console.log(acceptedApplication);
+   
    
     if (!id_thesis || !faculty || !title || !id_prof || !prof_name || !prof_email || !stud_id || !stud_email || !stud_name || !stud_program || !date) {
         return res.status(400).json({ error: 'Toate câmpurile sunt necesare!' });
@@ -498,7 +500,7 @@ app.get('/Accepted/:id', async (req, res) => {
   
 app.get('/aplies/:id', async (req, res) => {
     const studentId = parseInt(req.params.id); 
-    console.log(studentId);
+    
     const query = "SELECT * FROM Applies WHERE id_prof = ?";  
     
     db.query(query, [studentId], (err, results) => { 
@@ -656,7 +658,7 @@ app.post('/addProposal', (req, res) => {
         user_name,
         prof_name
     } = req.body;
-    console.log(req.body);
+    //console.log(req.body);
 
     const query = `
         INSERT INTO proposals 
@@ -681,7 +683,7 @@ app.post('/addProposal', (req, res) => {
 
 app.get('/getProposals/:userId', async (req, res) => {
     const id_stud = req.params.userId; 
-    console.log(id_stud);
+    
     
     if (!id_stud) {
          return res.status(400).json({ error: "id_stud is required" });
@@ -724,5 +726,93 @@ app.delete('/withdrawApplication/:id', (req, res) => {
 
         
         res.status(200).json({ message: 'Thesis withdrawn successfully.' });
+    });
+});
+
+
+
+//--------------------------------------------------Add_To_Favorite--------------------------------------------------
+//--------------------------------------------------Add_To_Favorite--------------------------------------------------
+
+app.post('/fav', async (req, res) => {
+    const { userId, thesisId } = req.body;
+   
+   
+
+    if (!userId || !thesisId) {
+        return res.status(400).json({ error: 'lipsesc userId sau thesisId' });
+    }
+
+    try {
+       
+        await db.query('INSERT INTO favorite (id_user, id_thesis) VALUES (?, ?)', [userId, thesisId]);
+        res.status(200).json({ message: 'Adaugat la favorite' });
+    } catch (error) {
+        console.error('Eroare la adaugarea în favorite:', error);
+        res.status(500).json({ error: 'Eroare de server' });
+    }
+});
+
+
+app.delete('/fav', async (req, res) => {
+    const { userId, thesisId } = req.body;
+  
+    if (!userId || !thesisId) {
+        return res.status(400).json({ error: 'lipsesc userId sau thesisId' });
+    }
+
+    try {
+       
+        await db.query('DELETE FROM favorite WHERE id_user = ? AND id_thesis = ?', [userId, thesisId]);
+        res.status(200).json({ message: 'sters din favorite' });
+    } catch (error) {
+        console.error('Eroare la ștergerea din favorite:', error);
+        res.status(500).json({ error: 'Eroare de server' });
+    }
+});
+
+
+
+app.get('/check', (req, res) => {
+    const { userId, thesisId } = req.query;
+
+    const query = `SELECT * FROM favorite WHERE id_user = ? AND id_thesis = ?`;
+
+    db.query(query, [userId, thesisId], (err, result) => {
+        if (err) {
+            return res.status(500).json({ error: 'Database error' });
+        }
+        if (result.length > 0) {
+            return res.json({ isFavorite: true, data: result[0] });
+        } else {
+            return res.json({ isFavorite: false });
+        }
+    });
+});
+
+
+//-------------------------------------------------------UpBar----------------------------------------------
+app.get('/count', (req, res) => {
+    const { userId } = req.query; 
+
+    if (!userId) {
+        return res.status(400).json({ message: 'User ID is required' });
+    }
+
+   
+    const query = `
+        SELECT COUNT(*) AS count FROM favorite WHERE id_user = ?;
+    `;
+
+    
+    db.query(query, [userId], (err, results) => {
+        if (err) {
+            console.error('Error fetching favorites:', err);
+            return res.status(500).json({ message: 'Internal server error' });
+        }
+
+        // Send back the count of favorites
+        const favoriteCount = results[0].count;
+        return res.json({ count: favoriteCount });
     });
 });

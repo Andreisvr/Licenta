@@ -161,3 +161,114 @@
     background-color:  rgb(235, 235, 235);
     
 }
+
+
+
+
+@media (max-width: 1200px) {
+    .left_container {
+        max-width: 25%;
+    }
+
+    .right_container {
+        width: 75%;
+    }
+
+    .top_container {
+        height: 12%;
+    }
+
+    .button-group button {
+        font-size: 1.2rem;
+    }
+
+    .add-button-container {
+        bottom: 4vh; 
+        right: 3vw; 
+    }
+}
+
+@media (max-width: 992px) {
+    .left_container {
+        max-width: 30%;
+    }
+
+    .right_container {
+        width: 70%;
+    }
+
+    .button-group button {
+        width: 12vw;
+    }
+
+    .search_input,
+    .date_input {
+        width: 80%;
+    }
+}
+
+@media (max-width: 768px) {
+    .left_container {
+        max-width: 20%;
+    }
+
+    .right_container {
+        width: 60%;
+    }
+
+    .button-group {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .button-group button {
+        width: 100%;
+    }
+
+    .icon-container .icon {
+        font-size: 2.5rem;
+    }
+
+    .add-button-container {
+        right: 5vw; 
+    }
+
+    .top_container {
+        min-height: 25%;
+        overflow: auto;
+        
+    }
+}
+
+@media (max-width: 576px) {
+    .left_container {
+        max-width:30%;
+    }
+
+    .right_container {
+        width: 50%;
+    }
+
+    .section_title {
+        font-size: 1.1rem;
+    }
+
+    .button-group button {
+        font-size: 1rem;
+        width: 100%;
+    }
+
+    .search_input,
+    .date_input {
+        width: 100%;
+    }
+
+    .add-button-container {
+        bottom: 5vh; 
+        right: 7vw; 
+    }
+
+    .top_container {
+        height: 25%;
+    }
+}

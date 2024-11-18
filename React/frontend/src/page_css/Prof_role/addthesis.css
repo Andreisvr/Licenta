@@ -162,3 +162,29 @@
     background-color: red;
     color: white;
 }
+
+
+@media (max-width: 768px) {
+    .applied_form {
+        width: 75%; 
+        margin: 10px;
+    }
+
+    .button-container {
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .chose_btn {
+        width: 100%; 
+    }
+
+    
+    .text.description,
+    .add_date,
+    .requirements {
+        display: none; 
+    }
+}
+

@@ -26,9 +26,43 @@ export default function ThesisInfo() {
         if (userinfo) {
             const parsedUserInfo = JSON.parse(userinfo);
             setUserInfo(parsedUserInfo);
-            console.log('User Info:', parsedUserInfo); 
+            //console.log('User Info:', parsedUserInfo); 
         }
     }, []);
+
+    useEffect(() => {
+        if (!userInfo || !thesisData) return;
+    
+       
+        const checkFavorite = async () => {
+            try {
+                const response = await fetch(
+                    `http://localhost:8081/check?userId=${userInfo.id}&thesisId=${thesisData.id}`, 
+                    {
+                        method: 'GET', 
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    }
+                );
+    
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+    
+                const result = await response.json();
+               // console.log('eezultatul:', result);
+    
+                
+                setClicked(result.isFavorite);  
+            } catch (error) {
+                console.error('Eroare în timpul verificării favoritei:', error);
+            }
+        };
+    
+        checkFavorite();
+    }, [userInfo, thesisData]);
+    
 
     function formatDate(isoDateString) {
         const date = new Date(isoDateString);
@@ -44,10 +78,58 @@ export default function ThesisInfo() {
 
     if (!thesisData) return <p>Loading...</p>;
 
-    const handleClick = () => {
-        setClicked(!clicked); 
-    };
+    const handleClick = async() => {
+        setClicked(!clicked);
+    
+        if (!clicked) {
 
+            try {
+                const response = await fetch('http://localhost:8081/fav', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        userId: userInfo.id,
+                        thesisId: thesisData.id,
+                    }),
+                });
+            
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+            
+                const result = await response.json();
+                console.log('rez:', result);
+            } catch (error) {
+                console.error('Eroare în timpul adăugării la favorite:', error);
+            }
+
+        } else {
+            try {
+                const response = await fetch('http://localhost:8081/fav', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        userId: userInfo.id,
+                        thesisId: thesisData.id,
+                    }),
+                });
+            
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+            
+                const result = await response.json();
+                console.log('Șters cu succes din favorite:', result);
+            } catch (error) {
+                console.error('Eroare în timpul ștergerii din favorite:', error);
+            }
+        }
+    };
+    
     const handleBack = () => {
         navigate("/prof");
     };
