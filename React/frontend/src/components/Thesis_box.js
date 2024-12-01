@@ -21,7 +21,7 @@ export default function ThesisBox({ thesisName, professorName, facultyName, stud
         return text;
     };
 
-    // Butonul de like 
+    
     const [clicked, setClicked] = useState(false); 
 
     const handleClick = () => {

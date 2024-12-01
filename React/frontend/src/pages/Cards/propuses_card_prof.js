@@ -1,96 +1,107 @@
 
 import React, { useContext, useEffect, useState } from "react";
 
-export default function Applied({ 
-    thesisName, 
-    faculty, 
-    study_program, 
-    applied_data,
-    stud_email,
-    student_program,
+export default function Propouses({ 
+ 
+    thesisName,
     professor_name,
-
+    professor_id,
+    stud_id,
+    applied_data,
     stud_name,
-  
-    id, 
+    stud_email,
+    faculty,
+    study_program,
+    description,
+    id,
+    state
  }) {
 
 
     const [allAplies, setAllAplies] = useState([]);
     const [theses, setTheses] = useState([]); 
    
-    function handleAplication_delet(id) {
-       
-        console.log(id);
-        fetch(`http://localhost:8081/accept/${id}`, { 
-            method: "DELETE",
-            headers: { "Content-Type": "application/json" }
+   if(state !='waiting')
+   {
+    return
+   }
+    
+
+    function handlePropouse_Accepted(id) {
+        console.log(`Accepting proposal with ID: ${id}`);
+        fetch(`http://localhost:8081/proposalAcceptConfirm/${id}`, {
+            method: "PATCH", 
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ state: "accepted" }), 
         })
         .then(response => {
-            if (!response.ok) throw new Error("Failed to withdraw thesis");
-            setTheses(prevTheses => prevTheses.filter(thesis => thesis.id !== id));
+            if (!response.ok) throw new Error("Failed to accept thesis");
+            setTheses(prevTheses =>
+                prevTheses.map(thesis =>
+                    thesis.id === id ? { ...thesis, state: "accepted" } : thesis
+                )
+            );
         })
-        .catch(error => console.error("Error withdrawing thesis:", error));
+        .catch(error => console.error("Error accepting thesis:", error));
        
         window.location.reload();
-        
     }
+    
+    async function handlePropouse_reject(id) {
+        console.log(`Rejecting proposal with ID: ${id}`);
+        fetch(`http://localhost:8081/proposaReject/${id}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ state: "rejected" }), 
+        })
+        .then(response => {
+            if (!response.ok) throw new Error("Failed to reject thesis");
+            setTheses(prevTheses =>
+                prevTheses.map(thesis =>
+                    thesis.id === id ? { ...thesis, state: "rejected" } : thesis
+                )
+            );
+        })
+        .catch(error => console.error("Error rejecting thesis:", error));
+        
+        window.location.reload();
+    }
+    
 
+
+    
     async function handleAcceptStudent(thesisId) {
-        try {
+         try {
             const userInfo = JSON.parse(localStorage.getItem('userInfo'));
             const studentId = userInfo.id;
+          
             
             if (!studentId) {
                 console.error("Student ID not found");
                 return;
             }
-            console.log(studentId);
-    
             
-            const response = await fetch(`http://localhost:8081/aplies/${studentId}`, {
-                method: "GET",
-                headers: { "Content-Type": "application/json" },
-            });
     
-            if (!response.ok) {
-                throw new Error("Failed to fetch applications");
-            }
-    
-            const data = await response.json();
-            setAllAplies(data);  
-    
-          
-            const matchedApplication = data.find(application => application.id === thesisId);
-            
-           
-    
-            if (!matchedApplication) {
-                console.error("No matching application found for thesis id:", thesisId);
-                return;
-            }
-    
-          
+
           
             
             const acceptedApplicationData = {
-                id_thesis: matchedApplication.id_thesis,
-                faculty: matchedApplication.faculty,
-                title: matchedApplication.title,
-                id_prof: matchedApplication.id_prof,
-                prof_name: matchedApplication.prof_name,
-                prof_email: matchedApplication.prof_email,
-                stud_id: matchedApplication.id_stud,
-                stud_email: matchedApplication.stud_email,
-                stud_name: matchedApplication.stud_name,
-                stud_program: matchedApplication.student_program,
+                id_thesis: id,
+                faculty: faculty,
+                title: thesisName,
+                id_prof:professor_id,
+                prof_name:professor_name,
+                prof_email: 'propuse',
+                stud_id: stud_id,
+                stud_email:stud_email,
+                stud_name: stud_name,
+                stud_program: study_program,
                 date: new Date().toISOString().split('T')[0],
-                origin:'theses'
-                
+                origin:'propouse'
             };
     
             
-            console.log(acceptedApplicationData)
+            
         
             const acceptResponse = await fetch("http://localhost:8081/acceptedApplications", {
                 method: "POST",
@@ -105,14 +116,17 @@ export default function Applied({
             console.log("Application accepted successfully:", acceptedApplicationData);
     
            
-             handleAplication_delet(thesisId);
+            handlePropouse_Accepted(thesisId);
     
         } catch (error) {
             console.error("Error in handleAcceptStudent:", error);
         }
     }
-    
    
+
+    const getShortDescription = (desc) => (desc ? `${desc.substring(0, 20)}${desc.length > 100 ? "..." : ""}` : "");
+
+
 
     function formatDate(isoDateString) {
         const date = new Date(isoDateString);
@@ -129,9 +143,10 @@ export default function Applied({
     
     
             
-                    <p className="text ">Prof Name: {professor_name}</p>
+                    {/* <p className="text ">Prof Name: {professor_name}</p> */}
                     <p className="text">Student: {stud_name || "Loading..."}</p>
                     <p className="text">Student Email: {stud_email || "Loading..."}</p>
+                    <p className="text">Description : {getShortDescription(description) || "Loading..."}</p>
                     
                         <p className="text">Applied Data: {formatDate(applied_data)}</p>
                     
@@ -152,7 +167,7 @@ export default function Applied({
                             type="button" 
                             onClick={(e) => { 
                                 e.stopPropagation(); 
-                                handleAplication_delet(id); 
+                                handlePropouse_reject(id); 
                             }}
                         >
                             Decline

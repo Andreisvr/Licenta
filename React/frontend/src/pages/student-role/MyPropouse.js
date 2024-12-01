@@ -5,13 +5,15 @@ export default function MyPropouses({
     thesisName, 
     professor_id,
     applied_data,
-    user_id,
     professor_name,
-    stud_name,
-    
+    description,
+   
+    state,
     id
 }) {
-    // Funcția pentru a formata data
+    if(state =='accepted' || state =='confirmed' ){
+        return
+    }
     function formatDate(isoDateString) {
         const date = new Date(isoDateString);
         if (date.getTime() === 0) return ''; 
@@ -35,15 +37,20 @@ export default function MyPropouses({
         .catch(error => console.error("Error withdrawing thesis:", error));
     }
 
+    const getShortDescription = (desc) => (desc ? `${desc.substring(0, 100)}${desc.length > 100 ? "..." : ""}` : "");
+
+
     return (
         <form className="applied_form">
            
               
                 <p className="title text">Title: {thesisName}</p>
                 <p className="text">Professor: {professor_name}</p>
-                <p className="text">Student: {stud_name || "Loading..."}</p>
-              
+                <p className="text">Description: {getShortDescription(description) || "Loading..."}</p>
+                <p className="text" >Answer : {state}</p>
                 <p className="text">Applied Date: {formatDate(applied_data)}</p>
+               
+
                 <button className= 'withdraw_btn' onClick={() => handleWithdrawApplication(id)}>Withdraw</button>
             
         </form>

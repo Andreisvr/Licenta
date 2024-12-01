@@ -7,17 +7,18 @@ import PersonIcon from '@mui/icons-material/Person';
 import SchoolIcon from '@mui/icons-material/School';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import MyConfirmed from "./MyConfiremd_thesis.js";
-import AddResponse from "./responsed_card.js";
+import AddResponse from "../student-role/Confirmation_card_stud.js";
 import MyApplied from "./my_aplies.js";
 import Applied from "./applied_students.js";
-import Accepted from "./accepted_thesis.js";
+import Accepted from "../Prof_role/Accepted_Students_card.js";
 import MyThesis from "./my_thesis_card.js";
 import FacultyList from '/Users/Andrei_Sviridov/Desktop/React/frontend/src/components/Faculty_List.js';
 import MyPropouses from "../student-role/MyPropouse.js";
+import Propouses from "./propuses_card_prof.js";
 
 
 export default function Cabinet() {
-    const { name, email, logined, type } = useContext(AppContext);
+    const { name,email, logined, type } = useContext(AppContext);
     const navigate = useNavigate();
     const [theses, setTheses] = useState([]);
     const [allTheses, setAllTheses] = useState([]);
@@ -33,6 +34,8 @@ export default function Cabinet() {
     const[MyResponsedList,setMyResponsedList] = useState([]);
     const [MyConfirmedthesis,setMyConfirmed] = useState([]);
     const[MyPropouse,setMyPropouses]= useState([]);
+    const[PropousesList,setPropouses]= useState([]);
+    const[Confirmed,setConfirmed]= useState([]);
    
     const [searchTitle, setSearchTitle] = useState("");
     const [searchStartDate, setSearchStartDate] = useState("");
@@ -76,7 +79,7 @@ export default function Cabinet() {
                 localStorage.setItem('userInfo', JSON.stringify(userInfo));
                 setId(userInfo.id);
                
-                console.log('user info', userInfo);
+                //console.log('user info', userInfo);
             })
             .catch((error) => console.error("Error fetching user info:", error));
 
@@ -87,6 +90,8 @@ export default function Cabinet() {
             .then((response) => response.json())
             .then((data) => {
                 setAllApplications(data);
+               
+              
                 
             })
             .catch((error) => console.error("Error fetching applications:", error));
@@ -105,16 +110,15 @@ export default function Cabinet() {
     };
 
     const handleSeeApplies = () => {
-        setViewType("MyApplies");
+
         const userInfo = JSON.parse(localStorage.getItem('userInfo'));
         const studentId = userInfo?.id;
 
-        if (!studentId) {
-            // console.error("Student ID not found");
-            //alert("Not Logined")
+        if (!userInfo) {
+            console.error("Student ID not found, userInfo is missing");
+            alert("Not logined")
             return;
         }
-
         const matchedTheses = allTheses.filter(thesis =>
             allApplications.some(application => application.id_thesis === thesis.id && application.id_stud === studentId)
         );
@@ -160,7 +164,7 @@ export default function Cabinet() {
 
         setTheses(allApplications.filter(application => application.id_prof === profId));
         setMyAppliedList(allApplications.filter(application => application.id_prof === profId));
-        //console.log('my aplies',MyAppliedList);
+        console.log('aplies from students ',MyAppliedList);
 
         setViewType("Applied");
     };
@@ -257,6 +261,15 @@ export default function Cabinet() {
    async function handleMyPropouse()
         {
            
+            const userInfo = localStorage.getItem('userInfo');
+        
+            if (!userInfo) {
+                console.error("Student ID not found, userInfo is missing");
+                alert("Not logined")
+                return;
+            }
+
+           
             try {
                 const response = await fetch(`http://localhost:8081/getProposals/${id}`);
                 if (!response.ok) {
@@ -265,6 +278,7 @@ export default function Cabinet() {
     
                 const data = await response.json();
                 setMyPropouses(data);
+                
             } catch (error) {
                 console.error('Error fetching proposals:', error);
             }
@@ -310,7 +324,60 @@ export default function Cabinet() {
         setViewType('ALL');
         setTheses(theses); 
     }
+
+
+    async function handleShowPropouses() {
+        if (!id) {
+            console.error("Student ID not found in userInfo");
+            alert("Not logined");
+            return;
+        }
     
+        try {
+            const response = await fetch(`http://localhost:8081/propoused/${name}`, {
+                method: "GET",
+                headers: { "Content-Type": "application/json" },
+            });
+    
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+    
+            const data = await response.json(); 
+            setPropouses(data); 
+            console.log("propused", data); 
+            
+        } catch (error) {
+            console.error("Error fetching accepted applications:", error);
+        }
+        setViewType("Propoused");
+    }
+    
+    async function handleShowConfirmed() {
+
+        if (!id ) {
+            console.error("Student ID not found in userInfo");
+            alert('Not logined');
+            return;
+        }
+        setViewType("MyChose");
+        console.log('id' ,id);
+        fetch(`http://localhost:8081/confirmed?id_stud=${id}`, {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+        })
+        .then(response => response.json())
+        .then(data => {
+            setConfirmed(data);
+            console.log('Confirmed', Confirmed); 
+        })
+        .catch(error => console.error("Error fetching accepted applications:", error));
+        
+        
+    }
+
+
+
     const getShortDescription = (desc) => (desc ? `${desc.substring(0, 100)}${desc.length > 100 ? "..." : ""}` : "");
 
     return (
@@ -364,9 +431,11 @@ export default function Cabinet() {
                         {type === "professor" ? (
                             <>
                                 <button onClick={handleAllClick_All}>ALL</button>
-                                <button onClick={handleShowMyThesis}>MyThesis</button>
+                                <button onClick={handleShowMyThesis}>MyTheses</button>
                                 <button onClick={handleShowApplied}>Applied</button>
+                                <button onClick={handleShowPropouses}>Propoused</button>
                                 <button onClick={handleShowAccepted}>Accepted</button>
+                                <button onClick={handleShowConfirmed}>Confirmed</button>
                             </>
                         ) : (
                             <>
@@ -421,7 +490,7 @@ export default function Cabinet() {
         study_program={respons.stud_program}
         student_name={respons.stud_name}
         professor_name={respons.prof_name}
-        viewType={viewType}
+        prof_email={respons.prof_email}
         id={respons.id}
       />
     ))
@@ -503,19 +572,42 @@ export default function Cabinet() {
     ))
   ): viewType === "MyPropouse" && MyPropouse.length > 0 ? (
     MyPropouse.map((application) => (
+       
         <MyPropouses
         key={application.id}
         thesisName={application.title}
         professor_name={application.prof_name}
         professor_id={application.professor_id}
-        stud_id={application.user_id}
-        applied_data={application.created_at} 
-        stud_name={application.stud_name}
+       
+        applied_data={application.date} 
+        description={application.description}
+        state = {application.state}
         id={application.id}
     />
+       
     ))
-  ) : (
+  ) : viewType === "Propoused" && PropousesList.length > 0 ? (
+    PropousesList.map((application) => (
+            <Propouses
+            key={application.id}
+            thesisName={application.title}
+            professor_name={application.prof_name}
+            professor_id={application.prof_id}
+            stud_name={application.stud_name}
+            stud_email={application.stud_email}
+            applied_data={application.date} 
+            stud_id={application.stud_id}
+            description={application.description}
+            state={application.state}
+            study_program={application.study_program}
+            faculty={application.faculty}
+            id={application.id}
+            />
+       
+    ))
+) :  (
     <p>No available content for this link</p> 
+   
     //null
   )
 }

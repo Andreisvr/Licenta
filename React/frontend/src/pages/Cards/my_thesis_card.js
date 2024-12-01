@@ -13,7 +13,7 @@ export default function MyThesis({
  }) {
 
     const handleWithdraw = (id) => {
-        console.log(id);
+        // console.log(id);
         fetch(`http://localhost:8081/prof/${id}`, { 
             method: "DELETE",
             headers: { "Content-Type": "application/json" },

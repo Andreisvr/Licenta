@@ -5,7 +5,7 @@ import { AppContext } from './AppContext';
 import { useNavigate } from "react-router";
 function PersonalForm() {
 
-    const { logined, handleLogout } = useContext(AppContext);  // Preluăm handleLogout din context
+    const { logined, handleLogout } = useContext(AppContext);  
 
      const navigate = useNavigate();
 
@@ -18,7 +18,7 @@ function PersonalForm() {
             <div className="form_account">
                 {logined ? (
                     <div>
-                        {/* Afișează formularul dacă utilizatorul este autentificat */}
+                       
                         <h2>Name Plate</h2>
                         <h2>Pagina Form</h2>
                         <h2>Pagina Form</h2>

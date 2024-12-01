@@ -21,7 +21,7 @@ function RegFormProf() {
     setPasswordError('');
     setConfirmPasswordError('');
    
-    // Email validation
+  
     if ('' === email) {
       setEmailError('Please enter your email');
       return;
@@ -55,7 +55,7 @@ function RegFormProf() {
       return;
     }
 
-    // Afișăm formularul pentru acceptarea termenilor
+    
     setShowTermsForm(true);
 
     setEmail('');

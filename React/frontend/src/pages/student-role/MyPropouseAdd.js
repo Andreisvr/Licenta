@@ -5,7 +5,7 @@ import { AppContext } from '../../components/AppContext';
 import ProfessorList from '../../components/Prof_List';
 
 export default function MyPropouseAdd() {
-    const { logined } = useContext(AppContext);
+    const { logined, email, name} = useContext(AppContext);
     const navigate = useNavigate();
 
     const userInfo = localStorage.getItem('userInfo');
@@ -14,9 +14,9 @@ export default function MyPropouseAdd() {
     const [formData, setFormData] = useState({
         title: '',
         description: '',
-        additionalInfo: '',
-        professorId: '',
         motivation: '',
+        professorId: '',
+        prof_name: '',
     });
 
     const handleChange = (e) => {
@@ -31,7 +31,7 @@ export default function MyPropouseAdd() {
         setFormData((prevData) => ({
             ...prevData,
             professorId: professor.id,
-            prof_name:professor.name
+            prof_name: professor.name,
         }));
         console.log('Profesor selectat:', professor.name);
     };
@@ -41,20 +41,25 @@ export default function MyPropouseAdd() {
 
         const adjustedData = {
             title: formData.title,
+            study_program: user_info.ProgramStudy,
+            faculty: user_info.Faculty,
+            prof_id: formData.professorId,
+            prof_name: formData.prof_name,
+            stud_name: user_info.name,
+            stud_email: email,
             description: formData.description,
-            additional_info: formData.additionalInfo,
-            professor_id: formData.professorId,
             motivation: formData.motivation,
-            user_faculty: user_info.Faculty,
-            user_study_program: user_info.ProgramStudy,
-            user_id: user_info.id,
-            user_name:user_info.name,
-            prof_name:formData.prof_name
+            state: 'waiting',
+            date: new Date().toISOString(), 
+            stud_id: user_info.id
         };
 
-        console.log('adajusted ',adjustedData);
+        
+
+        console.log('Trimis către server:', adjustedData);
+
         try {
-            const response = await fetch('http://localhost:8081/addProposal', {
+            const response = await fetch(`http://localhost:8081/Propouses`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -62,28 +67,24 @@ export default function MyPropouseAdd() {
                 body: JSON.stringify(adjustedData),
             });
 
-            if (!response.ok) {
-                throw new Error('Failed to submit proposal');
+            if (response.ok) {
+                console.log('Propunere salvată cu succes');
+                setFormData({
+                    title: '',
+                    description: '',
+                    motivation: '',
+                    professorId: '',
+                    prof_name: '',
+                });
+                navigate('/prof');
+            } else {
+                console.error('Eroare la salvarea propunerii');
             }
-
-            const result = await response.json();
-            console.log('Proposal submitted successfully:', result);
-
-            
-            setFormData({
-                title: '',
-                description: '',
-                additionalInfo: '',
-                professorId: '',
-                motivation: '',
-            });
-
-            
-            navigate('/prof');
         } catch (error) {
-            console.error('Error submitting proposal:', error);
+            console.error('Eroare la cererea către server:', error);
         }
     };
+
     return (
         <form className="thesis-form" onSubmit={handleSubmit}>
             <label>
@@ -96,7 +97,7 @@ export default function MyPropouseAdd() {
                     required
                 />
             </label>
-    
+
             <label>
                 Description:
                 <textarea
@@ -106,16 +107,7 @@ export default function MyPropouseAdd() {
                     required
                 />
             </label>
-    
-            <label>
-                Additional Information (*):
-                <textarea
-                    name="additionalInfo"
-                    value={formData.additionalInfo}
-                    onChange={handleChange}
-                />
-            </label>
-    
+
             <label>
                 Professor:
                 <ProfessorList
@@ -123,7 +115,7 @@ export default function MyPropouseAdd() {
                     onSelect={handleProfessorSelect}
                 />
             </label>
-    
+
             <label>
                 Motivation:
                 <textarea
@@ -133,8 +125,8 @@ export default function MyPropouseAdd() {
                     required
                 />
             </label>
-    
+
             <button type="submit">Submit Proposal</button>
         </form>
     );
-}    
+}

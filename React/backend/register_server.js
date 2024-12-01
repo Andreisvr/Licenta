@@ -205,6 +205,67 @@ app.post('/add_form', (req, res) => {
 
 
 
+app.post('/Propouses', (req, res) => {
+    const {
+        title,
+        study_program,
+        faculty,
+        prof_id,
+        prof_name,
+        stud_name,
+        stud_email,
+        description,
+        motivation,
+        
+      
+        stud_id,
+    } = req.body;
+
+        
+
+       
+    if (!title || !study_program || !faculty || !prof_id || !stud_name || !stud_email || !description) {
+        return res.status(400).json({ error: 'Toate câmpurile obligatorii trebuie completate.' });
+    }
+    
+
+
+    const sql = `
+        INSERT INTO Propouses (
+            title, study_program, faculty, prof_id, prof_name, 
+            stud_name, stud_email, description, motivation, 
+            stud_id
+        ) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?,?,?)
+    `;
+
+    
+    const values = [
+        title,
+        study_program,
+        faculty,
+        prof_id,
+        prof_name,
+        stud_name,
+        stud_email,
+        description,
+        motivation || null,
+        stud_id
+    ];
+
+    
+    db.query(sql, values, (err, result) => {
+        if (err) {
+            console.error('Eroare la interogarea bazei de date:', err);
+            return res.status(500).json({ error: 'Eroare la salvarea datelor în baza de date.' });
+        }
+
+        res.status(201).json({ message: 'Propunerea a fost adăugată cu succes.', propouseId: result.insertId });
+    });
+});
+
+
+
 
 
 app.get('/thesisinfo', (req, res) => {
@@ -324,7 +385,7 @@ app.post('/prof', (req, res) => {
 
 
 app.get("/prof", (req, res) => {
-    const query = "SELECT * FROM theses WHERE limita > 0";
+    const query = "SELECT * FROM theses WHERE limita > 0 and state <> 'propouse'";
     db.query(query, (err, results) => {
         if (err) {
             console.error("Eroare la obținerea lucrărilor:", err);
@@ -407,6 +468,67 @@ app.delete('/accept/:id', (req, res) => {
     });
 });
 
+
+
+app.patch('/proposalAcceptConfirm/:id', (req, res) => {
+    const { id } = req.params;
+    const { state } = req.body;
+
+    if (!state || (state !== 'accepted' && state !== 'rejected' && state !== 'confirmed')) {
+        return res.status(400).json({ error: 'Invalid state value. Only "accepted" or "rejected", confirmed allowed.' });
+    }
+
+    const sql = `
+        UPDATE Propouses 
+        SET state = ? 
+        WHERE id = ?
+    `;
+
+    db.query(sql, [state, id], (err, result) => {
+        if (err) {
+            console.error('Error updating state in the database:', err);
+            return res.status(500).json({ error: 'Database error during state update.' });
+        }
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: 'Proposal not found.' });
+        }
+
+        res.status(200).json({ message: `Proposal state updated to "${state}".` });
+    });
+});
+
+
+app.patch('/proposaReject/:id', (req, res) => {
+    const { id } = req.params;
+    const { state } = req.body;
+
+    if (!state || (state !== 'accepted' && state !== 'rejected')) {
+        return res.status(400).json({ error: 'Invalid state value. Only "accepted" or "rejected" allowed.' });
+    }
+
+    const sql = `
+        UPDATE Propouses 
+        SET state = ? 
+        WHERE id = ?
+    `;
+
+    db.query(sql, [state, id], (err, result) => {
+        if (err) {
+            console.error('Error updating state in the database:', err);
+            return res.status(500).json({ error: 'Database error during state update.' });
+        }
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: 'Proposal not found.' });
+        }
+
+        res.status(200).json({ message: `Proposal state updated to "${state}".` });
+    });
+});
+
+
+
 app.post('/acceptedApplications', (req, res) => {
     const acceptedApplication = req.body;
 
@@ -422,7 +544,8 @@ app.post('/acceptedApplications', (req, res) => {
         stud_email,
         stud_name,
         stud_program,
-        date
+        date,
+        origin
     } = acceptedApplication;
    
    
@@ -431,8 +554,8 @@ app.post('/acceptedApplications', (req, res) => {
     }
 
    
-    const sql = `INSERT INTO AcceptedApplication (id_thesis, faculty, title, id_prof, prof_name, prof_email, stud_id, stud_email, stud_name, stud_program, data) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-    const values = [id_thesis, faculty, title, id_prof, prof_name, prof_email, stud_id, stud_email, stud_name, stud_program, date];
+    const sql = `INSERT INTO AcceptedApplication (id_thesis, faculty, title, id_prof, prof_name, prof_email, stud_id, stud_email, stud_name, stud_program, data,origin) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)`;
+    const values = [id_thesis, faculty, title, id_prof, prof_name, prof_email, stud_id, stud_email, stud_name, stud_program, date,origin];
 
     db.query(sql, values, (error, results) => {
         if (error) {
@@ -533,13 +656,29 @@ app.get('/confirmedThesis', (req, res) => {
 
 
 
+app.get('/propoused/:name', async (req, res) => { 
+    const profname = req.params.name;; 
+   
+    const query = "SELECT * FROM Propouses WHERE prof_name = ? and state <> 'accepted'";  
+
+    db.query(query, [profname], (err, results) => { 
+        if (err) {
+            console.error("Error fetching applications:", err);
+            return res.status(500).json({ error: "Error fetching applications." });
+        }
+        res.json(results); 
+    });
+});
+
+
+
 
 //-----------------------------------------------------------------Confirmation from responsed_card-----------
 
 app.post('/confirmation', (req, res) => {
     const { id_thesis, id_prof, id_stud, date } = req.body;
 
-   // console.log(id_prof, id_stud, id_thesis);
+console.log(id_prof, id_stud, id_thesis);    
 
     
     const checkLimitQuery = `SELECT limita FROM theses WHERE id = ?`;
@@ -590,6 +729,63 @@ app.post('/confirmation', (req, res) => {
         }
     });
 });
+
+
+
+app.post('/confirmationPropouse', (req, res) => {
+    const { id_thesis, id_prof, id_stud, date, origin } = req.body;
+
+    console.log(req.body);
+
+    if (!id_thesis || !id_prof || !id_stud || !date || !origin) {
+        return res.status(400).json({ error: 'All fields are required: id_thesis, id_prof, id_stud, date, origin.' });
+    }
+
+    
+    const insertSql = `
+        INSERT INTO confirmed (id_thesis, id_prof, id_stud, date, origin)
+        VALUES (?, ?, ?, ?, ?)
+    `;
+
+    db.query(insertSql, [id_thesis, id_prof, id_stud, date, origin], (err, result) => {
+        if (err) {
+            console.error('Error inserting into confirmed table:', err);
+            if (err.code === 'ER_DUP_ENTRY') {
+                return res.status(400).json({ error: 'Duplicate entry: This record already exists in the confirmed table.' });
+            }
+            return res.status(500).json({ error: 'Database error during insertion.' });
+        }
+
+        console.log('Insertion into confirmed table successful:', result);
+
+       
+        const updateSql = `
+            UPDATE Propouses 
+            SET state = 'confirmed' 
+            WHERE id = ?
+        `;
+
+        db.query(updateSql, [id_thesis], (updateErr, updateResult) => {
+            if (updateErr) {
+                console.error('Error updating Propouses table:', updateErr);
+                return res.status(500).json({ error: 'Database error during state update.' });
+            }
+
+            if (updateResult.affectedRows === 0) {
+                return res.status(404).json({ error: 'Proposal not found in Propouses table.' });
+            }
+
+            res.status(201).json({ 
+                message: 'Proposal confirmed and state updated successfully.', 
+                confirmedData: result, 
+                updatedRows: updateResult.affectedRows 
+            });
+        });
+    });
+});
+
+
+
 
 
 app.delete('/response/:id', (req, res) => {
@@ -689,7 +885,7 @@ app.get('/getProposals/:userId', async (req, res) => {
          return res.status(400).json({ error: "id_stud is required" });
     }
 
-    const sql = 'SELECT * FROM proposals WHERE user_id = ?';
+    const sql = 'SELECT * FROM Propouses WHERE stud_id = ?';
 
     db.query(sql, [id_stud], (error, results) => {
         if (error) {
@@ -702,16 +898,19 @@ app.get('/getProposals/:userId', async (req, res) => {
 
 
 
+
+
+
 app.delete('/withdrawApplication/:id', (req, res) => {
     const { id } = req.params; 
-
+  //  console.log(id)
    
     if (!id) {
         return res.status(400).json({ error: 'ID is required' });
     }
 
     
-    const query = 'DELETE FROM proposals WHERE id = ?';
+    const query = 'DELETE FROM Propouses WHERE id = ?';
 
     db.query(query, [id], (err, result) => {
         if (err) {

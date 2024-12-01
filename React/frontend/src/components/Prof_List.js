@@ -10,7 +10,7 @@ export default function ProfessorList({ faculty, onSelect }) {
 
     useEffect(() => {
         if (faculty) {
-            setLoading(true); // Indică începutul încărcării
+            setLoading(true); 
             const fetchProfessors = async () => {
                 try {
                     const response = await fetch(`http://localhost:8081/get-professors?faculty=${faculty}`);
@@ -19,9 +19,9 @@ export default function ProfessorList({ faculty, onSelect }) {
                     setProfessors(data);
                 } catch (error) {
                     console.error('Error fetching professors:', error);
-                    setProfessors([]); // Golește lista dacă eșuează
+                    setProfessors([]); 
                 } finally {
-                    setLoading(false); // Încărcarea s-a încheiat
+                    setLoading(false); 
                 }
             };
 
