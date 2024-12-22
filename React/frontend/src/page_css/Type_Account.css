@@ -1,29 +1,29 @@
 .body_choose {
     display: flex;
-    flex-direction: column; /* Aliniere verticală */
-    align-items: center; /* Centrează conținutul pe orizontală */
+    flex-direction: column;
+    align-items: center; 
     height: 100vh;
     padding: 0 5%;
 }
 
 .types {
     display: flex;
-    justify-content: center; /* Centrează boxurile pe orizontală */
-    width: 100%; /* Asigură-te că ocupă întreaga lățime */
-    gap: 7vw; /* Spațiu între boxuri */
+    justify-content: center; 
+    width: 100%; 
+    gap: 7vw;
 }
 
 .profesor, .student {
     width: 40%;
-    height: auto; /* Înlătură limita de înălțime */
+    height: auto;
     background-color: lightgray;
     display: flex;
-    flex-direction: column; /* Aliniere verticală */
-    justify-content: center; /* Centrează conținutul pe verticală */
-    align-items: center; /* Centrează conținutul pe orizontală */
+    flex-direction: column; 
+    justify-content: center; 
+    align-items: center; 
     border: 2px solid black;
     text-align: center;
-    padding: 2vw; /* Spațiu interior */
+    padding: 2vw;
 }
 .profesor:hover{
     color: blue;
@@ -43,7 +43,7 @@ img {
 p {
     font-size: 18px;
     font-weight: bold;
-    margin-bottom: 10px; /* Spațiu între text și GIF */
+    margin-bottom: 10px;
 }
 
 .profesor {

@@ -75,13 +75,22 @@ const {  logined} = useContext(AppContext);
        
     }, [logined]); 
 
+    function ShowFavorite()
+    {
+        navigate('/favorite')
+    }
+    function goMain()
+    {
+        navigate('/prof')
+    }
     return (
         <div className="upbar">
+           
             <IconButton className="logo_box" onClick={handleLogoClick}>
                 <img src={Logo} alt="Logo" className="logo" />
             </IconButton>
-
-            <IconButton aria-label={notificationsLabel(favoriteCount)} className="liked_icon">
+            <button onClick={goMain} >Main</button>
+            <IconButton aria-label={notificationsLabel(favoriteCount)} className="liked_icon" onClick={ShowFavorite}>
                 <Badge 
                     badgeContent={favoriteCount} 
                     color="secondary" 
@@ -101,12 +110,13 @@ const {  logined} = useContext(AppContext);
                     <FavoriteBorderIcon className='icon' />
                 </Badge>
             </IconButton>   
-
+            
             <div item>
                 <IconButton onClick={handleClickForm} className="personal_icon">
                     <AccountBoxIcon className='icon' />
                 </IconButton>
             </div>
+            
             {showForm && <PersonalForm />}
         </div>
     );

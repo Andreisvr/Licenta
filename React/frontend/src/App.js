@@ -13,6 +13,9 @@ import RegisterStud from './pages/Register_Form_Stud';
 import ThesisProposalForm from '/Users/Andrei_Sviridov/Desktop/React/frontend/src/pages/Cards/add_thesis_form.js';
 import RegFormStudent from './pages/student-role/register_student';
 import MyPropouseAdd from './pages/student-role/MyPropouseAdd';
+import Favorite from './components/Favorite_Page';
+import RestorePass from './pages/Restore_Password';
+
 
 function App() {
 
@@ -23,6 +26,7 @@ function App() {
                 <Route path="/" element={<Main />} />
                 <Route path="/reg_stud" element={<RegFormStudent />} />
                 <Route path="/login" element={<LogIn />} />
+                <Route path="/restore_pass" element={<RestorePass />} />
                 <Route path="/reg" element={<Register />} />
                 <Route path="/type" element={<Type_account />} />
                 <Route path="/reg_form" element={<RegFormProf />} />
@@ -32,6 +36,7 @@ function App() {
                 <Route path="/prof" element={<Cabinet/>} />
                 <Route path="/add_form" element={<ThesisProposalForm/>} />
                 <Route path="/MyPropouseAdd" element={<MyPropouseAdd/>} />
+                <Route path="/favorite" element={<Favorite/>} />
             </Routes>
             
         </Router>

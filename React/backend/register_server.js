@@ -656,6 +656,7 @@ app.get('/confirmedThesis', (req, res) => {
 
 
 
+
 app.get('/propoused/:name', async (req, res) => { 
     const profname = req.params.name;; 
    
@@ -1014,4 +1015,163 @@ app.get('/count', (req, res) => {
         const favoriteCount = results[0].count;
         return res.json({ count: favoriteCount });
     });
+});
+
+
+//-==------------------------------------------------MyConfiremd_thesis----------------------------------------
+//-==------------------------------------------------MyConfiremd_thesis----------------------------------------
+
+app.get('/ConfirmInformation/:id_thesis', async (req, res) => {
+    const id_thesis = req.params.id_thesis; 
+    const origin = req.query.origin; 
+
+   
+    if (!id_thesis) {
+         return res.status(400).json({ error: "id_thesis is required" });
+    }   
+    if(origin !=='propouse'){
+      
+        const sql = 'SELECT * FROM theses WHERE id = ?';
+
+    db.query(sql, [id_thesis], (error, results) => {
+        if (error) {
+            console.error("Error fetching applied theses:", error);
+            return res.status(500).json({ error: "Database error" });
+        }
+        res.json(results);
+    });
+
+    }else if(origin ==='propouse') {
+       
+   const sql = 'SELECT * FROM Propouses WHERE id = ?';
+
+   db.query(sql, [id_thesis], (error, results) => {
+        if (error) {
+            console.error("Error fetching applied theses:", error);
+            return res.status(500).json({ error: "Database error" });
+        }
+        res.json(results);
+    });
+    }
+
+});
+
+
+//-==------------------------------------------------Favorite---------------------------------------------------
+//-==------------------------------------------------Favorite--------------------------------------------------
+
+
+app.get("/Favorites/:id_user", (req, res) => {
+    const { id_user } = req.params;
+    const query = "SELECT id_thesis FROM favorite WHERE id_user = ?";
+
+    db.query(query, [id_user], (err, results) => {
+        if (err) {
+            console.error("Error fetching favorites:", err.message);
+            return res.status(500).json({ error: "Database error." });
+        }
+       
+        res.json(results);
+    });
+});
+
+app.get("/ThesisDetails/:id_thesis", (req, res) => {
+    const { id_thesis } = req.params;
+    const query = `
+        SELECT  * FROM theses WHERE id = ?`;
+
+    db.query(query, [id_thesis], (err, results) => {
+        if (err) {
+            console.error("Error fetching thesis details:", err.message);
+            return res.status(500).json({ error: "Database error." });
+        }
+        if (results.length === 0) {
+            return res.status(404).json({ error: "Thesis not found." });
+        }
+      
+        res.json(results[0]);
+    });
+});
+
+
+
+
+//-----Restore Password----------------------------------------------------------------------------------
+
+
+app.get('/check-email/:email', async (req, res) => {
+    const email = req.params.email;
+    console.log('Received email:', email);
+
+    const queryProf = 'SELECT * FROM profesorii_neverificati WHERE email = ?';
+    const queryStud = 'SELECT * FROM studentii WHERE email = ?';
+
+    db.query(queryProf, [email], (err, profResults) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ message: 'Database error' });
+        }
+
+        if (profResults.length > 0) {
+            return res.status(200).json({ message: 'Is found as prof' });
+        } else {
+            db.query(queryStud, [email], (err, studResults) => {
+                if (err) {
+                    console.error(err);
+                    return res.status(500).json({ message: 'Database error' });
+                }
+
+                if (studResults.length > 0) {
+                    return res.status(200).json({ message: 'Is found as stud' });
+                } else {
+                    return res.status(404).json({ message: 'Email not found' });
+                }
+            });
+        }
+    });
+});
+
+
+
+app.patch('/update-password', async (req, res) => {
+    const { email, password } = req.body;
+
+    console.log('din update ', email, password);
+
+    if (!email || !password) {
+        return res.status(400).json({ success: false, message: 'Email and password are required' });
+    }
+
+    try {
+        // Înlocuirea parolei pentru profesorii_neverificati
+        const resultNeverificati = await db.query(
+            'UPDATE profesorii_neverificati SET password = ? WHERE email = ?',
+            [password, email]
+        );
+
+        //console.log(resultNeverificati);
+
+        // Verificăm dacă cel puțin o linie a fost afectată
+        if (resultNeverificati.affectedRows > 0) {
+            return res.status(200).json({ success: true, message: 'Password updated in profesorii_neverificati' });
+        }
+
+        // Înlocuirea parolei pentru studentii
+        const resultStudenti = await db.query(
+            'UPDATE studentii SET pass = ? WHERE email = ?',
+            [password, email]
+        );
+
+       
+
+        // Verificăm dacă cel puțin o linie a fost afectată
+        if (resultStudenti.affectedRows > 0) {
+            return res.status(200).json({ success: true, message: 'Password updated in studentii' });
+        }
+
+        res.status(404).json({ success: false, message: 'Email not found in any table' });
+    } catch (error) {
+        console.error('Error updating password:', error);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
 });

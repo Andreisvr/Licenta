@@ -44,7 +44,7 @@ export default function Cabinet() {
     const [selectedFaculty, setSelectedFaculty] = useState("");
     const [selectedProgram, setSelectedProgram] = useState("");
 
-    const [formData, setFormData] = useState('');
+
     const [id,setId] = useState('');
 
 
@@ -567,6 +567,7 @@ export default function Cabinet() {
          id_thesis={aply.id_thesis}
          date={aply.date}
          id_stud={aply.id_stud}
+         origin={aply.origin}
        
       />
     ))

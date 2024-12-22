@@ -1,22 +1,22 @@
-/* Stiluri pentru footer */
+
 .footer {
     position: fixed;
-    bottom: -100px; /* Ascunde footer-ul în afara ecranului */
+    bottom: -100px; 
     left: 0;
     width: 100%;
     background-color: #333;
     color: white;
     text-align: center;
     padding: 1rem;
-    transition: bottom 0.3s ease; /* Animație de tranziție pentru apariție */
+    transition: bottom 0.3s ease;
 }
 
-/* Footer-ul devine vizibil când ajungem la partea de jos */
+
 body:has(footer.footer-visible) .footer {
-    bottom: 0; /* Aduce footer-ul în vizibilitate */
+    bottom: 0; 
 }
 
-/* Pentru a avea conținut suficient pentru scroll */
+
 .content {
-    min-height: 150vh; /* Setează o înălțime minimă pentru a avea scroll */
+    min-height: 150vh; 
 }

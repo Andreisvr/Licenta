@@ -73,3 +73,20 @@
 .link:hover {
     text-decoration: underline; 
 }
+
+
+
+.main_btn {
+    padding: 10px 15px;
+    font-size: 1rem;
+    color: #fff;
+    background-color: #007BFF;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.main_btn:hover {
+    background-color: #0056b3;
+}

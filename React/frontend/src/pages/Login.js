@@ -67,7 +67,7 @@ function LogIn() {
     //     return;
     // }
 
-    console.log('em pass', email, password);
+    //console.log('em pass', email, password);
     try {
         const response = await axios.post('http://localhost:8081/login', {
             email,
@@ -115,7 +115,7 @@ function LogIn() {
           <label className="errorLabel">{passwordError}</label>
         </div>
         <div className="links_container">
-          <Link className="link_forget" to="/">Forget the password</Link>
+          <Link className="link_forget" to="/restore_pass">Forget the password</Link>
           <Link className="link_register" to="/type">Register</Link>
         </div>
         <div className='google_btn'>

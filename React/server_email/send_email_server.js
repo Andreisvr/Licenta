@@ -14,7 +14,7 @@ const transporter = nodemailer.createTransport({
     service: 'Gmail', 
     auth: {
         user: 'andrei.sviridov00@e-uvt.ro', 
-        pass: 'qeph olck zhzf hpjg',
+        pass: 'gdqs aqps xjst lfzn',
     },
 });
  
@@ -69,6 +69,9 @@ app.post('/reg', (req, res) => {
         res.status(200).json({ message: 'Codul a fost trimis cu succes', info });
     });
 });
+
+
+
 
 
 app.listen(PORT, () => {

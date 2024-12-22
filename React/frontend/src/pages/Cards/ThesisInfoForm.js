@@ -9,7 +9,7 @@ import { Link } from "react-router-dom";
 
 export default function ThesisInfo() {
     const [thesisData, setThesisData] = useState(null);
-    const { email, type } = useContext(AppContext);
+    const {  type } = useContext(AppContext);
     const [clicked, setClicked] = useState(false);
     const [userInfo, setUserInfo] = useState(null);
     const [applied, setApplied] = useState(false);
