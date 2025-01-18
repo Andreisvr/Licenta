@@ -27,10 +27,10 @@ function RegFormProf() {
       return;
     }
 
-    if (!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)) {
-      setEmailError('Please enter a valid email');
-      return;
-    }
+    // if (!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)) {
+    //   setEmailError('Please enter a valid email');
+    //   return;
+    // }
 
     
     if ('' === password) {
@@ -38,16 +38,16 @@ function RegFormProf() {
       return;
     }
 
-    if (password.length < 8) {
-      setPasswordError('The password must be 8 characters or longer');
-      return;
-    }
+    // if (password.length < 8) {
+    //   setPasswordError('The password must be 8 characters or longer');
+    //   return;
+    // }
 
     
-    if (!/[A-Z]/.test(password) && !/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
-      setPasswordError('The password must contain at least one uppercase letter or one special character');
-      return;
-    }
+    // if (!/[A-Z]/.test(password) && !/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+    //   setPasswordError('The password must contain at least one uppercase letter or one special character');
+    //   return;
+    // }
 
     
     if (password !== confirmPassword) {
@@ -78,7 +78,7 @@ function RegFormProf() {
   return (
     <div className='body_reg_prof'>
         <form className='form_reg_prof'>
-          <h1 className='title'>Information</h1>
+          <h1 className='title'>Infosdrmation</h1>
           <br />
           <FacultyList/>
     

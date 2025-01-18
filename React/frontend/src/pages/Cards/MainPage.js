@@ -15,6 +15,7 @@ import MyThesis from "./my_thesis_card.js";
 import FacultyList from '/Users/Andrei_Sviridov/Desktop/React/frontend/src/components/Faculty_List.js';
 import MyPropouses from "../student-role/MyPropouse.js";
 import Propouses from "./propuses_card_prof.js";
+import MenuIcon from "@mui/icons-material/Menu";
 
 
 export default function Cabinet() {
@@ -46,6 +47,11 @@ export default function Cabinet() {
 
 
     const [id,setId] = useState('');
+    const [showLeftContainer, setShowLeftContainer] = useState(false); 
+
+    const toggleLeftContainer = () => {
+      setShowLeftContainer(!showLeftContainer);
+    };
 
 
     const handleClickThesis = (thesis) => {
@@ -63,8 +69,11 @@ export default function Cabinet() {
         .then((response) => response.json())
         .then((data) => {
             setTheses(data);
+
+           
             setAllTheses(data);
             setViewType("ALL");  
+
         })
         .catch((error) => console.error("Error fetching theses:", error));
 
@@ -382,7 +391,10 @@ export default function Cabinet() {
 
     return (
         <div className="body_prof">
-             <div className="left_container">
+         <div className="menu_icon">
+        <MenuIcon onClick={toggleLeftContainer} style={{ cursor: "pointer" }} />
+        </div>
+         <div className={`left_container ${showLeftContainer ? "visible" : "hidden"}`}>
         <h3 className="section_title">Search Thesis</h3>
        
         <label className="search_label">Title</label>
@@ -425,7 +437,7 @@ export default function Cabinet() {
         <button className="search_button" onClick={handleReset}>Rest</button>
 
     </div>
-            <div className="right_container">
+        <div className={`right_container ${showLeftContainer ? "default" : "full-width"}`}>
                 <div className="top_container">
                     <div className="button-group">
                         {type === "professor" ? (

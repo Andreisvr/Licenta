@@ -89,7 +89,7 @@ const {  logined} = useContext(AppContext);
             <IconButton className="logo_box" onClick={handleLogoClick}>
                 <img src={Logo} alt="Logo" className="logo" />
             </IconButton>
-            <button onClick={goMain} >Main</button>
+            {/* <button onClick={goMain} >Main</button> */}
             <IconButton aria-label={notificationsLabel(favoriteCount)} className="liked_icon" onClick={ShowFavorite}>
                 <Badge 
                     badgeContent={favoriteCount} 

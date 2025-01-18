@@ -15,13 +15,13 @@ import RegFormStudent from './pages/student-role/register_student';
 import MyPropouseAdd from './pages/student-role/MyPropouseAdd';
 import Favorite from './components/Favorite_Page';
 import RestorePass from './pages/Restore_Password';
-
+import MainPage from './pages/Test';
 
 function App() {
 
     return (
         <Router>
-            <UpBar />
+            {/* <UpBar /> */}
             <Routes>
                 <Route path="/" element={<Main />} />
                 <Route path="/reg_stud" element={<RegFormStudent />} />
@@ -37,6 +37,7 @@ function App() {
                 <Route path="/add_form" element={<ThesisProposalForm/>} />
                 <Route path="/MyPropouseAdd" element={<MyPropouseAdd/>} />
                 <Route path="/favorite" element={<Favorite/>} />
+                <Route path="/test" element={<MainPage/>} />
             </Routes>
             
         </Router>

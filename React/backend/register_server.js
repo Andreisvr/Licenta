@@ -1,6 +1,7 @@
 const express = require("express");
 const mysql = require("mysql");
 const cors = require("cors");
+const bcrypt = require("bcrypt");
 
 const app = express();
 app.use(cors({
@@ -22,7 +23,6 @@ app.listen(8081, () => {
 });
 
 
-
 db.connect(err => {
     if (err) {
         console.error("Database connection failed: ", err.stack);
@@ -32,28 +32,42 @@ db.connect(err => {
 });
 
 
+
 app.post('/reg', async (req, res) => {
-    const { name, email,  password, gmail_password, faculty, cv_link } = req.body;
-   
-   
+    const { name, email, password, gmail_password, faculty, cv_link } = req.body;
+ 
+    let hashedPassword = '';
+
+    if (password) {
+        try {
+            hashedPassword = await bcrypt.hash(password, 10);
+        } catch (error) {
+            console.error('Eroare la criptarea parolei:', error);
+            return res.status(500).json({ message: 'Eroare la criptarea parolei.' });
+        }
+    }
+
     try {
+       
         await db.query('INSERT INTO profesorii_neverificati SET ?', {
             faculty: faculty,
             email: email,
             name: name,
-            password: password,
+            password: hashedPassword || password, 
             gmail_password: gmail_password,
             entered: 0,
             cv_link: cv_link,
-            prof:1 
+            prof: 1
         });
 
+        
         res.json({
             message: 'Profesorul a fost înregistrat cu succes!'
         });
     } catch (error) {
-        console.error('Error la înregistrare:', error);
+        console.error('Eroare la înregistrare:', error);
 
+        
         if (error.code === 'ER_DUP_ENTRY') {
             res.status(409).json({ message: 'Email-ul este deja înregistrat.' });
         } else {
@@ -67,7 +81,9 @@ app.post('/reg', async (req, res) => {
 app.post('/reg_stud', async (req, res) => {
 
     const { name, email, pass, gmail_pass, faculty, program } = req.body;
-    //console.log('numeee ',name);
+    
+    const hashedPassword = await bcrypt.hash(pass, 10); 
+
     try {
         
         await db.query('INSERT INTO studentii SET ?', {
@@ -75,7 +91,7 @@ app.post('/reg_stud', async (req, res) => {
             ProgramStudy: program,
             name: name,
             email: email,
-            pass: pass,
+            pass: hashedPassword,
             gmail_pass: gmail_pass,
             prof: 0 
         });
@@ -94,11 +110,10 @@ app.post('/reg_stud', async (req, res) => {
 
 
 app.post('/login', (req, res) => {
-    const { email, password,pass } = req.body;
-    
-   
+    const { email, password, pass } = req.body;
+
     const sqlStudent = "SELECT * FROM studentii WHERE email = ?";
-    db.query(sqlStudent, [email], (err, studentResults) => {
+    db.query(sqlStudent, [email], async (err, studentResults) => {
         if (err) {
             console.error("Database Error: ", err);
             return res.status(500).json({ error: "Database Error" });
@@ -106,41 +121,50 @@ app.post('/login', (req, res) => {
 
         if (studentResults.length > 0) {
             const user = studentResults[0];
-           
-           
+
             if (pass) {
                 if (email === user.email) {
                     console.log('Student is logged with Gmail');
-                    return res.json({ success: true, user: { 
-                        id: user.id,
-                        name: user.name,
-                        email: user.email,
-                        faculty: user.Faculty,
-                        program: user.ProgramStudy,
-                        prof: user.prof 
-                    }});
+                    return res.json({ 
+                        success: true, 
+                        user: { 
+                            id: user.id,
+                            name: user.name,
+                            email: user.email,
+                            faculty: user.Faculty,
+                            program: user.ProgramStudy,
+                            prof: user.prof 
+                        }
+                    });
                 } else {
                     return res.status(401).json({ success: false, message: "Invalid email for Gmail login" });
                 }
-            } 
-            
-            else if (password === user.pass) {
-                console.log('Student is logged with password');
-                return res.json({ success: true, user: { 
-                    id: user.id,
-                    name: user.name,
-                    email: user.email,
-                    faculty: user.Faculty,
-                    program: user.ProgramStudy,
-                    prof: user.prof 
-                }});
+            }
+             if (!pass) {
+                const isMatch = await bcrypt.compare(password, user.pass);
+                if (isMatch) {
+                    console.log('Student is logged with password');
+                    return res.json({ 
+                        success: true, 
+                        user: { 
+                            id: user.id,
+                            name: user.name,
+                            email: user.email,
+                            faculty: user.Faculty,
+                            program: user.ProgramStudy,
+                            prof: user.prof 
+                        }
+                    });
+                } else {
+                    return res.status(401).json({ success: false, message: "Invalid password" });
+                }
             } else {
-                return res.status(401).json({ success: false, message: "Invalid password" });
+                return res.status(400).json({ success: false, message: "Password is required" });
             }
         }
 
         const sqlProfessor = "SELECT * FROM profesorii_neverificati WHERE email = ?";
-        db.query(sqlProfessor, [email], (err, professorResults) => {
+        db.query(sqlProfessor, [email], async (err, professorResults) => {
             if (err) {
                 console.error("Database Error: ", err);
                 return res.status(500).json({ error: "Database Error" });
@@ -148,36 +172,46 @@ app.post('/login', (req, res) => {
 
             if (professorResults.length > 0) {
                 const user = professorResults[0];
-               
-                
+
                 if (pass) {
                     if (email === user.email) {
                         console.log('Professor is logged with Gmail');
-                        return res.json({ success: true, user: { 
-                            id: user.id,
-                            name: user.name,
-                            email: user.email,
-                            faculty: user.Faculty,
-                            program: user.ProgramStudy,
-                            prof: user.prof 
-                        }});
+                        return res.json({ 
+                            success: true, 
+                            user: { 
+                                id: user.id,
+                                name: user.name,
+                                email: user.email,
+                                faculty: user.Faculty,
+                                program: user.ProgramStudy,
+                                prof: user.prof 
+                            }
+                        });
                     } else {
                         return res.status(401).json({ success: false, message: "Invalid email for Gmail login" });
                     }
-                } 
-               
-                else if (password === user.password) {
-                    console.log('Professor is logged with password');
-                    return res.json({ success: true, user: { 
-                        id: user.id,
-                        name: user.name,
-                        email: user.email,
-                        faculty: user.Faculty,
-                        program: user.ProgramStudy,
-                        prof: user.prof 
-                    }});
+                }
+
+                if (!pass) {
+                    const isMatch = await bcrypt.compare(password, user.pass);
+                    if (isMatch) {
+                        console.log('Professor is logged with password');
+                        return res.json({ 
+                            success: true, 
+                            user: { 
+                                id: user.id,
+                                name: user.name,
+                                email: user.email,
+                                faculty: user.Faculty,
+                                program: user.ProgramStudy,
+                                prof: user.prof 
+                            }
+                        });
+                    } else {
+                        return res.status(401).json({ success: false, message: "Invalid password" });
+                    }
                 } else {
-                    return res.status(401).json({ success: false, message: "Invalid password" });
+                    return res.status(400).json({ success: false, message: "Password is required" });
                 }
             }
 
@@ -185,6 +219,7 @@ app.post('/login', (req, res) => {
         });
     });
 });
+
 
 
 app.post('/add_form', (req, res) => {
@@ -1098,14 +1133,13 @@ app.get("/ThesisDetails/:id_thesis", (req, res) => {
 
 //-----Restore Password----------------------------------------------------------------------------------
 
-
 app.get('/check-email/:email', async (req, res) => {
     const email = req.params.email;
-    console.log('Received email:', email);
 
     const queryProf = 'SELECT * FROM profesorii_neverificati WHERE email = ?';
     const queryStud = 'SELECT * FROM studentii WHERE email = ?';
 
+    
     db.query(queryProf, [email], (err, profResults) => {
         if (err) {
             console.error(err);
@@ -1113,8 +1147,19 @@ app.get('/check-email/:email', async (req, res) => {
         }
 
         if (profResults.length > 0) {
-            return res.status(200).json({ message: 'Is found as prof' });
+            const prof = profResults[0];
+            console.log('primul',prof,prof.gmail_password);
+            if (prof.gmail_password && prof.gmail_password.trim().length > 0) {
+                return res.status(403).json({
+                    message: 'Cannot change password. User is logged in with Gmail.',
+                });
+            }
+            return res.status(200).json({
+                message: 'Is found as prof',
+                table: 'profesorii_neverificati',
+            });
         } else {
+        
             db.query(queryStud, [email], (err, studResults) => {
                 if (err) {
                     console.error(err);
@@ -1122,7 +1167,19 @@ app.get('/check-email/:email', async (req, res) => {
                 }
 
                 if (studResults.length > 0) {
-                    return res.status(200).json({ message: 'Is found as stud' });
+                    const stud = studResults[0];
+
+                console.log('primul',stud,stud.gmail_pass);
+                 
+                    if (stud.gmail_pass && stud.gmail_password.trim().length > 0) {
+                        return res.status(403).json({
+                            message: 'Cannot change password. User is logged in with Gmail.',
+                        });
+                    }
+                    return res.status(200).json({
+                        message: 'Is found as stud',
+                        table: 'studentii',
+                    });
                 } else {
                     return res.status(404).json({ message: 'Email not found' });
                 }
@@ -1134,44 +1191,37 @@ app.get('/check-email/:email', async (req, res) => {
 
 
 app.patch('/update-password', async (req, res) => {
-    const { email, password } = req.body;
+    const { email, password, table } = req.body;
 
-    console.log('din update ', email, password);
-
-    if (!email || !password) {
-        return res.status(400).json({ success: false, message: 'Email and password are required' });
+    if (!email || !password || !table) {
+        return res.status(400).json({ success: false, message: 'Missing email, password, or table' });
     }
 
     try {
-        // Înlocuirea parolei pentru profesorii_neverificati
-        const resultNeverificati = await db.query(
-            'UPDATE profesorii_neverificati SET password = ? WHERE email = ?',
-            [password, email]
-        );
+    
+        const hashedPassword = await bcrypt.hash(password, 10); 
 
-        //console.log(resultNeverificati);
+        
+        const updateQuery =
+            table === 'studentii'
+                ? 'UPDATE studentii SET pass = ? WHERE email = ?'
+                : 'UPDATE profesorii_neverificati SET password = ? WHERE email = ?';
 
-        // Verificăm dacă cel puțin o linie a fost afectată
-        if (resultNeverificati.affectedRows > 0) {
-            return res.status(200).json({ success: true, message: 'Password updated in profesorii_neverificati' });
-        }
+        
+        db.query(updateQuery, [hashedPassword, email], (err, result) => {
+            if (err) {
+                console.error("Database error: ", err);
+                return res.status(500).json({ success: false, message: 'Database error' });
+            }
 
-        // Înlocuirea parolei pentru studentii
-        const resultStudenti = await db.query(
-            'UPDATE studentii SET pass = ? WHERE email = ?',
-            [password, email]
-        );
-
-       
-
-        // Verificăm dacă cel puțin o linie a fost afectată
-        if (resultStudenti.affectedRows > 0) {
-            return res.status(200).json({ success: true, message: 'Password updated in studentii' });
-        }
-
-        res.status(404).json({ success: false, message: 'Email not found in any table' });
+            if (result.affectedRows > 0) {
+                return res.status(200).json({ success: true, message: 'Password updated successfully' });
+            } else {
+                return res.status(404).json({ success: false, message: 'User not found' });
+            }
+        });
     } catch (error) {
-        console.error('Error updating password:', error);
-        res.status(500).json({ success: false, message: 'Internal server error' });
+        console.error("Error hashing password: ", error);
+        return res.status(500).json({ success: false, message: 'Internal server error' });
     }
 });

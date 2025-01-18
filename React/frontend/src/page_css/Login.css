@@ -6,12 +6,15 @@ html,body{
 .body_login {
   height: 100vh;
   width: 100vw;
-  background-color: rgb(206, 206, 206);
+  background-image: url('/Users/Andrei_Sviridov/Desktop/React/frontend/src/images/wallpaperflare.com_wallpaper.jpg'); 
+  background-size: cover;
+  background-position: center; 
   display: flex;
   flex-direction: column;
-  justify-content: center; /* Centrează vertical */
-  align-items: center; /* Centrează orizontal */
+  justify-content: center;
+  align-items: center;
   overflow-y: auto;
+  background-color: rgb(206, 206, 206); 
 }
 
   .form_login {
@@ -19,28 +22,28 @@ html,body{
     flex-direction: column;
     background-color: white;
     height: 60vh;
-    width: 40vw; /* Lățime proporțională pe ecrane mai mari */
-    padding: 20px; /* Padding pentru spațiu interior */
+    width: 40vw; 
+    padding: 20px; 
     border-radius: 10px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Umbra formularului */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); 
   }
   
   .title {
     font-size: 36px;
     font-weight: bold;
     text-align: center;
-    margin-bottom: 20px; /* Spațiu sub titlu */
+    margin-bottom: 20px; 
   }
   
   .field_container {
     display: flex;
     flex-direction: column;
-    width: 100%; /* Lățime completă a containerului */
+    width: 100%; 
     margin-bottom: 20px;
   }
   
   .inputBox {
-    width: 95%; /* Ocupă toată lățimea containerului */
+    width: 95%; 
     height: 40px;
     padding: 10px;
     font-size: 16px;
@@ -74,7 +77,7 @@ html,body{
   .links_container {
     display: flex;
     justify-content: space-between;
-    width: 100%; /* Linkurile ocupă toată lățimea containerului */
+    width: 100%;
    
   }
   
@@ -90,12 +93,12 @@ html,body{
   }
   
   .link_register {
-    margin-left: auto; /* Plasează acest link în partea dreaptă */
+    margin-left: auto; 
   }
   .google_btn{
     display: flex;
-  justify-content: center; /* Centrează pe orizontală */
-  align-items: center;     /* Centrează pe verticală */
+  justify-content: center; 
+  align-items: center;    
   height: 100vh; 
 
   }

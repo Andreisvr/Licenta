@@ -147,25 +147,25 @@ function RegFormStudent() {
       return;
     }
 
-    if (!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)) {
-      setEmailError('Please enter a valid email');
-      return;
-    }
+    // if (!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)) {
+    //   setEmailError('Please enter a valid email');
+    //   return;
+    // }
 
     if (!password) {
       setPasswordError('Please enter a password');
       return;
     }
 
-    if (password.length < 8) {
-      setPasswordError('The password must be 8 characters or longer');
-      return;
-    }
+    // if (password.length < 8) {
+    //   setPasswordError('The password must be 8 characters or longer');
+    //   return;
+    // }
 
-    if (!/[A-Z]/.test(password) && !/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
-      setPasswordError('The password must contain at least one uppercase letter or one special character');
-      return;
-    }
+    // if (!/[A-Z]/.test(password) && !/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+    //   setPasswordError('The password must contain at least one uppercase letter or one special character');
+    //   return;
+    // }
 
     if (password !== confirmPassword) {
       setConfirmPasswordError('Passwords do not match');

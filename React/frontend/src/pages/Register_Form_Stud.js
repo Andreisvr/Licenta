@@ -64,18 +64,18 @@ function RegisterStud() {
         setEmailError('Please enter your email');
         return;
       }
-      if (!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)) {
-        setEmailError('Please enter a valid email');
-        return;
-      }
+      // if (!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)) {
+      //   setEmailError('Please enter a valid email');
+      //   return;
+      // }
       if (password === '') {
         setPasswordError('Please enter a password');
         return;
       }
-      if (password.length < 8) {
-        setPasswordError('The password must be 8 characters or longer');
-        return;
-      }
+      // if (password.length < 8) {
+      //   setPasswordError('The password must be 8 characters or longer');
+      //   return;
+      // }
       if (password !== confirmPassword) {
         setConfirmPasswordError('Passwords do not match');
         return;
@@ -118,7 +118,7 @@ function RegisterStud() {
             placeholder="Enter your email here"
             onChange={(ev) => setEmail(ev.target.value)}
             className={'inputBox'}
-            disabled={!!gmailData} // Disable if Gmail login is used
+            disabled={!!gmailData} 
           />
           <label className="errorLabel">{emailError}</label>
         </div>

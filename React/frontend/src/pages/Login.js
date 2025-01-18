@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import '/Users/Andrei_Sviridov/Desktop/React/frontend/src/page_css/Login.css';
 import GoogleBtn from '../components/login_btn';
 import axios from 'axios';
+import '/Users/Andrei_Sviridov/Desktop/React/frontend/src/images/wallpaperflare.com_wallpaper.jpg'
 import { AppContext } from '../components/AppContext';
 
 function LogIn() {
@@ -45,7 +46,7 @@ function LogIn() {
     setEmailError('');
     setPasswordError('');
 
-    // Validare email
+    
     if (email === '') {
         setEmailError('Please enter your email');
         return;

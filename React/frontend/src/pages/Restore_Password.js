@@ -4,7 +4,7 @@ import axios from 'axios';
 import '/Users/Andrei_Sviridov/Desktop/React/frontend/src/page_css/Login.css';
 
 function RestorePass() {
-  const [step, setStep] = useState(1); // To manage different steps of the form
+  const [step, setStep] = useState(1);
   const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState('');
   const [verificationCode, setVerificationCode] = useState('');
@@ -12,6 +12,7 @@ function RestorePass() {
   const [newPassword, setNewPassword] = useState('');
   const [repeatPassword, setRepeatPassword] = useState('');
   const [passwordError, setPasswordError] = useState('');
+  const [foundTable, setFoundTable] = useState('');
   const navigate = useNavigate();
 
   const handleEmailSubmit = async () => {
@@ -28,26 +29,19 @@ function RestorePass() {
                 'Content-Type': 'application/json',
             },
         });
-    
-        
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-    
-        const data = await response.json();
-       
 
-      
+        const data = await response.json();
+
         if (response.status === 200) {
             console.log('Server response:', data);
 
-            
+            setFoundTable(data.table);
+            console.log('Table found:', data.table);
+
             const code = Math.floor(100000 + Math.random() * 900000);
             setGeneratedCode(code);
             console.log('Codul de verificare:', code);
-        
-
-            // Trimitere cod către server pentru email
+        // Trimitere cod către server pentru email
             // const sendCodeResponse = await fetch('http://localhost:5002/reg', {
             //     method: 'POST',
             //     headers: {
@@ -59,16 +53,25 @@ function RestorePass() {
             // if (!sendCodeResponse.ok) {
             //     throw new Error(`Error sending verification code: ${sendCodeResponse.status}`);
             // }
-    
+
+
             setStep(2);
+        } else if (response.status === 403) {
+            // Utilizator logat cu Gmail
+            setEmailError(data.message || 'Cannot change password for Gmail accounts.');
+        } else if (response.status === 404) {
+            // Email negăsit
+            setEmailError(data.message || 'Email not found');
         } else {
-            setEmailError('Email not found');
+            setEmailError('An unexpected error occurred. Please try again.');
         }
     } catch (error) {
         console.error('Error during email submission:', error);
         setEmailError('An error occurred. Please try again.');
     }
 };
+
+
 
 
   const handleCodeSubmit = () => {
@@ -89,16 +92,17 @@ function RestorePass() {
         setPasswordError('Passwords do not match');
         return;
     }
-    console.log('trimis la update ',email, newPassword);
+
+    console.log('Submitting password update for:', email, 'in table:', foundTable);
+
     try {
         const response = await fetch('http://localhost:8081/update-password', {
-            method: 'PATCH', 
+            method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ email, password: newPassword }),
+            body: JSON.stringify({ email, password: newPassword, table: foundTable }),
         });
-    
 
         const data = await response.json();
 
@@ -106,9 +110,8 @@ function RestorePass() {
             throw new Error(`HTTP error! Status: ${response.status}`);
         }
 
-        
         if (data.success) {
-            navigate('/login'); 
+            navigate('/login');
         } else {
             setPasswordError(data.message || 'Failed to update password');
         }
@@ -117,6 +120,7 @@ function RestorePass() {
         setPasswordError('An error occurred. Please try again.');
     }
 };
+
 
 
   return (

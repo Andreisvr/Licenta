@@ -1,13 +1,15 @@
 .body_prof {
     display: flex;
-    height: 100vh; 
+    height: 100vh;
     overflow: auto;
-    
+    transition: all 0.3s ease-in-out;
+    background-color:  rgb(235, 235, 235);
 }
 
 
 .left_container {
-   
+    transition: transform 0.3s ease-in-out;
+ 
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -20,6 +22,27 @@
     overflow: auto;
 }
 
+.left_container.hidden {
+    transform: translateX(-100%);
+   
+    
+    
+}
+
+  
+  .left_container.visible {
+    transform: translateX(0);
+  }
+  
+  .menu_icon {
+    position: fixed;
+    top: 8%;
+    left: 1%;
+    z-index: 20;
+
+  }
+
+  
 .section_title {
     margin-top: 20%;
     font-size: 1.3rem;
@@ -70,14 +93,25 @@
     background-color: #0056b3;
 }
 
+
 .right_container {
-    width: 80%;
     display: flex;
     flex-direction: column;
-    height: 100%; 
+    height: 100%;
+    transition: width 0.3s ease-in-out;
     flex: 1; 
-   
+    border: .4px solid black;
 }
+
+.right_container.full-width {
+    flex: 1;
+    
+}
+
+.right_container.default {
+    width: 82%; 
+}
+
 
 
 .bottom_container {
@@ -128,8 +162,9 @@
 }
 
 .button-group button {
-    margin-top: 2vh;
-    /* margin-left: .21vw; */
+    margin-top: 1vh;
+    
+    margin-left: 2%;
     background: none;
     height: 3vh;
     width: 10vw;
@@ -138,8 +173,9 @@
     color: #333;
     cursor: pointer;
     
-    padding: 15px 10px; 
+    padding-bottom: 3%;
     transition: color 0.3s ease;
+    
 }
 
 .button-group button:hover {
