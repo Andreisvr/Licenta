@@ -4,8 +4,10 @@
     left: 0;
     width: 100%;
     height: 6%;
-    /* background-color: rgb(48, 113, 183); */
-    background-color: transparent;
+    
+    background-image: url('/Users/Andrei_Sviridov/Desktop/React/frontend/src/images/up_bar_back.png'); 
+    background-size: cover;
+    background-position: center; 
     color: white;
     padding: 0;
     display: flex;
@@ -50,13 +52,31 @@
 
 
 .form_account {
+   min-width: 20vh;
     position: absolute; 
     top: 80%; 
+    font-size: 10px;
     right: 1%;
     background-color: rgb(243, 243, 243); 
     padding: 20px;
     border-radius: 5px; 
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.4); 
+    color:#333;
+}
+.log_btn{
+    margin-left: 10%;
+    margin-top: 3vh;
+    min-width: 80%;
+    padding: 5%;
+    
+    font-size: 1rem;
+    font-weight: bold;
+    background-color: #007BFF;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
 .enter_form {

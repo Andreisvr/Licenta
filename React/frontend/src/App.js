@@ -16,12 +16,13 @@ import MyPropouseAdd from './pages/student-role/MyPropouseAdd';
 import Favorite from './components/Favorite_Page';
 import RestorePass from './pages/Restore_Password';
 import MainPage from './pages/Test';
-
+import ThesisModify from './pages/Cards/My_thesis_info';
+import MyPropouse_Info from './pages/student-role/MyPropouse_Info';
 function App() {
 
     return (
         <Router>
-            {/* <UpBar /> */}
+            <UpBar />
             <Routes>
                 <Route path="/" element={<Main />} />
                 <Route path="/reg_stud" element={<RegFormStudent />} />
@@ -38,6 +39,9 @@ function App() {
                 <Route path="/MyPropouseAdd" element={<MyPropouseAdd/>} />
                 <Route path="/favorite" element={<Favorite/>} />
                 <Route path="/test" element={<MainPage/>} />
+                <Route path="/MyThesisInfo" element={<ThesisModify/>} />
+                <Route path="/MyPropouse_Info" element={<MyPropouse_Info/>} />
+
             </Routes>
             
         </Router>

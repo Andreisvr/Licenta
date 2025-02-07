@@ -34,8 +34,8 @@ function Register() {
       email: decodedToken.email,
       gmail: true,
       name: `${decodedToken.given_name} ${decodedToken.family_name}`,
-      prof: isProf ? 1 : 0, // Set 1 for professors and 0 for students
-      password: '', // No password required for Gmail login
+      prof: isProf ? 1 : 0,
+      password: '',
       verified: false,
       verify_nr: null,
     };
@@ -56,7 +56,7 @@ function Register() {
     setPasswordError('');
     setConfirmPasswordError('');
 
-    // Manual registration validations
+   
     if (!gmailData) {
       if (email === '') {
         setEmailError('Please enter your email');
@@ -83,9 +83,9 @@ function Register() {
     const values = {
       email,
       password,
-      name: name || email, // Fallback to email if no name is provided
+      name: name || email,
       gmail: false,
-      prof: isProf ? 1 : 0, // Set 1 for professors and 0 for students
+      prof: isProf ? 1 : 0,
       verified: false,
       verify_nr: null,
     };
@@ -99,7 +99,7 @@ function Register() {
       console.log("Eroarea la trimiterea datelor la backend:", error);
     }
 
-    // Clear input fields after registration
+
     setEmail('');
     setPassword('');
     setConfirmPassword('');

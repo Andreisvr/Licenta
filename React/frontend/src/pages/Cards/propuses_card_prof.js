@@ -1,5 +1,7 @@
 
 import React, { useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router";
+import { AppContext } from "../../components/AppContext";
 
 export default function Propouses({ 
  
@@ -17,10 +19,13 @@ export default function Propouses({
     state
  }) {
 
-
+  
     const [allAplies, setAllAplies] = useState([]);
     const [theses, setTheses] = useState([]); 
-   
+    const { handleThesisId } = useContext(AppContext); 
+
+   const navigate = useNavigate();
+
    if(state !='waiting')
    {
     return
@@ -127,6 +132,12 @@ export default function Propouses({
     const getShortDescription = (desc) => (desc ? `${desc.substring(0, 20)}${desc.length > 100 ? "..." : ""}` : "");
 
 
+    function PropouseInfo()
+    {
+        handleThesisId(id); 
+        navigate('/MyPropouse_Info');
+    }
+
 
     function formatDate(isoDateString) {
         const date = new Date(isoDateString);
@@ -138,12 +149,12 @@ export default function Propouses({
     }
    
     return (
-        <form className="applied_form">
+        <form className="applied_form" onClick={PropouseInfo}>
             <p className="text title">Title: {thesisName}</p>
     
     
             
-                    {/* <p className="text ">Prof Name: {professor_name}</p> */}
+                    
                     <p className="text">Student: {stud_name || "Loading..."}</p>
                     <p className="text">Student Email: {stud_email || "Loading..."}</p>
                     <p className="text">Description : {getShortDescription(description) || "Loading..."}</p>

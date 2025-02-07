@@ -94,6 +94,7 @@ function LogIn() {
 
   return (
     <div className='body_login'>
+     
       <form className='form_login'>
         <h1 className='title'>Login</h1>
         <div className={'field_container'}>

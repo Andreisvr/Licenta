@@ -90,7 +90,7 @@ export default function Applied({
             };
     
             
-            console.log(acceptedApplicationData)
+            // console.log(acceptedApplicationData)
         
             const acceptResponse = await fetch("http://localhost:8081/acceptedApplications", {
                 method: "POST",
@@ -132,7 +132,7 @@ export default function Applied({
                     <p className="text ">Prof Name: {professor_name}</p>
                     <p className="text">Student: {stud_name || "Loading..."}</p>
                     <p className="text">Student Email: {stud_email || "Loading..."}</p>
-                    
+                    {/* <p className="text ">Student Program: {student_program||"Null"}</p> */}
                         <p className="text">Applied Data: {formatDate(applied_data)}</p>
                     
                         <div className="button-container">

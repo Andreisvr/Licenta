@@ -78,7 +78,7 @@ function RegFormProf() {
   return (
     <div className='body_reg_prof'>
         <form className='form_reg_prof'>
-          <h1 className='title'>Infosdrmation</h1>
+          <h1 className='title'>Infoddrmation</h1>
           <br />
           <FacultyList/>
     

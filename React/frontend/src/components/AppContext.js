@@ -12,6 +12,7 @@ export const AppProvider = ({ children }) => {
     const [userInfo, setUserInfo] = useState(null); 
     const [program, setProgram] = useState(''); 
     const [faculty, setFaculty] = useState(''); 
+    const [thesis_id , setIdThesis] = useState('');
 
     useEffect(() => {
         const storedName = localStorage.getItem('userName');
@@ -21,7 +22,7 @@ export const AppProvider = ({ children }) => {
         const storedUserInfo = localStorage.getItem('userInfo'); 
         const storedProgram = localStorage.getItem('userProgram'); 
         const storedFaculty = localStorage.getItem('userFaculty'); 
-
+        
         if (storedLogined) {
             setName(storedName);
             setEmail(storedEmail);
@@ -35,6 +36,10 @@ export const AppProvider = ({ children }) => {
             }
         }
     }, []);
+    const handleThesisId=(thesis_id)=>{
+        setIdThesis(thesis_id);
+        localStorage.setItem('thesis_id', thesis_id);
+    }
 
     const handleLogin = (userName, userEmail, userType, userProgram, userFaculty) => {
         setName(userName);
@@ -82,7 +87,9 @@ export const AppProvider = ({ children }) => {
             program, setProgram, 
             faculty, setFaculty, 
             handleLogin, 
-            handleLogout 
+            handleLogout,
+            thesis_id,handleThesisId,
+            
         }}>
             {children}
         </AppContext.Provider>

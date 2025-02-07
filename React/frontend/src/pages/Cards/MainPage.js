@@ -3,8 +3,7 @@ import { useNavigate } from "react-router";
 import '/Users/Andrei_Sviridov/Desktop/React/frontend/src/page_css/Prof_role/prof_cab.css';
 import AddThesis from "./thesis_card.js";
 import { AppContext } from '/Users/Andrei_Sviridov/Desktop/React/frontend/src/components/AppContext.js';
-import PersonIcon from '@mui/icons-material/Person';
-import SchoolIcon from '@mui/icons-material/School';
+
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import MyConfirmed from "./MyConfiremd_thesis.js";
 import AddResponse from "../student-role/Confirmation_card_stud.js";
@@ -12,7 +11,6 @@ import MyApplied from "./my_aplies.js";
 import Applied from "./applied_students.js";
 import Accepted from "../Prof_role/Accepted_Students_card.js";
 import MyThesis from "./my_thesis_card.js";
-import FacultyList from '/Users/Andrei_Sviridov/Desktop/React/frontend/src/components/Faculty_List.js';
 import MyPropouses from "../student-role/MyPropouse.js";
 import Propouses from "./propuses_card_prof.js";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -138,29 +136,35 @@ export default function Cabinet() {
         setViewType("MyApplies");
     };
 
-    const handleWithdraw = (id) => {
-        fetch(`http://localhost:8081/prof/${id}`, { 
-            method: "DELETE",
-            headers: { "Content-Type": "application/json" },
-        })
-        .then(response => {
-            if (!response.ok) throw new Error("Failed to withdraw thesis");
-            setTheses(prevTheses => prevTheses.filter(thesis => thesis.id !== id));
-        })
-        .catch(error => console.error("Error withdrawing thesis:", error));
-        window.location.reload();
-    };
+
 
     const handleShowMyThesis = () => {
         const userInfo = JSON.parse(localStorage.getItem('userInfo'));
         const profId = userInfo?.id;
-        setTheses(allTheses.filter(thesis => thesis.prof_id === profId));
-        
-        setMyThesisList(allTheses.filter(thesis => thesis.prof_id === profId));
-        console.log('my thesis',MyThesisList);
-        
-        setViewType("MyThesis");
+    
+        if (!profId) {
+            console.error("User ID not found in localStorage.");
+            return;
+        }
+    
+        fetch(`http://localhost:8081/show_My_thesis/${profId}`, {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+        })
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error("Error fetching theses");
+                }
+                return response.json();
+            })
+            .then((data) => {
+                setMyThesisList(data); 
+                setViewType("MyThesis"); 
+                console.log("My thesis list:", data);
+            })
+            .catch((error) => console.error("Error fetching theses:", error));
     };
+    
 
     const handleShowApplied = () => {
         const userInfo = JSON.parse(localStorage.getItem('userInfo'));
@@ -365,20 +369,24 @@ export default function Cabinet() {
     async function handleShowConfirmed() {
 
         if (!id ) {
-            console.error("Student ID not found in userInfo");
+            console.error("{Professor} ID not found in userInfo");
             alert('Not logined');
             return;
         }
+        console.log('profesor',id);
         setViewType("MyChose");
-        console.log('id' ,id);
-        fetch(`http://localhost:8081/confirmed?id_stud=${id}`, {
+       
+        fetch(`http://localhost:8081/confirmed?id_prof=${id}`, {
             method: "GET",
             headers: { "Content-Type": "application/json" },
         })
         .then(response => response.json())
         .then(data => {
-            setConfirmed(data);
-            console.log('Confirmed', Confirmed); 
+            // setConfirmed(data);
+            // console.log('Confirmed', Confirmed); 
+            
+            setMyConfirmed(data);
+            console.log('my thesis', data); 
         })
         .catch(error => console.error("Error fetching accepted applications:", error));
         
@@ -391,17 +399,17 @@ export default function Cabinet() {
 
     return (
         <div className="body_prof">
-         <div className="menu_icon">
+         <div className={`menu_icon ${showLeftContainer ? "visible" : "hidden"}`}>
         <MenuIcon onClick={toggleLeftContainer} style={{ cursor: "pointer" }} />
         </div>
          <div className={`left_container ${showLeftContainer ? "visible" : "hidden"}`}>
         <h3 className="section_title">Search Thesis</h3>
        
-        <label className="search_label">Title</label>
+        <label className="search_label_top">Title</label>
 
         <input
                     type="text"
-                    className="search_input"
+                    className="search_input_text"
                     placeholder="Caută după titlu..."
                     value={searchTitle}
                     onChange={(e) => setSearchTitle(e.target.value)}
@@ -416,7 +424,7 @@ export default function Cabinet() {
                 />
                 <input
                     type="date"
-                    className="date_input"
+                    className="date_input_end"
                     placeholder="Data End"
                     value={searchEndDate}
                     onChange={(e) => setSearchEndDate(e.target.value)}
@@ -429,23 +437,23 @@ export default function Cabinet() {
                     value={searchProfessor}
                     onChange={(e) => setSearchProfessor(e.target.value)}
                     />
-            <label className="search_label">Faculty/Study Program</label>
+            {/* <label className="search_label">Faculty/Study Program</label>
        
         <FacultyList onSelect={handleSelection} />
-        
+         */}
         <button className="search_button" onClick={handleSearch}>Caută</button>
         <button className="search_button" onClick={handleReset}>Rest</button>
 
     </div>
         <div className={`right_container ${showLeftContainer ? "default" : "full-width"}`}>
-                <div className="top_container">
+        <div className={`top_container ${showLeftContainer ? "default" : "full-width"}`}>
                     <div className="button-group">
                         {type === "professor" ? (
                             <>
                                 <button onClick={handleAllClick_All}>ALL</button>
                                 <button onClick={handleShowMyThesis}>MyTheses</button>
                                 <button onClick={handleShowApplied}>Applied</button>
-                                <button onClick={handleShowPropouses}>Propoused</button>
+                                <button onClick={handleShowPropouses}>Proposed</button>
                                 <button onClick={handleShowAccepted}>Accepted</button>
                                 <button onClick={handleShowConfirmed}>Confirmed</button>
                             </>
@@ -460,12 +468,10 @@ export default function Cabinet() {
                             </>
                         )}
                     </div>
-                    <div className="icon-container">
-                        {type === "professor" ? <PersonIcon className="icon" /> : <SchoolIcon className="icon" />}
-                    </div>
+                   
                 </div>
                
-                <div className="bottom_container">
+                <div className={`bottom_container ${showLeftContainer ? "default" : "full-width"}`}>
                 {
   viewType === "ALL" && theses.length > 0 ? (
     theses.map((thesis) => (
@@ -476,7 +482,7 @@ export default function Cabinet() {
           handleClickThesis(thesis);
           navigate('/thesisinfo');
         }}
-        onWithdraw={() => handleWithdraw(thesis.id)}
+       
         thesisName={thesis.title}
         date_start={thesis.start_date}
         date_end={thesis.end_date}
@@ -568,6 +574,7 @@ export default function Cabinet() {
         professor_name={aply.prof_name}
         viewType={viewType}
         id={aply.id}
+        state={aply.state}
       />
     ))
   ) : viewType === "MyChose" && MyConfirmedthesis.length > 0 ? (
@@ -621,7 +628,7 @@ export default function Cabinet() {
 ) :  (
     <p>No available content for this link</p> 
    
-    //null
+   
   )
 }
 

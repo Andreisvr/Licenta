@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+import React, { useContext } from "react";
+import { useNavigate } from "react-router";
+import { AppContext } from "../../components/AppContext";
 
 export default function MyPropouses({ 
 
@@ -10,7 +12,20 @@ export default function MyPropouses({
    
     state,
     id
-}) {
+}) 
+{
+    const { handleThesisId } = useContext(AppContext); 
+    const navigate = useNavigate();
+    
+    
+    function MyPropouses_Info()
+     { 
+        //   console.log('merge')
+        handleThesisId(id); 
+        navigate('/MyPropouse_Info');
+    }
+
+
     if(state =='accepted' || state =='confirmed' ){
         return
     }
@@ -24,7 +39,8 @@ export default function MyPropouses({
     }
 
     
-    function handleWithdrawApplication(id) {
+    function handleWithdrawApplication(id,e) {
+        e.stopPropagation(); 
         console.log(id);
         fetch(`http://localhost:8081/withdrawApplication/${id}`, { 
             method: "DELETE",
@@ -41,7 +57,7 @@ export default function MyPropouses({
 
 
     return (
-        <form className="applied_form">
+        <form className="applied_form" onClick={MyPropouses_Info}>
            
               
                 <p className="title text">Title: {thesisName}</p>
@@ -51,7 +67,7 @@ export default function MyPropouses({
                 <p className="text">Applied Date: {formatDate(applied_data)}</p>
                
 
-                <button className= 'withdraw_btn' onClick={() => handleWithdrawApplication(id)}>Withdraw</button>
+                <button className= 'withdraw_btn' onClick={(e) => handleWithdrawApplication(id,e)}>Remove</button>
             
         </form>
 

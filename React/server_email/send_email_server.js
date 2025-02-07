@@ -14,7 +14,7 @@ const transporter = nodemailer.createTransport({
     service: 'Gmail', 
     auth: {
         user: 'andrei.sviridov00@e-uvt.ro', 
-        pass: 'gdqs aqps xjst lfzn',
+        pass: 'nqkx snel lqha hwgr',
     },
 });
  
@@ -22,8 +22,7 @@ const transporter = nodemailer.createTransport({
 
 app.post('/reg_stud', (req, res) => {
 
-    console.log('Request received:');
-    console.log('Request received:', req.body);
+    
     const { email, code } = req.body;
 
     const mailOptions = {
@@ -39,7 +38,7 @@ app.post('/reg_stud', (req, res) => {
             console.error('Error sending email:', error); 
             return res.status(500).json({ message: 'Eroare la trimiterea emailului', error });
         }
-        console.log('Email sent:', info); 
+        console.log('Email sent'); 
         res.status(200).json({ message: 'Codul a fost trimis cu succes', info });
     });
 });
@@ -49,7 +48,7 @@ app.post('/reg_stud', (req, res) => {
 app.post('/reg', (req, res) => {
 
     console.log('Request received:');
-    console.log('Request received:', req.body);
+    // console.log('Request received:', req.body);
     const { email, code } = req.body;
 
     const mailOptions = {

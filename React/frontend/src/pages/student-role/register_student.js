@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import GoogleBtn from '../../components/login_btn';
 import '/Users/Andrei_Sviridov/Desktop/React/frontend/src/page_css/student_role/reg_stud.css';
 import FacultyList from '/Users/Andrei_Sviridov/Desktop/React/frontend/src/components/Faculty_List.js';
-import { AppContext } from '/Users/Andrei_Sviridov/Desktop/React/frontend/src/components/AppContext.js';
 
 function RegFormStudent() {
   const [email, setEmail] = useState('');
@@ -23,6 +22,10 @@ function RegFormStudent() {
   const [generatedCode, setGeneratedCode] = useState('');
   const [UserData, setUserData] = useState({});
   const [emailSent, setEmailSent] = useState(false);
+  const [studyYear, setStudyYear] = useState('');
+
+  const [studyYearError, setStudyYearError] = useState('');
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -90,8 +93,7 @@ function RegFormStudent() {
     setFacultyError('');
     setProgramError('');
 
-    // const firstName = decodedToken.given_name;
-    // const lastName = decodedToken.family_name;
+
     const email = decodedToken.email;
     const gmailPass = decodedToken.jti;
 
@@ -107,12 +109,19 @@ function RegFormStudent() {
       return;
     }
 
+    if (!studyYear) {
+      setStudyYearError('Please select a study year');
+      return;
+    }
+  
+
     setUserData({
       fullName: decodedToken.name,
       email: email,
       gmailPass: gmailPass,
       faculty: faculty,
-      program: program
+      program: program,
+      year:studyYear
     });
    
     setShowTermsForm(true);
@@ -126,6 +135,7 @@ function RegFormStudent() {
     setProgramError('');
     setPasswordError('');
     setConfirmPasswordError('');
+    setStudyYear('');
 
     if (!fullName) {
       setFullNameError('Please enter your full name');
@@ -144,6 +154,11 @@ function RegFormStudent() {
 
     if (!email) {
       setEmailError('Please enter your email');
+      return;
+    }
+
+    if (!studyYear) {
+      setStudyYearError('Please select a study year');
       return;
     }
 
@@ -177,6 +192,7 @@ function RegFormStudent() {
       fullName: fullName,
       email: email,
       password: password,
+      year:studyYear
     });
     setShowTermsForm(true);
   };
@@ -193,6 +209,7 @@ function RegFormStudent() {
             gmail_pass: UserData.gmailPass,
             faculty: UserData.faculty,
             program: UserData.program,
+            year:UserData.year
         };
         
         console.log('Date trimitse',userDataToSend);
@@ -298,6 +315,17 @@ function RegFormStudent() {
             />
             <label className="errorLabel">{confirmPasswordError}</label>
           </div>
+          <div className={'field_container'}>
+              <select value={studyYear} onChange={(ev) => setStudyYear(ev.target.value)} className={'year_select'}>
+                <option value="">Select study year</option>
+                <option value="1">1st Year</option>
+                <option value="2">2nd Year</option>
+                <option value="3">3rd Year</option>
+                <option value="4">4th Year</option>
+              </select>
+              <label className="errorLabel">{studyYearError}</label>
+            </div>
+        
           <GoogleBtn onSuccessLogin={onSuccessLogin} />
           <div className={'inputContainer_reg_stud'}>
             <input className={'Reg_btn_reg_stud'} type="button" onClick={onButtonClick} value={'Register'} />
@@ -305,7 +333,7 @@ function RegFormStudent() {
         </form>
       ) : (
         <form className='form_reg_stud' onSubmit={handleVerification}>
-          <h1 className='title'>Accept Terms and Conditions</h1>
+          <h3 className='title'>Accept Terms and Conditions</h3>
           <p>If you select "Register," you accept the terms and conditions.</p>
           <p>A code has been sent to your email: <strong>{UserData.email}</strong>. Please enter this code.</p>
 

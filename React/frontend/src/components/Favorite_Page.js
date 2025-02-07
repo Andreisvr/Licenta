@@ -1,15 +1,15 @@
 import React, { useEffect, useState, useContext } from "react";
 import { AppContext } from "./AppContext";
 import '/Users/Andrei_Sviridov/Desktop/React/frontend/src/page_css/Favorite_page.css'
-
-
+import ArrowBackIcon from '@mui/icons-material/ArrowBack'; 
+import { useNavigate } from "react-router";
 
 export default function Favorite() {
     const [favoriteIds, setFavoriteIds] = useState([]); 
     const [data, setData] = useState([]); 
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-
+    const navigate = useNavigate(); 
     const { logined } = useContext(AppContext);
 
     useEffect(() => {
@@ -78,23 +78,34 @@ export default function Favorite() {
         }
     }, [favoriteIds]);
 
-    if (loading) {
-        return <p>Loading...</p>;
-    }
+    // if (loading) {
+    //     return <p>Loading...</p>;
+    // }
 
+    const handleBack = () => {
+        navigate("/prof");
+    };
     if (error) {
         return <p>Error: {error}</p>;
     }
 
     return (
         <div className="favorites-container">
-            {data.length === 0 ? (
-                <p>No favorites found.</p>
-            ) : (
-                data.map((item, index) => (
-                    <FavoriteCard key={index} item={item} />
-                ))
-            )}
+             <button type="button" className="back_button" onClick={handleBack}>
+                            <ArrowBackIcon  className="arrow"/>
+                        </button>
+            <div className="m_container">
+                {data.length === 0 ? (
+                    
+                    <p className="not_found">No favorites found.</p>
+                   
+                ) : (
+                    data.map((item, index) => (
+                        <FavoriteCard key={index} item={item} />
+                    ))
+                )}
+            </div>
+          
         </div>
     );
 }

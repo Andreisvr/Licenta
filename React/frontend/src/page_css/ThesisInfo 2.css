@@ -5,23 +5,17 @@ body {
 .body_thesisinfo {
     display: flex;
     justify-content: center;
-    align-items: flex-start; 
-    height: auto; 
+    align-items: flex-start; /* Aliniază la început pentru a permite expansiunea */
+    height: auto; /* Permite extinderea înălțimii */
     width: 100vw;
-    padding: 2rem;
-    background-image: url('/Users/Andrei_Sviridov/Desktop/React/frontend/src/images/back3.jpg'); 
-    background-size: cover;
-    background-position: center; 
-    transition: width 0.3s ease, padding 0.3s ease;
-
+    padding: 2rem; /* Adaugă un pic de padding */
 }
 
 .form-container {
     display: flex;
     width: 100%;
-  
     padding: 3vw;
-    overflow: visible; 
+    overflow: hidden; /* Ascunde overflow-ul dacă există */
 }
 
 .left-form {
@@ -34,7 +28,7 @@ body {
     border-radius: 8px;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start; 
+    justify-content: flex-start; /* Aliniază la început */
 }
 
 .right-form {
@@ -47,10 +41,10 @@ body {
     margin-left: 3vw; 
     display: flex;
     flex-direction: column; 
-    justify-content: flex-start;
-    overflow: auto;
+    justify-content: flex-start; /* Aliniază la început */
 }
 
+/* Restul codului CSS rămâne neschimbat */
 
 
 h2 {
@@ -71,7 +65,7 @@ h2 {
 .description {
     font-weight: 300;
     width: 85%;
-    height: 45%; 
+    height: 65%; 
     margin-top: 2vh;
     margin-left: 4%;
     
@@ -79,10 +73,11 @@ h2 {
 .requirements {
     font-weight: 300;
     width: 85%;
-    height: 30%; 
+    height: 25%; 
+    margin-top: 2vh;
+    margin-left: 4% !important;
    
-    margin-left: 4% !important ;
-   overflow: auto;
+   
 }
 
 
@@ -208,8 +203,8 @@ h2 {
 
 .header-container {
     display: flex;
-    align-items: center; 
-    margin-bottom: 1rem; 
+    align-items: center; /* Center items vertically */
+    margin-bottom: 1rem; /* Space below the header */
 }
 
 .back-button {
@@ -228,43 +223,4 @@ h2 {
     
     flex-grow: 1; 
     margin-right: 2vw;
-}
-
-
-
-
-@media screen and (max-width: 768px) {
-    .body_thesisinfo {
-        padding: 1rem; 
-    }
-
-    
-    .form-container {
-        flex-direction: column; 
-        gap: 1rem; 
-        overflow: auto;
-       
-    }
-    .requirements{
-        position: absolute;
-        top: 40vh;
-        left: 30vh;
-    }
-
-
-    .left-form, .right-form {
-        height: 100vh;
-        width: 90%; 
-        padding: 1rem; 
-        margin-left: 0; 
-        max-height: unset;
-    }
-
-   .apply-button{
-   margin-top: 2vh;
-    width: 30%;
-   }
-
-  
- 
 }

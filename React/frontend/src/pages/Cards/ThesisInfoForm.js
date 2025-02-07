@@ -194,10 +194,10 @@ export default function ThesisInfo() {
                         <p className="in_date">{formatDate(thesisData.start_date)}</p>
                         <p className="off_date">{formatDate(thesisData.end_date)}</p>
                     </div>
-                    <p className="faculty-name"><strong>Facultatea:</strong> {thesisData.faculty}</p>
-                    <p className="study-program"><strong>Program Studii:</strong> {thesisData.study_program}</p>
-                    <p className="description"><strong>Descriere:</strong> {thesisData.description}</p>
-                    <p className="requirements"><strong>Cerinte:</strong> {thesisData.requirements}</p>
+                    <p className="faculty-name"><strong>Faculty:</strong> {thesisData.faculty}</p>
+                    <p className="study-program"><strong>ProgramStudy:</strong> {thesisData.study_program}</p>
+                    <p className="description"><strong>Description:</strong> {thesisData.description}</p>
+                    <p className="requirements"><strong>Requirements:</strong> {thesisData.requirements}</p>
                     <div className="apply-status-favorite-container">
                         {(type === "student" || type === 0) && (
                             <button type="button" className="apply-button" onClick={handleApply} disabled={applied}>
@@ -218,15 +218,18 @@ export default function ThesisInfo() {
                 </form>
                 
                 <form className="right-form">
-                    <h2>{thesisData.prof_name}</h2>
-                    <p>Email: {thesisData.email}</p>
+                    <h2>Name: {thesisData.prof_name}</h2>
+                 
+                    <p>Email: 
+                        <a href={`mailto:${thesisData?.email}`} className="email-link">
+                            {thesisData?.email}
+                        </a>
+                    </p>
                     <p>Facultatea: {thesisData.faculty}</p>
                   
                     <Link>CV: {userInfo && userInfo.cv_link ? 'Available' : 'Not Available'}</Link>
 
-                    {(type === "student" || type === 0) && (
-                        <button type="submit" className="send-button">Send</button>
-                    )}
+                    
                 </form>
             </div>
         </div>
