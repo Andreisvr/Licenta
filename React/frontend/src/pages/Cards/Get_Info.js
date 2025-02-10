@@ -19,11 +19,11 @@ export async  function GetAllApplies(id) {
         }
 
         const data = await response.json();
-        return data; // return the data here directly
+        return data; 
 
     } catch (error) {
         console.error("Error in GetAllApplies:", error);
-        return []; // return an empty array in case of error
+        return []; 
     }
 }
 
@@ -41,10 +41,10 @@ export async function GetAllAccepted(id) {
         }
 
         const data = await response.json();
-        return data; // Return the fetched data
+        return data; 
 
     } catch (error) {
         console.error("Error in GetAllAccepted:", error);
-        return []; // Return an empty array in case of error
+        return []; 
     }
 }

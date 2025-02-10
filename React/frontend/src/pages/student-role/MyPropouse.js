@@ -40,7 +40,9 @@ export default function MyPropouses({
 
     
     function handleWithdrawApplication(id,e) {
-        e.stopPropagation(); 
+        e.preventDefault();
+        e.stopPropagation();
+        
         console.log(id);
         fetch(`http://localhost:8081/withdrawApplication/${id}`, { 
             method: "DELETE",

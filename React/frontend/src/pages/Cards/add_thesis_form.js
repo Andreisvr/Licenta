@@ -1,92 +1,90 @@
 import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router';
 import '/Users/Andrei_Sviridov/Desktop/React/frontend/src/page_css/Prof_role/addthesis_form.css';
-import FacultyList from '../../components/Faculty_List';
 import { AppContext } from '../../components/AppContext';
 
 function ThesisForm() {
-    const { name, email, logined, type } = useContext(AppContext);
+    const { logined } = useContext(AppContext);
     const navigate = useNavigate();
 
-    
     if (!logined) {
-        console.log('nu este logat');
-    } else {
-        console.log('este logat', name, email, type);  
+        console.log('Nu este logat');
     }
 
     const userInfo = localStorage.getItem('userInfo');
     const user_info = JSON.parse(userInfo);
-    console.log('userinfo', user_info);
+    const [errors, setErrors] = useState({
+        title: '',
+        description: '',
+        requirements: '',
+        cover_letter: '',
+    });
 
     const initialFormData = {
         title: '',
-        faculty: '',
-        studyProgram: '',
+        faculty: user_info.faculty,
+        
         prof_id: user_info.id,
         description: '',
         requirements: '',
         start_date: '',
-        end_date: '',
+        end_date: null,
         state: 'open',
         prof_name: user_info.name,
         cv_link: user_info.cv_link || null,
         email: user_info.email,
-        limita:'',
+        limita: '',
+        isLetterRequired: false, 
     };
-    
+   
     const [formData, setFormData] = useState(initialFormData);
-    
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData((prevData) => ({
-            ...prevData,
-            [name]: value,
-        }));
+   const handleChange = (e) => {
+    const { name, value } = e.target;
+
+   
+    const limits = {
+        title: 254,
+        description: 2000,
+        requirements: 2000,
+        cover_letter: 2000,
     };
 
-    const handleSelection = (faculty, program) => {
-        console.log('Selected Faculty:', faculty);
-        console.log('Selected Program:', program);
+    
+    if (limits[name] && value.length > limits[name]) {
+        setErrors((prevErrors) => ({
+            ...prevErrors,
+            [name]: `Ai depășit limita de ${limits[name]} caractere!`,
+        }));
+        return;
+    } else {
+        setErrors((prevErrors) => ({
+            ...prevErrors,
+            [name]: '',
+        }));
+    }
+
+    setFormData((prevData) => ({
+        ...prevData,
+        [name]: value,
+    }));
+};
+
+    const handleCheckboxChange = (e) => {
         setFormData((prevData) => ({
             ...prevData,
-            faculty: faculty,
-            studyProgram: program,
+            isLetterRequired: e.target.checked, 
         }));
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-       
-        // //Check if selected faculty matches user's faculty
-        // if (formData.faculty !== user_info.faculty) { 
-        //     alert(`Nu sunteți profesor în această facultate . Vă rugăm să selectați facultatea corectă.(${user_info.faculty})`);
-
-        //     setFormData((prevData) => ({
-        //         ...prevData,
-        //         faculty: '',
-        //         studyProgram: '',
-        //     }));
-        //     return; 
-        // }
 
         const adjustedData = {
-            title: formData.title,
-            faculty: formData.faculty,
-            study_program: formData.studyProgram,
-            prof_id: formData.prof_id,
-            description: formData.description,
-            requirements: formData.requirements || null,
-            start_date: formData.start_date,
-            end_date: formData.end_date || null,
-            state: formData.state,
-            prof_name: formData.prof_name,
-            cv_link: formData.cv_link || null,
-            email: formData.email,
-            limita: formData.limita,
-
+            ...formData,
+            isLetterRequired: formData.isLetterRequired,
         };
+
         console.log(adjustedData);
         
         try {
@@ -102,9 +100,6 @@ function ThesisForm() {
                 throw new Error('Network response was not ok');
             }
 
-            const result = await response.json();
-         
-
             setFormData(initialFormData);
             navigate('/prof');
 
@@ -115,7 +110,7 @@ function ThesisForm() {
 
     return (
         <form className="thesis-form" onSubmit={handleSubmit}>
-            <label>
+           <label>
                 Title:
                 <input 
                     type="text" 
@@ -123,12 +118,10 @@ function ThesisForm() {
                     value={formData.title} 
                     onChange={handleChange} 
                     required 
+                    maxLength={254}
                 />
-            </label>
-
-            <label>
-                Faculty:
-                <FacultyList onSelect={handleSelection} />
+                <small>{formData.title.length}/254</small>
+                {errors.title && <p className="error-message">{errors.title}</p>}
             </label>
 
             <label>
@@ -138,7 +131,10 @@ function ThesisForm() {
                     value={formData.description} 
                     onChange={handleChange} 
                     required 
+                    maxLength={2000}
                 />
+                <small>{formData.description.length}/2000</small>
+                {errors.description && <p className="error-message">{errors.description}</p>}
             </label>
 
             <label>
@@ -147,11 +143,17 @@ function ThesisForm() {
                     name="requirements" 
                     value={formData.requirements} 
                     onChange={handleChange} 
+                    maxLength={2000}
                 />
+                <small>{formData.requirements.length}/2000</small>
+                {errors.requirements && <p className="error-message">{errors.requirements}</p>}
             </label>
+
+
+
             <label>
                 Limită de locuri:
-                    <input
+                <input
                     type="number"
                     name="limita"
                     value={formData.limita}
@@ -159,8 +161,9 @@ function ThesisForm() {
                     required
                     min="1"
                     step="1"
-                    />
+                />
             </label>
+
             <label>
                 Start Date:
                 <input 
@@ -180,6 +183,17 @@ function ThesisForm() {
                     value={formData.end_date} 
                     onChange={handleChange} 
                 />
+            </label>
+
+           
+            <label>
+                <input
+                    type="checkbox"
+                    name="isLetterRequired"
+                    checked={formData.isLetterRequired}
+                    onChange={handleCheckboxChange}
+                />
+               Cover letter required?
             </label>
 
             <button type="submit">Submit Proposal</button>

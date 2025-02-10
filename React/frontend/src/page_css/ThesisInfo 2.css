@@ -5,17 +5,17 @@ body {
 .body_thesisinfo {
     display: flex;
     justify-content: center;
-    align-items: flex-start; /* Aliniază la început pentru a permite expansiunea */
-    height: auto; /* Permite extinderea înălțimii */
+    align-items: flex-start; 
+    height: auto; 
     width: 100vw;
-    padding: 2rem; /* Adaugă un pic de padding */
+    padding: 2rem;
 }
 
 .form-container {
     display: flex;
     width: 100%;
     padding: 3vw;
-    overflow: hidden; /* Ascunde overflow-ul dacă există */
+    overflow: hidden; 
 }
 
 .left-form {
@@ -28,7 +28,7 @@ body {
     border-radius: 8px;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start; /* Aliniază la început */
+    justify-content: flex-start; 
 }
 
 .right-form {
@@ -41,10 +41,10 @@ body {
     margin-left: 3vw; 
     display: flex;
     flex-direction: column; 
-    justify-content: flex-start; /* Aliniază la început */
+    justify-content: flex-start; 
 }
 
-/* Restul codului CSS rămâne neschimbat */
+
 
 
 h2 {

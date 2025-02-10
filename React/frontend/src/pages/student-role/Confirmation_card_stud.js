@@ -7,7 +7,7 @@ export default function AddResponse({
     study_program, 
     student_name,
     data,
-    professor_name,
+    cover_letter,
     prof_email,
     id_thesis,
     id_prof,
@@ -69,9 +69,10 @@ export default function AddResponse({
                 id_prof: id_prof, 
                 id_stud: studentId,
                 date: new Date().toISOString().split('T')[0],
+                cover_letter:cover_letter
             };
     
-            console.log("Data accepted:", acceptedApplicationData);
+            console.log("1Data accepted:", acceptedApplicationData);
     
             const confirmResponse = await fetch("http://localhost:8081/confirmation", {
                 method: "POST",
@@ -90,17 +91,17 @@ export default function AddResponse({
             console.log("Application confirmed successfully:", acceptedApplicationData);
     
             
-             handleResponse_delet(studentId);
+              handleResponse_delet(studentId);
     
         } catch (error) {
-            console.error("Error in handleAcceptStudent:", error);
+            console.error("Error in Confirm Aplication Student:", error);
             const userInfo = JSON.parse(localStorage.getItem('userInfo'));
             const studentId = userInfo.id;
     
             
         }}else{
 
-            console.log('din propouse',id_thesis)
+            
             try {
                 const userInfo = JSON.parse(localStorage.getItem('userInfo'));
                 const studentId = userInfo.id;
@@ -110,10 +111,11 @@ export default function AddResponse({
                     id_prof: id_prof, 
                     id_stud: studentId,
                     date: new Date().toISOString().split('T')[0],
-                    origin:'propouse'
+                    origin:'propouse',
+                    cover_letter:cover_letter
                 };
         
-               // console.log("Data accepted:", acceptedApplicationData);
+               
         
                 const confirmResponse = await fetch("http://localhost:8081/confirmationPropouse", {
                     method: "POST",
@@ -129,11 +131,11 @@ export default function AddResponse({
         
                 console.log("Application confirmed successfully:", acceptedApplicationData);
         
-                 handleChangeState(studentId)
-                 handleResponse_delet(studentId);
+                   handleChangeState(studentId)
+                  handleResponse_delet(studentId);
         
             } catch (error) {
-                console.error("Error in handleAcceptStudent:", error);
+                console.error("Error in  Confirm Propouse:", error);
                 const userInfo = JSON.parse(localStorage.getItem('userInfo'));
                 const studentId = userInfo.id;
         
@@ -169,7 +171,7 @@ export default function AddResponse({
                             type="button" 
                             onClick={(e) => {
                                 e.stopPropagation(); 
-                                handleConfirm(id_thesis); 
+                                handleConfirm(id_thesis,e); 
                             }}
                         >
                             Confirm

@@ -31,8 +31,7 @@ app.post('/reg_stud', (req, res) => {
         subject: 'Cod de verificare',
         text: `Codul tău de verificare este: ${code}`,
     };
-    console.log('Mail options:', mailOptions);
-
+   
     transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
             console.error('Error sending email:', error); 
@@ -48,7 +47,7 @@ app.post('/reg_stud', (req, res) => {
 app.post('/reg', (req, res) => {
 
     console.log('Request received:');
-    // console.log('Request received:', req.body);
+    
     const { email, code } = req.body;
 
     const mailOptions = {
@@ -57,7 +56,7 @@ app.post('/reg', (req, res) => {
         subject: 'Cod de verificare',
         text: `Codul tău de verificare este: ${code}`,
     };
-    console.log('Mail options:', mailOptions);
+   
 
     transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
@@ -69,7 +68,26 @@ app.post('/reg', (req, res) => {
     });
 });
 
-
+app.post('/sendEmail', (req, res) => {
+    const { email, subject, text } = req.body;
+     console.log('accepted primit');
+    const mailOptions = {
+        from: 'andrei.sviridov00@e-uvt.ro',
+        to: email,
+        subject: subject,
+        text: text,
+    };
+        console.log('dddd',mailOptions);
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            console.error('Error sending email:', error);
+            return res.status(500).json({ message: 'Eroare la trimiterea emailului', error });
+        }
+        console.log('Email sent:', info);
+        res.status(200).json({ message: 'Email trimis cu succes', info });
+        console.log('accepted');
+    });
+});
 
 
 

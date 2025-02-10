@@ -1,17 +1,17 @@
 // AddApplies.js
 import React ,{useEffect} from "react";
-
+//fgfkmdl,sas,ladfghfgdsaSDFGHJKLJHGFDSADSFGH
 export default function AddResponse({ 
     thesisName, 
     faculty, 
     study_program, 
     student_name,
    data,
-    professor_name,
+    
    id_thesis,
    id_prof,
    id_stud,
-    viewType,
+   cover_letter,
   
     id, 
  }) {
@@ -45,7 +45,8 @@ export default function AddResponse({
                 id_thesis: id_thesis,
                 id_prof: id_prof,
                 id_stud: id_stud,
-                date: new Date().toISOString().split('T')[0] 
+                date: new Date().toISOString().split('T')[0] ,
+                // cover_letter:cover_letter
             };
             console.log('data accepted ',acceptedApplicationData);
 
@@ -66,8 +67,8 @@ export default function AddResponse({
             }
     
             console.log("Application confirmed successfully:", acceptedApplicationData);
-            console.log('id thes',id_thesis);
-            handleResponse_delet(id_stud);
+           
+            // handleResponse_delet(id_stud);
     
         } catch (error) {
             console.error("Error in handleAcceptStudent:", error);
@@ -86,7 +87,7 @@ export default function AddResponse({
    
     return (
         <form className="applied_form">
-            <p className="text title">Title: {thesisName}</p>
+            <p className="text title">responsed_card: {thesisName}</p>
                
                     <p className="text">Student: {student_name || "Loading..."}</p>
                     <p className="text">Faculty: {faculty} {study_program && `Program: ${study_program}`}</p>

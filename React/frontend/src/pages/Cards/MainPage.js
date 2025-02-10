@@ -126,14 +126,29 @@ export default function Cabinet() {
             alert("Not logined")
             return;
         }
-        const matchedTheses = allTheses.filter(thesis =>
-            allApplications.some(application => application.id_thesis === thesis.id && application.id_stud === studentId)
-        );
-        setTheses(matchedTheses);
-        setAppliedList(matchedTheses);
-        //console.log('MyAplied List ',AppliedList);
-
-        setViewType("MyApplies");
+        fetch(`http://localhost:8081/show_My_applies/${studentId}`, {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+        })
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error("Error fetching theses");
+                }
+                return response.json();
+            })
+            .then((data) => {
+          
+                setTheses(data);
+                setAppliedList(data);
+                setViewType("MyApplies");
+                console.log('MyAplied List ',AppliedList);
+        
+            })
+            .catch((error) => console.error("Error fetching theses:", error));
+       
+        console.log('MyAplied List ',AppliedList);
+        
+       
     };
 
 
@@ -178,7 +193,7 @@ export default function Cabinet() {
         setTheses(allApplications.filter(application => application.id_prof === profId));
         setMyAppliedList(allApplications.filter(application => application.id_prof === profId));
         console.log('aplies from students ',MyAppliedList);
-
+       
         setViewType("Applied");
     };
 
@@ -510,6 +525,7 @@ export default function Cabinet() {
         professor_name={respons.prof_name}
         prof_email={respons.prof_email}
         id={respons.id}
+        cover_letter={respons.cover_letter}
       />
     ))
   ) : viewType === "MyApplies" && AppliedList.length > 0 ? (
@@ -517,11 +533,12 @@ export default function Cabinet() {
       <MyApplied
         key={aply.id}
         thesisName={aply.title}
-        date_start={aply.start_date}
-        date_end={aply.end_date}
+        study_year={aply.study_year}
         faculty={aply.faculty}
         study_program={aply.study_program}
+        applied_data={aply.applied_data}
         stud_name={aply.stud_name}
+        prof_email={aply.prof_email}
         professor_name={aply.prof_name}
         viewType={viewType}
         id={aply.id}
@@ -540,6 +557,7 @@ export default function Cabinet() {
         stud_name={aply.stud_name}
         professor_name={aply.prof_name}
         viewType={viewType}
+        study_year={aply.study_year}
         id={aply.id}
       />
     ))

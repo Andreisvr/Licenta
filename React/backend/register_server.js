@@ -227,10 +227,11 @@ app.post('/login', (req, res) => {
 
 
 app.post('/add_form', (req, res) => {
-    const { title, faculty, study_program, prof_id, prof_name, description, requirements, start_date, end_date, state, cv_link, email,limita } = req.body;
-
-    const sql = "INSERT INTO theses (title, faculty, study_program, prof_id, prof_name, description, requirements, start_date, end_date, state, cv_link, email,limita) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)";
-    const values = [title, faculty, study_program, prof_id, prof_name, description, requirements, start_date, end_date, state, cv_link, email, limita];
+    const { title, faculty, prof_id, prof_name, description, requirements, start_date, end_date, state, cv_link, email,limita,isLetterRequired } = req.body;
+    
+   
+    const sql = "INSERT INTO theses (title, faculty, prof_id, prof_name, description, requirements, start_date, end_date, state, cv_link, email,limita,isLetterRequired) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)";
+    const values = [title, faculty, prof_id, prof_name, description, requirements, start_date, end_date, state, cv_link, email, limita,isLetterRequired];
    
     db.query(sql, values, (err, result) => {
         if (err) {
@@ -342,6 +343,8 @@ app.post('/thesisinfo', (req, res) => {
         stud_email,
         prof_email,
         applied_data,
+        year,
+        coverLetter
     } = req.body;
 
     
@@ -349,7 +352,7 @@ app.post('/thesisinfo', (req, res) => {
     const formattedDate = `${appliedDate.getFullYear()}-${String(appliedDate.getMonth() + 1).padStart(2, '0')}-${String(appliedDate.getDate()).padStart(2, '0')} ${String(appliedDate.getHours()).padStart(2, '0')}:${String(appliedDate.getMinutes()).padStart(2, '0')}:${String(appliedDate.getSeconds()).padStart(2, '0')}`;
 
 
-   //console.log(id_stud,id_thesis);
+   
     const checkSql = `SELECT COUNT(*) as count FROM Applies WHERE id_stud = ? AND id_thesis = ?`;
     db.query(checkSql, [id_stud, id_thesis], (err, results) => {
         if (err) {
@@ -364,8 +367,8 @@ app.post('/thesisinfo', (req, res) => {
         }
 
       
-        const sql = `INSERT INTO Applies (title, id_thesis, id_prof, prof_name, id_stud, stud_name, faculty, student_program, stud_email, prof_email, applied_data) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-        const values = [title, id_thesis, id_prof, prof_name, id_stud, stud_name, faculty, student_program, stud_email, prof_email, formattedDate];
+        const sql = `INSERT INTO Applies (title, id_thesis, id_prof, prof_name, id_stud, stud_name, faculty, student_program, stud_email, prof_email, applied_data,study_year,cover_letter) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)`;
+        const values = [title, id_thesis, id_prof, prof_name, id_stud, stud_name, faculty, student_program, stud_email, prof_email, formattedDate,year,coverLetter];
 
         db.query(sql, values, (err, result) => {
             if (err) {
@@ -554,7 +557,7 @@ app.delete('/prof/:id', (req, res) => {
 app.delete('/myaply/:id', (req, res) => {
     const thesisId = parseInt(req.params.id);
    
-    const sql = 'DELETE FROM Applies WHERE id_thesis = ?';
+    const sql = 'DELETE FROM Applies WHERE id = ?';
     db.query(sql, [thesisId], (err, result) => {
         if (err) {
             console.error("Error deleting thesis:", err);
@@ -668,7 +671,8 @@ app.post('/acceptedApplications', (req, res) => {
         stud_name,
         stud_program,
         date,
-        origin
+        origin,
+        cover_letter,
     } = acceptedApplication;
    
    
@@ -677,8 +681,8 @@ app.post('/acceptedApplications', (req, res) => {
     }
 
    
-    const sql = `INSERT INTO AcceptedApplication (id_thesis, faculty, title, id_prof, prof_name, prof_email, stud_id, stud_email, stud_name, stud_program, data,origin) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)`;
-    const values = [id_thesis, faculty, title, id_prof, prof_name, prof_email, stud_id, stud_email, stud_name, stud_program, date,origin];
+    const sql = `INSERT INTO AcceptedApplication (id_thesis, faculty, title, id_prof, prof_name, prof_email, stud_id, stud_email, stud_name, stud_program, data,origin,cover_letter) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)`;
+    const values = [id_thesis, faculty, title, id_prof, prof_name, prof_email, stud_id, stud_email, stud_name, stud_program, date,origin,cover_letter];
 
     db.query(sql, values, (error, results) => {
         if (error) {
@@ -819,10 +823,8 @@ app.get('/propoused/:name', async (req, res) => {
 //-----------------------------------------------------------------Confirmation from responsed_card-----------
 
 app.post('/confirmation', (req, res) => {
-    const { id_thesis, id_prof, id_stud, date } = req.body;
+    const { id_thesis, id_prof, id_stud, date, cover_letter } = req.body;
 
-
-    
     const checkLimitQuery = `SELECT limita FROM theses WHERE id = ?`;
     db.query(checkLimitQuery, [id_thesis], (err, result) => {
         if (err) {
@@ -835,17 +837,15 @@ app.post('/confirmation', (req, res) => {
         }
 
         const thesisLimit = result[0].limita;
-       
+
         if (thesisLimit > 0) {
-            
-            const insertConfirmedQuery = `INSERT INTO confirmed (id_thesis, id_prof, id_stud, date) VALUES (?, ?, ?, ?)`;
-            db.query(insertConfirmedQuery, [id_thesis, id_prof, id_stud, date], (err, result) => {
+            const insertConfirmedQuery = `INSERT INTO confirmed (id_thesis, id_prof, id_stud, date, cover_letter) VALUES (?, ?, ?, ?, ?)`;
+            db.query(insertConfirmedQuery, [id_thesis, id_prof, id_stud, date, cover_letter], (err, result) => {
                 if (err) {
                     console.error("Error adding confirmed application:", err);
                     return res.status(500).json({ message: "Internal server error" });
                 }
 
-               
                 const updateLimitQuery = `UPDATE theses SET limita = limita - 1 WHERE id = ?`;
                 db.query(updateLimitQuery, [id_thesis], (err, result) => {
                     if (err) {
@@ -853,7 +853,6 @@ app.post('/confirmation', (req, res) => {
                         return res.status(500).json({ message: "Internal server error" });
                     }
 
-                    
                     const updateStateQuery = `UPDATE theses SET state = 'closed' WHERE limita = 0 AND id = ?`;
                     db.query(updateStateQuery, [id_thesis], (err, result) => {
                         if (err) {
@@ -861,8 +860,18 @@ app.post('/confirmation', (req, res) => {
                             return res.status(500).json({ message: "Internal server error" });
                         }
 
-                      
-                        res.status(201).json({ message: "Application confirmed successfully" });
+                        
+                        const updateStudentQuery = `UPDATE studentii SET thesis_confirmed = 1 WHERE id = ?`;
+                        db.query(updateStudentQuery, [id_stud], (err, result) => {
+                            if (err) {
+                                console.error("Error updating student thesis_confirmed:", err);
+                                return res.status(500).json({ message: "Internal server error" });
+                            }
+
+                            res.status(201).json({ 
+                                message: "Application confirmed successfully and student thesis_confirmed updated" 
+                            });
+                        });
                     });
                 });
             });
@@ -873,16 +882,13 @@ app.post('/confirmation', (req, res) => {
 });
 
 
-
 app.post('/confirmationPropouse', (req, res) => {
     const { id_thesis, id_prof, id_stud, date, origin } = req.body;
-
 
     if (!id_thesis || !id_prof || !id_stud || !date || !origin) {
         return res.status(400).json({ error: 'All fields are required: id_thesis, id_prof, id_stud, date, origin.' });
     }
 
-    
     const insertSql = `
         INSERT INTO confirmed (id_thesis, id_prof, id_stud, date, origin)
         VALUES (?, ?, ?, ?, ?)
@@ -897,9 +903,6 @@ app.post('/confirmationPropouse', (req, res) => {
             return res.status(500).json({ error: 'Database error during insertion.' });
         }
 
-        
-
-       
         const updateSql = `
             UPDATE Propouses 
             SET state = 'confirmed' 
@@ -916,10 +919,25 @@ app.post('/confirmationPropouse', (req, res) => {
                 return res.status(404).json({ error: 'Proposal not found in Propouses table.' });
             }
 
-            res.status(201).json({ 
-                message: 'Proposal confirmed and state updated successfully.', 
-                confirmedData: result, 
-                updatedRows: updateResult.affectedRows 
+            // Adăugare update pentru `thesis_confirmed` în tabela `students`
+            const updateStudentSql = `
+                UPDATE studentii 
+                SET thesis_confirmed = 1
+                WHERE id = ?
+            `;
+
+            db.query(updateStudentSql, [id_stud], (studentErr, studentResult) => {
+                if (studentErr) {
+                    console.error('Error updating students table:', studentErr);
+                    return res.status(500).json({ error: 'Database error during student update.' });
+                }
+
+                res.status(201).json({ 
+                    message: 'Proposal confirmed, state updated, and student thesis_confirmed set to 1.', 
+                    confirmedData: result, 
+                    updatedRows: updateResult.affectedRows,
+                    studentUpdated: studentResult.affectedRows
+                });
             });
         });
     });
@@ -1476,5 +1494,45 @@ app.get('/student_info/:id', async (req, res) => {
         } else {
             res.status(404).json({ message: "Student not found" });
         }
+    });
+});
+
+
+//---------------------------------------------------------------Aplied_Info--------------------------------
+app.get('/Applied_info/:thesis_id', async (req, res) => {
+    const thesisId = req.params.thesis_id;
+   
+  
+
+    const sql = 'SELECT * FROM Applies WHERE id = ?';
+
+    db.query(sql, [thesisId], (error, results) => {
+        if (error) {
+            console.error("Error geting  thesis:", error);
+            return res.status(500).json({ error: "Database error" });
+        }
+        res.json(results);
+    });
+ 
+});
+
+
+
+app.get('/show_My_applies/:studentId', (req, res) => {
+    const profId = parseInt(req.params.studentId);
+
+    if (isNaN(profId)) {
+        return res.status(400).json({ message: "Invalid professor ID" });
+    }
+   
+
+    const sql = 'SELECT * FROM Applies WHERE id_stud = ?';
+    db.query(sql, [profId], (err, results) => {
+        if (err) {
+            console.error("Error fetching theses:", err);
+            return res.status(500).json({ message: 'Error fetching theses' });
+        }
+
+        res.status(200).json(results);
     });
 });

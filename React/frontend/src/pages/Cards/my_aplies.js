@@ -1,21 +1,22 @@
 // AddApplies.js
-import React ,{useEffect} from "react";
-
+import React  from "react";
+import { useContext } from "react";
+import { useNavigate } from "react-router";
+import { AppContext } from "../../components/AppContext";
 export default function MyApplied({ 
     thesisName, 
     faculty, 
     study_program, 
-    date_start,
-    date_end,
+    applied_data,
     professor_name,
-    onWithdraw,
+    study_year,
     stud_name,
-    onClick,
+    prof_email,
     id, 
  }) {
-
+    const navigate = useNavigate();
+    const { handleThesisId} = useContext(AppContext); 
    
-
     function formatDate(isoDateString) {
         const date = new Date(isoDateString);
         if (date.getTime() === 0) return ''; 
@@ -39,20 +40,24 @@ export default function MyApplied({
         .catch(error => console.error("Error withdrawing thesis:", error));
         window.location.reload();
     };
-   
+
+    function go_info(){
+        handleThesisId(id);
+        navigate('/Applied_info')
+
+    }
     return (
-        <form className="applied_form">
+        <form className="applied_form" onClick={go_info}>
             <p className="text title">Title: {thesisName}</p>
     
     
             
-                    <p className="text ">Prof Name: {professor_name}</p>
-                    <p className="text">Student: {stud_name || "Loading..."}</p>
+                    <p className="text ">Professor Name: {professor_name}</p>
+                  
+                    <p className="text">Email: {prof_email || "Loading..."}</p>
                     <p className="text">Faculty: {faculty} {study_program && `Program: ${study_program}`}</p>
-                    <div className="add_date">
-                        <p className="text">{formatDate(date_start)}</p>
-                        <p className="text">{formatDate(date_end)}</p>
-                    </div>
+                  
+                    <p className="text ">Applied Date: {formatDate(applied_data)}</p>
                     <button 
                         className="withdraw_btn" 
                         type="button" 

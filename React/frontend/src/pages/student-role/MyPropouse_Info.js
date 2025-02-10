@@ -4,8 +4,6 @@ import { useEffect,useContext,useState } from "react";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'; 
 import '/Users/Andrei_Sviridov/Desktop/React/frontend/src/page_css/student_role/MyPropouse_Info.css';
 import { AppContext } from "../../components/AppContext";
-import { Link } from "react-router-dom";
-
 
 export default function MyPropouse_Info()
 {
@@ -106,11 +104,14 @@ export default function MyPropouse_Info()
             );
         })
         .catch(error => console.error("Error accepting thesis:", error));
-       
+        SendEmail('accepted'); 
         window.location.reload();
     }
     
-    async function handlePropouse_reject(id) {
+    async function handlePropouse_reject(id,e) {
+
+        e.preventDefault();
+        e.stopPropagation();
         console.log(`Rejecting proposal with ID: ${id}`);
         fetch(`http://localhost:8081/proposaReject/${id}`, {
             method: "PATCH",
@@ -127,6 +128,7 @@ export default function MyPropouse_Info()
         })
         .catch(error => console.error("Error rejecting thesis:", error));
         navigate('/prof')
+        SendEmail('reject'); 
         window.location.reload();
     }
     
@@ -134,7 +136,8 @@ export default function MyPropouse_Info()
 
     
     async function handleAcceptStudent(thesisId,e) {
-        e.preventDefault(); 
+        e.preventDefault();
+        e.stopPropagation();
          try {
            const userInfo = JSON.parse(localStorage.getItem('userInfo'));
            const studentId = userInfo.id;
@@ -184,6 +187,52 @@ export default function MyPropouse_Info()
        }
    }
 
+   function handleWithdrawApplication(id,e) {
+    e.preventDefault();
+    e.stopPropagation();
+   
+    fetch(`http://localhost:8081/withdrawApplication/${id}`, { 
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" }
+    })
+    .then(response => {
+        if (!response.ok) throw new Error("Failed to withdraw thesis");
+        console.log("Thesis withdrawn successfully.");
+    })
+    .catch(error => console.error("Error withdrawing thesis:", error));
+    navigate('/prof');
+    }
+
+
+        async function SendEmail(answer) {
+            const subject = answer === 'accepted'  
+            ? 'Congratulations! Your Propose has been accepted'  
+            : 'We are sorry! Your Propose was not accepted';  
+
+        const text = answer === 'accepted'  
+            ? `Hello, ${thesisData?.stud_name},\n\nCongratulations! Your Propose for the thesis with title: "${thesisData?.title}" has been accepted.`  
+            : `Hello, ${thesisData?.stud_name},\n\nUnfortunately, your Propose for the thesis with title :"${thesisData?.title}" was not accepted.`;  
+
+            try {
+                const response = await fetch('http://localhost:5002/sendEmail', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: thesisData?.stud_email, subject, text })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to send email');
+                }
+
+                console.log(`Email sent successfully to ${thesisData?.stud_email}`);
+
+            } catch (error) {
+                console.error('Error sending email:', error);
+            }
+
+        
+        }
+
    function formatDate(isoDateString) {
     const date = new Date(isoDateString);
     if (date.getTime() === 0) {
@@ -212,7 +261,7 @@ export default function MyPropouse_Info()
                     </div>
                     <p className="faculty-name"><strong>Faculty:</strong> {thesisData?.faculty}</p>
                     <p className="study-program"><strong>StudyProgram:</strong> {thesisData?.study_program}</p>
-                    <p className="description"><strong>Description:</strong> {thesisData?.description}</p>
+                    <p className="description" style={{ height: '55vh', overflow:'auto'}}><strong>Description:</strong> {thesisData?.description}</p>
                     <p className="requirements"><strong>Motivation:</strong> {thesisData?.motivation}</p>
                     <div className="buton_gr">
                     {(type === "professor" || type === 1) && (
@@ -229,6 +278,12 @@ export default function MyPropouse_Info()
                             </>
                     )}
                 </div>
+                <div className="buton_gr">
+                    {(type === "student" || type === 0) && (
+                           <button className= 'withdraw_btn' onClick={(e) => handleWithdrawApplication(thesisData?.id,e)}>Remove</button>
+            
+                    )}
+                </div>
                 </form>
                 
                 <form className="right-form">
@@ -241,8 +296,8 @@ export default function MyPropouse_Info()
                     <p>Faculty: {thesisData?.faculty}</p>
                     <p>Study Program: {thesisData?.study_program}</p>
                     <p>Study year: {studyYear || 'null'}</p>
-
-                    
+                    <p>Profesor Name: {thesisData?.prof_name || 'null'}</p>
+                    <p>Answer: {thesisData?.state || 'null'}</p>
                 </form>
             </div>
         </div>

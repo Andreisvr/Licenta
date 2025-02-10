@@ -19,13 +19,45 @@ export default function MyPropouseAdd() {
         prof_name: '',
     });
 
-    const handleChange = (e) => {
+    const [errors, setErrors] = useState({
+        title: '',
+        description: '',
+        motivation: '',
+    });
+
+
+    const invalidCharsRegex = /[^a-zA-Z0-9À-ÿ\s,.'-]/;
+
+
+     const handleChange = (e) => {
         const { name, value } = e.target;
+
+       
+        const limits = {
+            title: 254,
+            description: 2000,
+            motivation: 2000,
+        };
+
+        
+        if (value.length > limits[name]) {
+            setErrors((prevErrors) => ({
+                ...prevErrors,
+                [name]: `Maximum ${limits[name]} characters allowed.`,
+            }));
+        } else {
+            setErrors((prevErrors) => ({
+                ...prevErrors,
+                [name]: '',
+            }));
+        }
+
         setFormData((prevData) => ({
             ...prevData,
             [name]: value,
         }));
     };
+
 
     const handleProfessorSelect = (professor) => {
         setFormData((prevData) => ({
@@ -33,7 +65,7 @@ export default function MyPropouseAdd() {
             professorId: professor.id,
             prof_name: professor.name,
         }));
-        console.log('Profesor selectat:', professor.name);
+        
     };
 
     const handleSubmit = async (e) => {
@@ -56,7 +88,7 @@ export default function MyPropouseAdd() {
 
         
 
-        console.log('Trimis către server:', adjustedData);
+       
 
         try {
             const response = await fetch(`http://localhost:8081/Propouses`, {
@@ -87,15 +119,18 @@ export default function MyPropouseAdd() {
 
     return (
         <form className="thesis-form" onSubmit={handleSubmit}>
-            <label>
+             <label>
                 Title:
                 <input
                     type="text"
                     name="title"
                     value={formData.title}
                     onChange={handleChange}
+                    maxLength={254}
                     required
                 />
+                <small>{formData.title.length}/254</small>
+                {errors.title && <p className="error">{errors.title}</p>}
             </label>
 
             <label>
@@ -104,8 +139,11 @@ export default function MyPropouseAdd() {
                     name="description"
                     value={formData.description}
                     onChange={handleChange}
+                    maxLength={2000}
                     required
                 />
+                  <small>{formData.description.length}/2000</small>
+                {errors.description && <p className="error">{errors.description}</p>}
             </label>
 
             <label>
@@ -122,8 +160,12 @@ export default function MyPropouseAdd() {
                     name="motivation"
                     value={formData.motivation}
                     onChange={handleChange}
+                    maxLength={2000}
                     required
                 />
+                
+                <small>{formData.motivation.length}/2000</small>
+                {errors.motivation && <p className="error-message">{errors.motivation}</p>}
             </label>
 
             <button type="submit">Submit Proposal</button>

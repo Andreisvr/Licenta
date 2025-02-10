@@ -52,7 +52,10 @@ export default function Propouses({
         window.location.reload();
     }
     
-    async function handlePropouse_reject(id) {
+    async function handlePropouse_reject(id,e) {
+        // e.preventDefault();
+        // e.stopPropagation();
+        SendEmail('reject'); 
         console.log(`Rejecting proposal with ID: ${id}`);
         fetch(`http://localhost:8081/proposaReject/${id}`, {
             method: "PATCH",
@@ -68,14 +71,16 @@ export default function Propouses({
             );
         })
         .catch(error => console.error("Error rejecting thesis:", error));
-        
+       
         window.location.reload();
     }
     
 
 
     
-    async function handleAcceptStudent(thesisId) {
+    async function handleAcceptStudent(thesisId,e) {
+        e.preventDefault();
+        e.stopPropagation();
          try {
             const userInfo = JSON.parse(localStorage.getItem('userInfo'));
             const studentId = userInfo.id;
@@ -120,8 +125,9 @@ export default function Propouses({
     
             console.log("Application accepted successfully:", acceptedApplicationData);
     
-           
+            SendEmail('accepted'); 
             handlePropouse_Accepted(thesisId);
+            navigate('/prof')
     
         } catch (error) {
             console.error("Error in handleAcceptStudent:", error);
@@ -139,6 +145,37 @@ export default function Propouses({
     }
 
 
+    async function SendEmail(answer) {
+        const subject = answer === 'accepted'  
+        ? 'Congratulations! Your Propose has been accepted'  
+        : 'We are sorry! Your Propose was not accepted';  
+    
+    const text = answer === 'accepted'  
+        ? `Hello, ${stud_name},\n\nCongratulations! Your Propose for the thesis with title: "${thesisName}" has been accepted.`  
+        : `Hello, ${stud_name},\n\nUnfortunately, your Propose for the thesis with title :"${thesisName}" was not accepted.`;  
+    
+        try {
+            const response = await fetch('http://localhost:5002/sendEmail', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: stud_email, subject, text })
+            });
+    
+            if (!response.ok) {
+                throw new Error('Failed to send email');
+            }
+    
+            console.log(`Email sent successfully to ${stud_email}`);
+    
+        } catch (error) {
+            console.error('Error sending email:', error);
+        }
+
+       
+    }
+
+
+    
     function formatDate(isoDateString) {
         const date = new Date(isoDateString);
         if (date.getTime() === 0) return ''; 
@@ -167,7 +204,7 @@ export default function Propouses({
                             type="button" 
                             onClick={(e) => {
                                 e.stopPropagation(); 
-                                handleAcceptStudent(id); 
+                                handleAcceptStudent(id,e); 
                             }}
                         >
                             Accept
@@ -178,7 +215,7 @@ export default function Propouses({
                             type="button" 
                             onClick={(e) => { 
                                 e.stopPropagation(); 
-                                handlePropouse_reject(id); 
+                                handlePropouse_reject(id,e); 
                             }}
                         >
                             Decline

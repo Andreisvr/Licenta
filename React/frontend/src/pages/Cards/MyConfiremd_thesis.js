@@ -47,19 +47,17 @@ export default function MyConfirmed({ id_thesis, origin }) {
         const year = date.getFullYear();
         return `${day}/${month}/${year}`;
     }
-    const getShortDescription = (desc) => (desc ? `${desc.substring(0, 20)}${desc.length > 100 ? "..." : ""}` : "");
+    const getShortDescription = (desc) => (desc ? `${desc.substring(0, 50)}${desc.length > 100 ? "..." : ""}` : "");
 
 
     return (
         <form className="applied_form">
-             <p className="text title">Title: {data.title || "No title"}</p>
+             <p className="text title">Title: {getShortDescription(data.title) || "No title"}</p>
            
-            <p className="text">Description: {data.description || "No description"}</p>
-            <p className="text">Faculty: {data.faculty || "No faculty"}</p>
-            <p className="text">Professor: {data.prof_name || "No professor name"}</p>
-            <p className="text">Student: {data.stud_name || "No student name"}</p>
+            <p className="text">Description: {getShortDescription(data.description) || "No description"}</p>
           
-            <p className="text">Motivation: {getShortDescription(data.motivation) || "No motivation"}</p>
+            <p className="text">Professor: {data.prof_name || "No professor name"}</p>
+         
             <p className="text">Date: {data.date ? formatDate(data.date) : "No date"}</p>
         </form>
     );
