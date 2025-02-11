@@ -169,9 +169,12 @@ export default function Applied({
        navigate('/Applied_info')
 
     }
+
+    const getShortDescription = (desc) => (desc ? `${desc.substring(0, 25)}${desc.length > 100 ? "..." : ""}` : "");
+
     return (
         <form className="applied_form" onClick={go_info}>
-            <p className="text title">Title: {thesisName}</p>
+            <p className="text title">Title: {getShortDescription(thesisName)}</p>
     
     
             

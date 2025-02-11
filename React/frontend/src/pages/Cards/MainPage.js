@@ -34,7 +34,7 @@ export default function Cabinet() {
     const [MyConfirmedthesis,setMyConfirmed] = useState([]);
     const[MyPropouse,setMyPropouses]= useState([]);
     const[PropousesList,setPropouses]= useState([]);
-    const[Confirmed,setConfirmed]= useState([]);
+    // const[Confirmed,setConfirmed]= useState([]);
    
     const [searchTitle, setSearchTitle] = useState("");
     const [searchStartDate, setSearchStartDate] = useState("");
@@ -45,6 +45,7 @@ export default function Cabinet() {
 
 
     const [id,setId] = useState('');
+    const [is_confirmed,setConfirmed] = useState('');
     const [showLeftContainer, setShowLeftContainer] = useState(false); 
 
     const toggleLeftContainer = () => {
@@ -85,6 +86,7 @@ export default function Cabinet() {
             .then((userInfo) => {
                 localStorage.setItem('userInfo', JSON.stringify(userInfo));
                 setId(userInfo.id);
+                setConfirmed(userInfo.thesis_confirmed);
                
                 //console.log('user info', userInfo);
             })
@@ -407,6 +409,10 @@ export default function Cabinet() {
         
         
     }
+    function handelGoToChat()
+    {
+        navigate('/Student_chat');
+    }
 
 
 
@@ -452,17 +458,14 @@ export default function Cabinet() {
                     value={searchProfessor}
                     onChange={(e) => setSearchProfessor(e.target.value)}
                     />
-            {/* <label className="search_label">Faculty/Study Program</label>
-       
-        <FacultyList onSelect={handleSelection} />
-         */}
+            
         <button className="search_button" onClick={handleSearch}>Caută</button>
         <button className="search_button" onClick={handleReset}>Rest</button>
 
     </div>
         <div className={`right_container ${showLeftContainer ? "default" : "full-width"}`}>
         <div className={`top_container ${showLeftContainer ? "default" : "full-width"}`}>
-                    <div className="button-group">
+        <div className="button-group">
                         {type === "professor" ? (
                             <>
                                 <button onClick={handleAllClick_All}>ALL</button>
@@ -474,16 +477,23 @@ export default function Cabinet() {
                             </>
                         ) : (
                             <>
-                                <button onClick={handleAllClick_All}>ALL</button>
-                                <button onClick={handleMyPropouse}>MyPropose</button>
-                                <button onClick={handleSeeApplies}>MyApplies</button>
-                                <button onClick={handleSeeResponses}>Responsed</button>
-                                <button onClick={hanleSeeThesisConfirmed}>MyThesis</button>
-
+                                {is_confirmed === 1 ? (
+                                    <>
+                                        <button onClick={handleAllClick_All}>ALL</button>
+                                        <button onClick={handelGoToChat}>MyThesis</button>
+                                    </>
+                                ) : (
+                                    <>
+                                        <button onClick={handleAllClick_All}>ALL</button>
+                                        <button onClick={handleMyPropouse}>MyPropose</button>
+                                        <button onClick={handleSeeApplies}>MyApplies</button>
+                                        <button onClick={handleSeeResponses}>Responsed</button>
+                                    </>
+                                )}
                             </>
                         )}
                     </div>
-                   
+
                 </div>
                
                 <div className={`bottom_container ${showLeftContainer ? "default" : "full-width"}`}>

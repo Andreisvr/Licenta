@@ -104,8 +104,10 @@ export default function MyPropouse_Info()
             );
         })
         .catch(error => console.error("Error accepting thesis:", error));
+        
         SendEmail('accepted'); 
         window.location.reload();
+        navigate("/prof");
     }
     
     async function handlePropouse_reject(id,e) {
@@ -179,9 +181,9 @@ export default function MyPropouse_Info()
    
            console.log("Application accepted successfully:", acceptedApplicationData);
    
-          
-           handlePropouse_Accepted(thesisId);
            navigate('/prof')
+           handlePropouse_Accepted(thesisId);
+          
        } catch (error) {
            console.error("Error in handleAcceptStudent:", error);
        }
@@ -247,13 +249,21 @@ export default function MyPropouse_Info()
 
     return (
         <div className="body_thesisinfo">
-            <div className="form-container">
+            <div className="form-container" >
                 <form className="left-form">
                     <div className="header-container">
                         <button  className="back-button" onClick={handleBack}>
                             <ArrowBackIcon />
                         </button>
-                        <h2 className="thesisName"><strong>Titlu:</strong> {thesisData?.title}</h2>
+                        <h2 className="thesisName" style={{ 
+                            whiteSpace: 'normal', 
+                            wordWrap: 'break-word', 
+                            overflowY: 'auto', 
+                            minHeight: '8vh', 
+                            maxHeight: '20vh' 
+                            }}>
+                            <strong>Titlu:</strong> {thesisData?.title}
+                            </h2>
                     </div>
                     <div className="date">
                         <p className="in_date">Apply Date: {formatDate(thesisData?.date)}</p>

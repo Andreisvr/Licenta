@@ -187,7 +187,7 @@ export default function Propouses({
    
     return (
         <form className="applied_form" onClick={PropouseInfo}>
-            <p className="text title">Title: {thesisName}</p>
+            <p className="text title">Title: {getShortDescription(thesisName)}</p>
     
     
             

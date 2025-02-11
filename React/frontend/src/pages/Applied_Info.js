@@ -53,8 +53,8 @@ export default function Applied_Info(){
 
     const handleWithdraw = (id,e) => {
        
-        e.preventDefault();
-        e.stopPropagation();
+       
+       
         console.log(id);
         fetch(`http://localhost:8081/myaply/${id}`, { 
             method: "DELETE",
@@ -65,8 +65,9 @@ export default function Applied_Info(){
             
         })
         .catch(error => console.error("Error withdrawing thesis:", error));
-        navigate('/prof')
+        navigate('/prof');
         window.location.reload();
+        
 
       
     };
@@ -99,7 +100,7 @@ export default function Applied_Info(){
         .catch(error => console.error("Error withdrawing thesis:", error));
         SendEmail('rejected'); 
          window.location.reload();
-        
+         navigate('/prof')
     }
 
 

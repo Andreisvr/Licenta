@@ -121,17 +121,18 @@ export default function Accepted({
         return `${day}/${month}/${year}`;
     }
    
+    const getShortDescription = (desc) => (desc ? `${desc.substring(0, 25)}${desc.length > 100 ? "..." : ""}` : "");
+
     return (
         <form className="applied_form">
-            <p className="text title">Title: {thesisName}</p>
+            <p className="text title">Title: {getShortDescription(thesisName)}</p>
     
     
             
                     <p className="text ">Prof Name: {professor_name}</p>
                     <p className="text">Student: {stud_name || "Loading..."}</p>
                     <p className="text">Student Email: {stud_email || "Loading..."}</p>
-                    {/* <p className="text">Faculty: {faculty} {study_program && `Program: ${study_program}`}</p>
-                  */}
+                 
                         <p className="text">Accepted Data: {formatDate(applied_data)}</p>
                     
                         

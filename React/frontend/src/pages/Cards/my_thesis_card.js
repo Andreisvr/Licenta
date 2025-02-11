@@ -104,10 +104,11 @@ const handleModifyClick = () => {
   const handleCancelDelete = () => {
     setIsConfirmDialogOpen(false);
   };
+  const getShortDescription = (desc) => (desc ? `${desc.substring(0, 25)}${desc.length > 100 ? "..." : ""}` : "");
 
   return (
     <form className="applied_form">
-      <p className="text title">TitleM: {thesisName}</p>
+      <p className="text title">TitleM: {getShortDescription(thesisName)}</p>
       <p className="text">
         Faculty: {faculty} {study_program && `Program: ${study_program}`}
       </p>

@@ -120,10 +120,11 @@ export default function Accepted({
         const year = date.getFullYear();
         return `${day}/${month}/${year}`;
     }
-   
+    const getShortDescription = (desc) => (desc ? `${desc.substring(0, 25)}${desc.length > 100 ? "..." : ""}` : "");
+
     return (
         <form className="applied_form">
-            <p className="text title">Title: {thesisName}</p>
+            <p className="text title">Title: {getShortDescription(thesisName)}</p>
     
     
             

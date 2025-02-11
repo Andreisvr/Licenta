@@ -55,14 +55,14 @@ export default function MyPropouses({
         .catch(error => console.error("Error withdrawing thesis:", error));
     }
 
-    const getShortDescription = (desc) => (desc ? `${desc.substring(0, 100)}${desc.length > 100 ? "..." : ""}` : "");
+    const getShortDescription = (desc) => (desc ? `${desc.substring(0, 25)}${desc.length > 100 ? "..." : ""}` : "");
 
 
     return (
         <form className="applied_form" onClick={MyPropouses_Info}>
            
               
-                <p className="title text">Title: {thesisName}</p>
+                <p className="title text">Title: {getShortDescription(thesisName)}</p>
                 <p className="text">Professor: {professor_name}</p>
                 <p className="text">Description: {getShortDescription(description) || "Loading..."}</p>
                 <p className="text" >Answer : {state}</p>

@@ -221,7 +221,7 @@ export default function ThesisInfo() {
                     <p className="description"><strong>Description:</strong> {thesisData.description}</p>
                     <p className="requirements"><strong>Requirements:</strong> {thesisData.requirements}</p>
                     <div className="apply-status-favorite-container">
-                        {(type === "student" || type === 0) && (
+                        {(type === "student" || type === 0 )&&(userInfo.thesis_confirmed == 0) && (
                             <button type="button" className="apply-button" onClick={handleApplyClick} disabled={applied}>
                                 {applied ? 'Applied' : 'Apply'}
                             </button>

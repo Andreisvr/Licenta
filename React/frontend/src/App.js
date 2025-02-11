@@ -18,7 +18,8 @@ import RestorePass from './pages/Restore_Password';
 import MainPage from './pages/Test';
 import ThesisModify from './pages/Cards/My_thesis_info';
 import MyPropouse_Info from './pages/student-role/MyPropouse_Info';
-import Applied_Info from '/Users/Andrei_Sviridov/Desktop/React/frontend/src/pages/Applied_Info.js'
+import Applied_Info from '/Users/Andrei_Sviridov/Desktop/React/frontend/src/pages/Applied_Info.js';
+import StudentChatPage from './Student_Chat/My_thesis_page';
 function App() {
 
     return (
@@ -43,6 +44,7 @@ function App() {
                 <Route path="/MyThesisInfo" element={<ThesisModify/>} />
                 <Route path="/MyPropouse_Info" element={<MyPropouse_Info/>} />
                 <Route path="/Applied_info" element={<Applied_Info/>} />
+                <Route path="/Student_Chat" element={<StudentChatPage/>} />
 
             </Routes>
             

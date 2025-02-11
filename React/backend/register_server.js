@@ -1536,3 +1536,91 @@ app.get('/show_My_applies/:studentId', (req, res) => {
         res.status(200).json(results);
     });
 });
+
+
+//-------------------------------------StudentChat__My_thesis_page--------------------------------------------
+
+app.get("/get_info_my_th_page/:id", (req, res) => {
+    const userId = req.params.id;
+    
+    db.query("SELECT * FROM confirmed WHERE id_stud = ?", [userId], (err, results) => {
+        if (err) {
+            return res.status(500).json({ error: "Database error" });
+        }
+        if (results.length === 0) {
+            return res.status(404).json({ error: "User not found" });
+        }
+        res.json(results[0]);
+    });
+});
+
+
+app.get("/these_s/:id_thesis/:id_prof", (req, res) => {
+    
+    const { id_thesis, id_prof } = req.params;
+   
+
+    db.query("SELECT * FROM theses WHERE id = ? AND prof_id = ?", [id_thesis, id_prof], (err, results) => {
+        if (err) return res.status(500).json({ error: "Database error" });
+        res.json(results);
+    });
+});
+
+app.get("/propus_e/:id_stud/:id_thesis", (req, res) => {
+    const { id_stud, id_thesis } = req.params;
+    
+    
+
+    db.query("SELECT * FROM Propouses WHERE stud_id = ? AND id = ?", [id_stud, id_thesis], (err, results) => {
+        if (err) return res.status(500).json({ error: "Database error" });
+        res.json(results);
+    });
+});
+
+app.get("/profesori_neverificat_i/:id_prof", (req, res) => {
+    const { id_prof } = req.params;
+   
+    db.query("SELECT * FROM profesorii_neverificati WHERE id = ?", [id_prof], (err, results) => {
+        if (err) return res.status(500).json({ error: "Database error" });
+        res.json(results);
+    });
+});
+
+
+app.post('/send_message', (req, res) => {
+    const { message, id_stud, id_prof } = req.body;
+    
+    if (!message || !id_stud || !id_prof) {
+      return res.status(400).json({ error: 'Toate câmpurile sunt necesare' });
+    }
+  
+    
+    const query = `
+      INSERT INTO messages (mesaje, id_stud, id_prof, created_at)
+      VALUES (?, ?, ?, NOW())
+    `;
+  
+    db.query(query, [message, id_stud, id_prof], (err, result) => {
+      if (err) {
+        console.error('Eroare la inserarea mesajului:', err);
+        return res.status(500).json({ error: 'Eroare la salvarea mesajului' });
+      }
+  
+      res.status(200).json({ message: 'Mesaj trimis cu succes' });
+    });
+  });
+  
+
+  app.get('/read_messages/:prof_id/:student_id', (req, res) => {
+    const { prof_id, student_id } = req.params;
+   
+    
+    const query = `SELECT * FROM messages WHERE id_stud = ? AND id_prof = ? ORDER BY created_at`;
+  
+    db.query(query, [student_id,prof_id], (err, results) => {
+      if (err) {
+        return res.status(500).json({ message: 'Eroare la obținerea mesajelor' });
+      }
+      res.json(results); 
+    });
+  });
