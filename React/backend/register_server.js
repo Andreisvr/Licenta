@@ -1187,9 +1187,10 @@ app.get('/ConfirmInformation/:id_thesis', async (req, res) => {
     if (!id_thesis) {
          return res.status(400).json({ error: "id_thesis is required" });
     }   
+
     if(origin !=='propouse'){
       
-        const sql = 'SELECT * FROM theses WHERE id = ?';
+        const sql = 'SELECT title FROM theses WHERE id = ?';
 
     db.query(sql, [id_thesis], (error, results) => {
         if (error) {
@@ -1201,7 +1202,7 @@ app.get('/ConfirmInformation/:id_thesis', async (req, res) => {
 
     }else if(origin ==='propouse') {
        
-   const sql = 'SELECT * FROM Propouses WHERE id = ?';
+   const sql = 'SELECT title FROM Propouses WHERE id = ?';
 
    db.query(sql, [id_thesis], (error, results) => {
         if (error) {
@@ -1213,6 +1214,32 @@ app.get('/ConfirmInformation/:id_thesis', async (req, res) => {
     }
 
 });
+
+
+app.get('/ConfirmInformation_Student/:id_stud', async (req, res) => {
+    const id_stud = req.params.id_stud; 
+   
+
+   
+    if (!id_stud) {
+         return res.status(400).json({ error: "id_stud is required" });
+    }   
+   
+
+  
+      
+        const sql = 'SELECT * FROM studentii WHERE id = ?';
+
+    db.query(sql, [id_stud], (error, results) => {
+        if (error) {
+            console.error("Error fetching applied theses:", error);
+            return res.status(500).json({ error: "Database error" });
+        }
+        res.json(results);
+    });
+
+});
+
 
 
 //-==------------------------------------------------Favorite---------------------------------------------------
@@ -1588,19 +1615,19 @@ app.get("/profesori_neverificat_i/:id_prof", (req, res) => {
 
 
 app.post('/send_message', (req, res) => {
-    const { message, id_stud, id_prof } = req.body;
-    
+    const { message, id_stud, id_prof,sender } = req.body;
+      
     if (!message || !id_stud || !id_prof) {
       return res.status(400).json({ error: 'Toate câmpurile sunt necesare' });
     }
   
     
     const query = `
-      INSERT INTO messages (mesaje, id_stud, id_prof, created_at)
-      VALUES (?, ?, ?, NOW())
+      INSERT INTO messages (mesaje, id_stud, id_prof, created_at,sender)
+      VALUES (?, ?, ?, NOW(),?)
     `;
   
-    db.query(query, [message, id_stud, id_prof], (err, result) => {
+    db.query(query, [message, id_stud, id_prof,sender], (err, result) => {
       if (err) {
         console.error('Eroare la inserarea mesajului:', err);
         return res.status(500).json({ error: 'Eroare la salvarea mesajului' });
@@ -1614,7 +1641,7 @@ app.post('/send_message', (req, res) => {
   app.get('/read_messages/:prof_id/:student_id', (req, res) => {
     const { prof_id, student_id } = req.params;
    
-    
+   
     const query = `SELECT * FROM messages WHERE id_stud = ? AND id_prof = ? ORDER BY created_at`;
   
     db.query(query, [student_id,prof_id], (err, results) => {
@@ -1624,3 +1651,39 @@ app.post('/send_message', (req, res) => {
       res.json(results); 
     });
   });
+
+
+
+
+
+//-------------------------------------Profesor_Chat---------------------------------------------------------
+
+app.get('/get_thesis/:thesis_id', (req, res) => {
+    const { thesis_id } = req.params;
+
+    const queryTheses = "SELECT * FROM theses WHERE id = ?";
+    const queryPropouses = "SELECT * FROM Propouses WHERE id = ?";
+
+    db.query(queryTheses, [thesis_id], (err, results) => {
+        if (err) {
+            return res.status(500).json({ message: "Eroare la interogarea theses" });
+        }
+
+        if (results.length > 0) {
+            return res.json(results); 
+        }
+
+        
+        db.query(queryPropouses, [thesis_id], (err, results) => {
+            if (err) {
+                return res.status(500).json({ message: "Eroare la interogarea Propouses" });
+            }
+
+            if (results.length > 0) {
+                return res.json(results); 
+            } else {
+                return res.status(404).json({ message: "Thesis nu a fost găsit în nicio tabelă" });
+            }
+        });
+    });
+});

@@ -237,27 +237,27 @@ export default function Cabinet() {
 
 
 
- async function hanleSeeThesisConfirmed(){
+//  async function hanleSeeThesisConfirmed(){
 
-        if (!id ) {
-            console.error("Student ID not found in userInfo");
-            alert('Not logined');
-            return;
-        }
-        setViewType("MyChose");
-        console.log('id' ,id);
-        fetch(`http://localhost:8081/confirmedThesis?id_stud=${id}`, {
-            method: "GET",
-            headers: { "Content-Type": "application/json" },
-        })
-        .then(response => response.json())
-        .then(data => {
-            setMyConfirmed(data);
-            console.log('my thesis', data); 
-        })
-        .catch(error => console.error("Error fetching accepted applications:", error));
+//         if (!id ) {
+//             console.error("Student ID not found in userInfo");
+//             alert('Not logined');
+//             return;
+//         }
+//         setViewType("MyChose");
+//         console.log('id' ,id);
+//         fetch(`http://localhost:8081/confirmedThesis?id_stud=${id}`, {
+//             method: "GET",
+//             headers: { "Content-Type": "application/json" },
+//         })
+//         .then(response => response.json())
+//         .then(data => {
+//             setMyConfirmed(data);
+//             console.log('my thesis', data); 
+//         })
+//         .catch(error => console.error("Error fetching accepted applications:", error));
         
-    }
+//     }
 
 
 
@@ -383,6 +383,7 @@ export default function Cabinet() {
         setViewType("Propoused");
     }
     
+
     async function handleShowConfirmed() {
 
         if (!id ) {
@@ -390,7 +391,7 @@ export default function Cabinet() {
             alert('Not logined');
             return;
         }
-        console.log('profesor',id);
+      
         setViewType("MyChose");
        
         fetch(`http://localhost:8081/confirmed?id_prof=${id}`, {
@@ -400,7 +401,7 @@ export default function Cabinet() {
         .then(response => response.json())
         .then(data => {
             // setConfirmed(data);
-            // console.log('Confirmed', Confirmed); 
+            
             
             setMyConfirmed(data);
             console.log('my thesis', data); 

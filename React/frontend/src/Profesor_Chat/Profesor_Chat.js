@@ -1,18 +1,18 @@
-import React, { useState, useEffect, useContext } from "react";
-import { useNavigate } from "react-router";
+import React, { useState, useEffect, useContext} from "react";
 import { useRef } from "react";
+import { useNavigate } from "react-router";
 import SendIcon from "@mui/icons-material/Send";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { AppContext } from "../components/AppContext";
 import "/Users/Andrei_Sviridov/Desktop/React/frontend/src/Student_Chat/student_chat_css/My_thesis_page.css";
 
-export default function StudentChatPage() {
-    const { logined } = useContext(AppContext);
+export default function ProfesorChatPage() {
+
     const navigate = useNavigate();
     const userInfo = JSON.parse(localStorage.getItem("userInfo"));
-
+    const thesis_id = JSON.parse(localStorage.getItem("thesis_id"));
+    const stud_id =JSON.parse(localStorage.getItem("stud_id"));
     const messagesEndRef = useRef(null);
-    const [confirmed, setConfirmed] = useState(null);
     const [profesor, setProfesor] = useState(null);
     const [thesis, setThesis] = useState(null);
     const [message, setMessage] = useState("");
@@ -29,56 +29,9 @@ export default function StudentChatPage() {
        
     
     useEffect(() => {
-        if (logined && userInfo?.id) {
-            fetch(`http://localhost:8081/get_info_my_th_page/${userInfo.id}`, {
-                method: "GET",
-                headers: { "Content-Type": "application/json" },
-            })
-                .then((response) => response.json())
-                .then((data) => {
-                    setConfirmed(data);
-                })
-                .catch((error) =>
-                    console.error("Error fetching user info:", error)
-                );
-        }
-    }, [logined, userInfo?.id]);
-
-    useEffect(() => {
-        if (confirmed) {
-            let thesisFetch;
-            
-            if (confirmed.origin === "theses") {
-                thesisFetch = fetch(`http://localhost:8081/these_s/${confirmed.id_thesis}/${confirmed.id_prof}`, {
-                    method: "GET",
-                    headers: { "Content-Type": "application/json" },
-                }).then((res) => res.json());
-            } else if (confirmed.origin === "propouse") {
-                thesisFetch = fetch(`http://localhost:8081/propus_e/${userInfo.id}/${confirmed.id_thesis}`, {
-                    method: "GET",
-                    headers: { "Content-Type": "application/json" },
-                }).then((res) => res.json());
-            }
-
-            const profesorFetch = fetch(`http://localhost:8081/profesori_neverificat_i/${confirmed.id_prof}`, {
-                method: "GET",
-                headers: { "Content-Type": "application/json" },
-            }).then((res) => res.json());
-
-            Promise.all([thesisFetch, profesorFetch])
-                .then(([thesisData, profData]) => {
-                    setThesis(thesisData[0]);
-                    setProfesor(profData[0]);
-                    console.log("Theses/Propuse response:", thesisData);
-                    console.log("Profesori_neverificati response:", profData);
-                })
-                .catch((err) => console.error("Error in fetch:", err));
-        }
-    }, [confirmed]);
-
-    useEffect(() => {
-        if (profesor && userInfo?.id) {
-            fetch(`http://localhost:8081/read_messages/${profesor.id}/${userInfo.id}`, {
+       
+        if ( userInfo?.id) {
+            fetch(`http://localhost:8081/read_messages/${userInfo.id}/${stud_id}`, {
                 method: "GET",
                 headers: { "Content-Type": "application/json" },
             })
@@ -89,22 +42,34 @@ export default function StudentChatPage() {
                 })
                 .catch((err) => console.error("Error fetching messages:", err));
         }
-    }, [profesor, userInfo?.id]);
+    }, [ userInfo?.id]);
 
-
-
-    const getShortDescription = (desc) => (desc ? `${desc.substring(0, 35)}${desc.length > 100 ? "..." : ""}` : "");
-
+   
+    useEffect(() => {
+        if (userInfo?.id && thesis_id) { 
+            fetch(`http://localhost:8081/get_thesis/${thesis_id}`, {
+                method: "GET",
+                headers: { "Content-Type": "application/json" },
+            })
+                .then((res) => res.json())
+                .then((data) => {
+                    setThesis(data[0]);
+                    
+                })
+                .catch((err) => console.error("Error fetching thesis:", err));
+        }
+    }, [ thesis_id]); 
+    
     const sendMessage = () => {
         if (!message.trim()) return;
-
+    
         const payload = {
             message: message,
-            id_stud: userInfo.id,
-            id_prof: profesor?.id,
-            sender:'stud'
+            id_stud: stud_id,
+            id_prof: userInfo?.id,
+            sender: 'prof',
         };
-
+    
         fetch("http://localhost:8081/send_message", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -113,7 +78,7 @@ export default function StudentChatPage() {
         .then((res) => res.json())
         .then((data) => {
             console.log("Mesaj trimis cu succes:", data);
-            
+    
             if (data && data.message) {
                 const newMessage = {
                     id: data.id,
@@ -121,32 +86,44 @@ export default function StudentChatPage() {
                     id_prof: data.id_prof,
                     mesaje: data.message,
                     created_at: new Date().toISOString(),
-                    sender: 'stud',
+                    sender: 'prof',
                 };
-    
+     
                
                 setMessages((prevMessages) => [...prevMessages, newMessage]);
     
                 
                 setMessage("");
+                //window.location.reload();
             }
         })
         .catch((err) => console.error("Eroare la trimiterea mesajului:", err));
     };
+    
+
+    const getShortDescription = (desc) => (desc ? `${desc.substring(0, 35)}${desc.length > 100 ? "..." : ""}` : "");
+ 
+    function go_back(){
+    navigate("/prof")
+    localStorage.removeItem('thesis_id');
+
+    localStorage.removeItem('stud_id');
+    
+   }
 
     return (
         <div className="body_chat_student">
-            <button className="back_button" onClick={() => navigate("/prof")}>
+            <button className="back_button" onClick={go_back}>
                 <ArrowBackIcon />
             </button>
             <div className="chat_st">
             <div className="mesaje_lista">
                     {messages && messages.length > 0 ? (
                         messages.map((msg, index) => (
-                            <div key={msg.id} className={`mesaj ${msg.sender === "stud" ? "right" : "left"}`}>
+                            <div key={msg.id} className={`mesaj ${msg.sender === "prof" ? "right" : "left"}`}>
                                 <p>{msg.mesaje}</p>
                                 <p>
-                                    <strong>{msg.sender === "stud" ? "you" : "profesor"}</strong> - {new Date(msg.created_at).toLocaleString()}
+                                    <strong>{msg.sender === "prof" ? "you" : "student"}</strong> - {new Date(msg.created_at).toLocaleString()}
                                 </p>
                             </div>
                         ))
@@ -155,10 +132,9 @@ export default function StudentChatPage() {
                     )}
                      <div ref={messagesEndRef} />
                 </div>
-                 
             
                 <div className="info_mesaje">
-                    <p><strong></strong> {profesor?.name || ''}</p>
+                    <p><strong></strong> {userInfo?.name || ''}</p>
                     <p><strong>,</strong> {getShortDescription(thesis?.description) || ''}</p>
                 </div>
                 <div className="mesaje_input">
@@ -176,20 +152,20 @@ export default function StudentChatPage() {
             
 
             <div className="info">
-                {profesor && (
+               
                     <div>
-                        <h3>Profesor</h3>
-                        <p><strong>Nume:</strong> {profesor.name}</p>
+                      
+                        <p><strong>Student Name:</strong> {userInfo?.name}</p>
                         <p>Email: 
-                            <a href={`mailto:${profesor.email}`} className="email-link">
-                                {profesor.email}
+                            <a href={`mailto:${userInfo?.email}`} className="email-link">
+                                {userInfo?.email}
                             </a>
                         </p>
                         <h3>Teza</h3>
-                        <p><strong>Titlu:</strong> {getShortDescription(thesis.title)}</p>
-                        <p><strong>Descriere:</strong> {getShortDescription(thesis.description)}</p>
+                        <p><strong>Titlu:</strong> {getShortDescription(thesis?.title)}</p>
+                        <p><strong>Descriere:</strong> {getShortDescription(thesis?.description)}</p>
                     </div>
-                )}
+               
             </div>
         </div>
     );

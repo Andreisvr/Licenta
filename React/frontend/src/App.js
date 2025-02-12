@@ -20,6 +20,7 @@ import ThesisModify from './pages/Cards/My_thesis_info';
 import MyPropouse_Info from './pages/student-role/MyPropouse_Info';
 import Applied_Info from '/Users/Andrei_Sviridov/Desktop/React/frontend/src/pages/Applied_Info.js';
 import StudentChatPage from './Student_Chat/My_thesis_page';
+import ProfesorChatPage from './Profesor_Chat/Profesor_Chat';
 function App() {
 
     return (
@@ -45,6 +46,7 @@ function App() {
                 <Route path="/MyPropouse_Info" element={<MyPropouse_Info/>} />
                 <Route path="/Applied_info" element={<Applied_Info/>} />
                 <Route path="/Student_Chat" element={<StudentChatPage/>} />
+                <Route path="/Prof_Chat" element={<ProfesorChatPage/>} />
 
             </Routes>
             

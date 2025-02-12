@@ -14,6 +14,8 @@ export const AppProvider = ({ children }) => {
     const [faculty, setFaculty] = useState(''); 
     const [thesis_id , setIdThesis] = useState('');
 
+    const [stud_id , setStud_id] = useState('');
+
     useEffect(() => {
         const storedName = localStorage.getItem('userName');
         const storedEmail = localStorage.getItem('userEmail');
@@ -38,7 +40,13 @@ export const AppProvider = ({ children }) => {
     }, []);
     const handleThesisId=(thesis_id)=>{
         setIdThesis(thesis_id);
-        localStorage.setItem('thesis_id', thesis_id);
+        localStorage.setItem('thesis_id', thesis_id); 
+        
+    }
+    const handleStud_id=(stud_id)=>{
+        setStud_id(stud_id); 
+        localStorage.setItem('stud_id', stud_id); 
+     
     }
 
     const handleLogin = (userName, userEmail, userType, userProgram, userFaculty) => {
@@ -89,6 +97,7 @@ export const AppProvider = ({ children }) => {
             handleLogin, 
             handleLogout,
             thesis_id,handleThesisId,
+            stud_id,handleStud_id
             
         }}>
             {children}

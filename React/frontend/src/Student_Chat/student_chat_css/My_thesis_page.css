@@ -25,9 +25,10 @@
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
     border: 1px solid #ddd;
 }
-.mesaje_lista{
+
+
+.mesaje_lista {
     padding: 1vh;
-   
     position: fixed;
     top: 16%;
     left: 15.5%;
@@ -35,18 +36,20 @@
     height: 65vh;
     background-color: transparent;
     overflow: auto;
-    
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
 .mesaj {
     background-color: #f1f1f1;
-    padding: 10px 15px; 
-    margin-bottom: 10px; 
-    border-radius: 8px; 
-    max-width: 70%; 
-    word-wrap: break-word; 
-    font-size: 14px; 
-    line-height: 1.5; 
+    padding: 10px 15px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    max-width: 70%;
+    word-wrap: break-word;
+    font-size: 14px;
+    line-height: 1.5;
 }
 
 .mesaj p {
@@ -57,15 +60,32 @@
 
 .mesaj p strong {
     font-weight: bold;
-        color: #0073e6; 
+    color: #0073e6;
 }
 
 .mesaj .data_mesaj {
-    font-size: 12px; 
-    color: #888; 
+    font-size: 12px;
+    color: #888;
     text-align: right;
-    margin-top: 5px; 
+    margin-top: 5px;
 }
+
+
+.mesaj.left {
+    background-color: #f1f1f1;
+    align-self: flex-start;  
+    text-align: left;
+}
+
+
+.mesaj.right {
+   margin-right: 1vh;
+    background-color: #d1e7ff;
+    align-self: flex-end; 
+    text-align: right;
+}
+
+
 .info {
     position: fixed;
     top: 10%;
