@@ -1,0 +1,27 @@
+html,body{
+
+  width: 100%; 
+  height: 100%;
+  background-image: url('/Users/Andrei_Sviridov/Desktop/React/frontend/src/images/back3.jpg'); 
+  background-size: cover;
+  background-position: center; 
+  transition: width 0.3s ease, padding 0.3s ease;
+  
+}
+ .body_main {
+  height: 100vh;
+  width: 100vw;
+  /* background-color: rgb(206, 206, 206); */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center; 
+  overflow-y: auto;
+  }
+
+   
+  .form_login{
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+  }

@@ -1,0 +1,91 @@
+.not_found{
+    position: absolute;
+    left: 45%;
+    top: 45%;
+}
+
+.favorites-container {
+    display: flex;
+    height: 100vh;  
+    background-image: url('/Users/Andrei_Sviridov/Desktop/React/frontend/src/images/back3.jpg');
+    background-size: cover;
+    background-position: center;
+    transition: width 0.3s ease, padding 0.3s ease;
+    padding-bottom: 5vh;
+    overflow: hidden;
+}
+
+
+.m_container{
+    margin-top: 6vh;
+    padding-top: 5vh;
+    display: flex;
+    width: 96%;
+    height: 90%;
+    flex-wrap: wrap;
+    padding: 3%;
+    gap: 10px;
+    overflow: auto;
+   
+}
+
+.applied_form_fav {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 20px;
+    width: 300px; 
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+    text-align: left; 
+}
+
+.back_button {
+    position: fixed;
+    left: 3vh;
+    top: 8vh;
+    background-color: transparent;
+    border: none; 
+    padding: 0;
+    cursor: pointer; 
+    display: flex; 
+    align-items: center;
+    justify-content: center; 
+}
+
+.arrow {
+    color: #000;
+    font-size: 24px;
+}
+.text.title_fav {
+    font-weight: bold;
+    font-size: 1.2em;
+    margin-bottom: 10px;
+}
+
+
+.text_fav {
+    margin: 5px 0;
+    font-size: 1em;
+    color: #555;
+}
+
+@media (max-width: 768px) {
+    .favorites-container {
+        justify-content: center;
+    }
+    .m_container {
+        justify-content: center;
+    }
+    .applied_form_fav {
+        width: 45%;
+    }
+}
+
+@media (max-width: 480px) {
+    .applied_form_fav {
+        width: 90%; 
+    }
+}
+
+
+

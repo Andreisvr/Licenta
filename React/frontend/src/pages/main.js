@@ -1,18 +1,17 @@
 import React from "react";
-import { Grid } from "@mui/material";
-function Main(){
+import "/Users/Andrei_Sviridov/Desktop/React/frontend/src/page_css/main.css"; // Asigură-te că calea este corectă.
+import "/Users/Andrei_Sviridov/Desktop/React/frontend/src/components/up_bar.js"
 
-    return(<>
-        <Grid >
-          <h1 >PAgina main</h1>
-        </Grid>
-        <Grid>
+function Main() {
+  return (
+   
+    <div className="body_main">
+      <p></p>
+      <p>skmvkvmsd</p>
+  
+    </div>
 
-        <h1>mvfd</h1>
-        </Grid>
-
-        </>
-    );
+  );
 }
 
-export default Main
+export default Main;

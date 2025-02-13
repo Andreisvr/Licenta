@@ -1,30 +1,45 @@
 import React, { useContext } from "react";
 import "/Users/Andrei_Sviridov/Desktop/React/frontend/src/page_css/UpBar.css";
-import LoginPage from "./login_btn";
-import { Button } from "@mui/material";
+import { googleLogout } from "@react-oauth/google";
 import { AppContext } from './AppContext'; 
+import { useNavigate } from "react-router";
 
 function PersonalForm() {
-    const { logined } = useContext(AppContext); // Accesează valoarea logined din context
+    const { logined, handleLogout } = useContext(AppContext);  
+    const navigate = useNavigate();
+
+    function goLogin() {
+        navigate('/login');
+    }
+
+    // Obține datele utilizatorului din localStorage
+    const userInfo = JSON.parse(localStorage.getItem('userInfo'));
 
     return (
-       <div>
-        <div id="form">
-           
-            {logined ? (
-                <div>
-                    {/* Afișează formularul dacă utilizatorul este autentificat */}
-                    <h2>Name Plate</h2>
-
-                <h2>Pagina Form</h2>
-                    <h2>Pagina Form</h2>
-                </div>
-            ) : (
-               
-                <LoginPage />
-            )}
+        <div>
+            <div className="form_account">
+                {logined && userInfo ? (
+                    <div>
+                      
+                        <h2>{userInfo.name}</h2>
+                        {/* <h2>{userInfo.email}</h2> */}
+                        {/* <h2>{userInfo.faculty}</h2> */}
+                        <button onClick={() => {
+                            googleLogout();
+                            handleLogout(); 
+                            goLogin();
+                        }} className="log_btn">
+                            Logout
+                        </button>
+                    </div>
+                ) : (
+                    <div className="enter_form">
+                        <a href="/login" className="link">Log in</a>
+                        <a href="/type" className="link">Register</a>
+                    </div>
+                )}
+            </div>
         </div>
-       </div>
     );
 }
 
