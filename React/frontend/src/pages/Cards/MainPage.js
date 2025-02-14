@@ -22,9 +22,12 @@ export default function Cabinet() {
     const [theses, setTheses] = useState([]);
     const [allTheses, setAllTheses] = useState([]);
     const [allApplications, setAllApplications] = useState([]);
-    const [viewType, setViewType] = useState("ALL");
+    
+    const [viewType, setViewType] = useState(localStorage.getItem("CardView") || "ALL");
+
     const [acceptedResponses, setAcceptedResponses] = useState([]);
    
+       
     //listele de date pentru cards 
     const[AppliedList,setAppliedList] = useState([]);
     const[MyThesisList,setMyThesisList] = useState([]);
@@ -47,6 +50,7 @@ export default function Cabinet() {
     const [id,setId] = useState('');
     const [is_confirmed,setConfirmed] = useState('');
     const [showLeftContainer, setShowLeftContainer] = useState(false); 
+    const [isVerified,setVerified] = useState('');
 
     const toggleLeftContainer = () => {
       setShowLeftContainer(!showLeftContainer);
@@ -57,8 +61,14 @@ export default function Cabinet() {
         localStorage.setItem('selectedThesis', JSON.stringify(thesis));
         
     };
-
     
+    useEffect(() => {
+        localStorage.setItem("CardView", viewType);  
+      
+       
+
+    }, [viewType]);
+
   
     useEffect(() => {
         fetch("http://localhost:8081/prof", {
@@ -71,7 +81,10 @@ export default function Cabinet() {
 
            
             setAllTheses(data);
-            setViewType("ALL");  
+            
+           
+                setViewType("ALL");  
+           
 
         })
         .catch((error) => console.error("Error fetching theses:", error));
@@ -87,7 +100,7 @@ export default function Cabinet() {
                 localStorage.setItem('userInfo', JSON.stringify(userInfo));
                 setId(userInfo.id);
                 setConfirmed(userInfo.thesis_confirmed);
-               
+                setVerified(userInfo.entered);
                 //console.log('user info', userInfo);
             })
             .catch((error) => console.error("Error fetching user info:", error));
@@ -272,7 +285,7 @@ export default function Cabinet() {
         setViewType("Accept");
     
        
-        console.log(id);
+       
        const Profid= id;
         fetch(`http://localhost:8081/Accepted/${Profid}`, {
             method: "GET",
@@ -662,7 +675,7 @@ export default function Cabinet() {
 }
 
 
-    {type === "professor" && (
+    {type === "professor" && isVerified == 1 && (
         <div className="add-button-container">
             <AddCircleOutlineIcon onClick={handleClickAdd} className="add_button" />
         </div>

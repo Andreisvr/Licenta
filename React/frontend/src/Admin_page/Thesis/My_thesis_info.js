@@ -3,6 +3,8 @@ import { useNavigate } from "react-router";
 import '/Users/Andrei_Sviridov/Desktop/React/frontend/src/page_css/Prof_role/My_thesis_info.css';
 import { AppContext } from "../../components/AppContext";
 
+import ArrowBackIcon from '@mui/icons-material/ArrowBack'; 
+
 export default function ThesisModify_Admin() {
   
   const [thesisData, setThesisData] = useState(null);
@@ -45,6 +47,11 @@ export default function ThesisModify_Admin() {
         return updatedData;
     });
 };
+
+const handleBack = () => {
+  navigate("/Admin_Page");
+};
+
   const handleApply = (e) => {
         e.preventDefault();  
         const formattedData = {
@@ -88,7 +95,11 @@ export default function ThesisModify_Admin() {
   
   return (
     <div className="th_info_body">
+      
       <form className="left_form">
+      <button  className="back-button" onClick={handleBack}>
+                            <ArrowBackIcon />
+                        </button>
         <label className="label_modify">
           Title:
           <input className="input_modify"

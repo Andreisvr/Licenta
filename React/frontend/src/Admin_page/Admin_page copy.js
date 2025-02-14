@@ -7,7 +7,7 @@ import CreateIcon from '@mui/icons-material/Create';
 import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
 import { useNavigate } from "react-router";
 import { AppContext } from "../components/AppContext";
-
+import CloseIcon from '@mui/icons-material/Close';
 
 export default function Admin_Page() {
     const { handleThesisId } = useContext(AppContext); 
@@ -21,6 +21,22 @@ export default function Admin_Page() {
     const navigate = useNavigate();
    
     useEffect(() => {
+        const savedFaculty = localStorage.getItem("selectedFaculty");
+        const savedProgram = localStorage.getItem("selectedProgram");
+    
+        const savedList = localStorage.getItem("lastViewedList");
+       
+        if (savedList) {
+        setSelectedList(savedList);  
+        }
+        if (savedFaculty) {
+            setFaculty(savedFaculty);
+        }
+    
+        if (savedProgram) {
+            setProgram(savedProgram);
+        }
+        
         if (faculty) {
             setFacultyError(false);
 
@@ -53,12 +69,21 @@ export default function Admin_Page() {
     }, [faculty]);
 
     const handleSelection = (faculty, program) => {
-        setFaculty(faculty);
-        setProgram(program);
+       
+            setFaculty(faculty);
+            setProgram(program);
+            
+           
+            localStorage.setItem("selectedFaculty", faculty);
+            localStorage.setItem("selectedProgram", program);
+       
+        
     };
 
     const handleListSelection = (listName) => {
         setSelectedList(listName);
+       
+        localStorage.setItem("lastViewedList", listName);
     };
     
     function HandleInfo(id) {
@@ -103,6 +128,101 @@ export default function Admin_Page() {
     }
     
     
+   async function Delet_student(id) {
+    if (!window.confirm(`Sigur vrei să elimini acest Student cu ID-ul ${id}?`)) return;
+    try {
+        const response = await fetch("http://localhost:8081/delet_student_admin", {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ id }),
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.error || "Eroare la ștergere.");
+        }
+
+        console.log("Succes:", result.message);
+        alert("Studentul a fost ștears cu succes!");
+        
+        
+        window.location.reload();
+    } catch (error) {
+        console.error("Eroare:", error);
+        alert("A apărut o eroare la ștergere.");
+    }
+
+    
+   } 
+
+
+   async function VerifieProfesor(id,entered) {
+    if(entered == 0 ){
+    if (!window.confirm(`Sigur doriti sa acceptati acest user ca Profesor cu posibilitatea de a adauga teme de teza ID : ${id}?`)) return;
+    }else if(entered == 1 ){
+
+    if (!window.confirm(`Sigur doriti sa retrageti acest user ca Profesor fara posibilitatea de a adauga teme de teza ID : ${id}?`)) return;
+    }
+   
+    try {
+        const response = await fetch("http://localhost:8081/Verify_Profesor", {
+            method: "PUT",  
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ id,entered }),  
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.error || "Eroare la actualizare.");
+        }
+
+        console.log("Succes:", result.message);
+        alert("Profesorul a fost verificat cu succes!");
+        
+        window.location.reload();  
+    } catch (error) {
+        console.error("Eroare:", error);
+        alert("A apărut o eroare la verificare.");
+    }
+    
+   }
+
+  async function Delete_Profesor(id)
+   {
+    if (!window.confirm(`Sigur vrei să elimini acest Student cu ID-ul ${id}?`)) return;
+    try {
+        const response = await fetch("http://localhost:8081/delet_profesor_admin", {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ id }),
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.error || "Eroare la ștergere.");
+        }
+
+        console.log("Succes:", result.message);
+        alert("Profesorul a fost ștears cu succes!");
+        
+        
+        window.location.reload();
+    } catch (error) {
+        console.error("Eroare:", error);
+        alert("A apărut o eroare la ștergere.");
+    }
+}
+
+
 
     return (
         <div className="body_prof">
@@ -135,12 +255,17 @@ export default function Admin_Page() {
                                     <p className="text_info"><strong>Name: </strong> {prof.name}</p> 
                                     <p className="text_info"><strong>Email: </strong> {prof.email}</p> 
                                     <p className="text_info"><strong>Verified: </strong> {prof.entered}</p> 
+                                    <p className="text_info"><strong>ID: </strong> {prof.id}</p>
                                     </div>
                                     <div className="button_grp">
-                                        <InfoIcon className="InfoIcon" />
-                                        <DeleteOutlineIcon className="DeleteOutlineIcon"/>
-                                        <VerifiedUserIcon className="VerifiedUserIcon"/>
                                         
+                                        <DeleteOutlineIcon className="DeleteOutlineIcon" onClick={() => Delete_Profesor(prof.id)}/>
+                                       
+                                         {prof.entered === 0 ? (
+                                        <VerifiedUserIcon  className="VerifiedUserIcon" onClick={() => VerifieProfesor(prof.id,prof.entered)}  />
+                                      ) : (
+                                        <CloseIcon className="CloseIcon" onClick={() => VerifieProfesor(prof.id,prof.entered)} />
+                                      )}
                                     </div>
                                 </div>
                             ))}
@@ -152,14 +277,17 @@ export default function Admin_Page() {
                             {students.map((student, index) => (
                                 <div key={index} className="list-item">
                                     <div className="informations">
-                                <p className="text_info"><strong>Name: </strong>{student.name}</p> 
-                                <p className="text_info"> <strong>Email: </strong> {student.email} </p>
-                                <p className="text_info"> <strong>Study Year: </strong>{student.study_year} </p>
-                                <p className="text_info"> <strong>Have Thesis: </strong>{student.thesis_confirmed} </p>
+                                        <p className="text_info"> <strong>ID: </strong>{student.id} </p>
+                                        <p className="text_info"><strong>Name: </strong>{student.name}</p> 
+                                        <p className="text_info"> <strong>Email: </strong> {student.email} </p>
+                                        <p className="text_info"> <strong>Study Program: </strong>{student.ProgramStudy} </p>
+                                        <p className="text_info"> <strong>Study Year: </strong>{student.study_year} </p>
+                                        <p className="text_info"> <strong>Have Thesis: </strong>{student.thesis_confirmed} </p>
+                                    
                                 </div>
                                 <div className="button_grp">
-                                        <InfoIcon className="InfoIcon" />
-                                        <DeleteOutlineIcon className="DeleteOutlineIcon"/>
+                                      
+                                        <DeleteOutlineIcon className="DeleteOutlineIcon" onClick={() => Delet_student(student.id)}/>
                                         
                                         
                                     </div>

@@ -96,15 +96,11 @@ function RegFormStudent() {
 
     if (!faculty) {
       showErrorPopup('Please select a faculty');
-      setFacultyError('Please select a faculty');
+      setFacultyError('Please select a faculty Program is not mandatory');
       return;
     }
 
-    // if (!program) {
-    //   showErrorPopup('Please select a study program');
-    //   setProgramError('Please select a study program');
-    //   return;
-    // }
+    
 
     setUserData({
       name: `${firstName} ${lastName}`,
@@ -125,51 +121,47 @@ function RegFormStudent() {
     setProgramError('');
     setPasswordError('');
     setConfirmPasswordError('');
-
+  
     if (!fullName) {
       setFullNameError('Please enter your full name');
-      return;
+      return; 
     }
-
+  
     if (!faculty) {
       setFacultyError('Please select a faculty');
-      return;
+      return; 
     }
-
-    // if (!program) {
-    //   setProgramError('Please select a study program');
-    //   return;
-    // }
-
+  
     if (!email) {
       setEmailError('Please enter your email');
+      return; 
+    }
+  
+    if (!/^[\w-\.]+@e-uvt\.ro$/.test(email)) {
+      setEmailError('Please enter a valid email with @e-uvt.ro');
       return;
     }
-
-    // if (!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)) {
-    //   setEmailError('Please enter a valid email');
-    //   return;
-    // }
-
+  
     if (!password) {
       setPasswordError('Please enter a password');
+      return; 
+    }
+  
+    if (password.length < 8) {
+      setPasswordError('The password must be 8 characters or longer');
       return;
     }
-
-    // if (password.length < 8) {
-    //   setPasswordError('The password must be 8 characters or longer');
-    //   return;
-    // }
-
-    // if (!/[A-Z]/.test(password) && !/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
-    //   setPasswordError('The password must contain at least one uppercase letter or one special character');
-    //   return;
-    // }
-
+  
+    if (!/[A-Z]/.test(password) && !/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+      setPasswordError('The password must contain at least one uppercase letter or one special character');
+      return; 
+    }
+  
     if (password !== confirmPassword) {
       setConfirmPasswordError('Passwords do not match');
       return;
     }
+  
     setUserData({
       program: program,
       faculty: faculty,
@@ -179,50 +171,67 @@ function RegFormStudent() {
     });
     setShowTermsForm(true);
   };
+  
 
   const handleVerification = async (event) => {
     event.preventDefault();
-  
-    if (verificationCode === generatedCode) {
-      const userDataToSend = {
-        name: UserData.name,
-        email: UserData.email,
-        password: UserData.password || null, 
-        gmail_password: UserData.gmailPass || null, 
-        faculty: UserData.faculty,
-        cv_link: null,
-      };
-      //console.log('Date trimise:', userDataToSend);
-  
-      try {
-        const response = await fetch('http://localhost:8081/reg', {
-            method: 'POST', 
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(userDataToSend),
 
+
+    fetch(`http://localhost:8081/Verify_Profesor?email=${UserData.email}`)
+        .then((response) => response.json())
+        .then(async (data) => {
+          
+
+            let userDataToSend = {
+                name: UserData.name,
+                email: UserData.email,
+                password: UserData.password || null, 
+                gmail_password: UserData.gmailPass || null, 
+                faculty: UserData.faculty,
+                cv_link: null,
+                entered: 0, 
+            };
+
+            
+            if (data.found) {
+                userDataToSend.entered = 1;
+            }
+
+            
+            if (verificationCode === generatedCode) {
+                try {
+                    const response = await fetch('http://localhost:8081/reg', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(userDataToSend),
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                       
+                        navigate('/login');
+                    } else if (response.status === 409) {
+                        const errorData = await response.json();
+                        alert(`Eroare la înregistrare: ${errorData.message}`);
+                    } else {
+                        const errorData = await response.json();
+                        alert(`Eroare la înregistrare: ${errorData.message}`);
+                    }
+                } catch (error) {
+                    console.error('Eroare la trimiterea datelor:', error);
+                    alert('A apărut o eroare la înregistrare. Vă rugăm să încercați din nou.');
+                }
+            } else {
+                alert('Codul de verificare este incorect. Vă rugăm să încercați din nou.');
+            }
+        })
+        .catch((error) => {
+            console.error("Error fetching verification data:", error);
         });
-    
-        if (response.ok) {
-          const data = await response.json();
-          console.log(data.message);
-          navigate('/login');
-      } else if (response.status === 409) {
-          const errorData = await response.json();
-          alert(`Eroare la înregistrare: ${errorData.message}`);
-      } else {
-          const errorData = await response.json();
-          alert(`Eroare la înregistrare: ${errorData.message}`);
-      }
-  } catch (error) {
-      console.error('Eroare la trimiterea datelor:', error);
-      alert('A apărut o eroare la înregistrare. Vă rugăm să încercați din nou.');
-  }
-} else {
-  alert('Codul de verificare este incorect. Vă rugăm să încercați din nou.');
-}
 };
+
 
 
 

@@ -34,14 +34,43 @@ db.connect(err => {
 
 
 
+app.get('/Verify_Profesor', (req, res) => {
+    const email = req.query.email;
+
+   
+    if (!email) {
+        return res.status(400).json({ error: "Email-ul este obligatoriu." });
+    }
+
+    const query = 'SELECT * FROM profesorii WHERE email = ?';
+    
+    db.query(query, [email], (err, results) => {
+        if (err) {
+            console.error("Eroare la verificarea email-ului:", err);
+            return res.status(500).json({ error: "Eroare la server." });
+        }
+
+        if (results.length > 0) {
+            
+            return res.json({ found: true });
+        } else {
+            
+            return res.json({ found: false });
+        }
+    });
+});
+
+
+
 app.post('/reg', async (req, res) => {
-    const { name, email, password, gmail_password, faculty, cv_link } = req.body;
- 
+    const { name, email, password, gmail_password, faculty, cv_link, entered } = req.body;
+
     let hashedPassword = '';
+  
 
     if (password) {
         try {
-            hashedPassword = await bcrypt.hash(password, 10);
+         hashedPassword = await bcrypt.hash(password, 10);
         } catch (error) {
             console.error('Eroare la criptarea parolei:', error);
             return res.status(500).json({ message: 'Eroare la criptarea parolei.' });
@@ -49,26 +78,37 @@ app.post('/reg', async (req, res) => {
     }
 
     try {
-       
-        await db.query('INSERT INTO profesorii_neverificati SET ?', {
-            faculty: faculty,
-            email: email,
-            name: name,
-            password: hashedPassword || password, 
-            gmail_password: gmail_password,
-            entered: 0,
-            cv_link: cv_link,
-            prof: 1
-        });
-
-        
-        res.json({
-            message: 'Profesorul a fost înregistrat cu succes!'
-        });
+        if (entered === 1) {
+           
+            await db.query('UPDATE profesorii SET entered = 1 WHERE email = ?', [email]);
+            await db.query('INSERT INTO profesorii_neverificati SET ?', {
+                faculty: faculty,
+                email: email,
+                name: name,
+                password: hashedPassword || password,
+                gmail_password: gmail_password,
+                entered: 1,
+                cv_link: cv_link,
+                prof: 1
+            });
+            res.json({ message: 'Profesorul a fost verificat cu succes!' });
+        } else {
+            
+            await db.query('INSERT INTO profesorii_neverificati SET ?', {
+                faculty: faculty,
+                email: email,
+                name: name,
+                password: hashedPassword || password,
+                gmail_password: gmail_password,
+                entered: 0,
+                cv_link: cv_link,
+                prof: 1
+            });
+            res.json({ message: 'Profesorul a fost înregistrat cu succes!' });
+        }
     } catch (error) {
         console.error('Eroare la înregistrare:', error);
 
-        
         if (error.code === 'ER_DUP_ENTRY') {
             res.status(409).json({ message: 'Email-ul este deja înregistrat.' });
         } else {
@@ -1691,8 +1731,9 @@ app.get('/get_thesis/:thesis_id', (req, res) => {
 
 //==================================================Admin_Page================================================
 
+
 app.get("/getAllTheses", (req, res) => {
-    const { faculty } = req.query; // Facultatea vine ca parametru în query
+    const { faculty } = req.query; 
 
     if (!faculty) {
         return res.status(400).json({ error: "Trebuie să selectezi o facultate!" });
@@ -1709,9 +1750,9 @@ app.get("/getAllTheses", (req, res) => {
     });
 });
 
-// Ruta pentru a obține studenții dintr-o facultate selectată
+
 app.get("/getStudents", (req, res) => {
-    const { faculty } = req.query; // Facultatea vine ca parametru în query
+    const { faculty } = req.query; 
 
     if (!faculty) {
         return res.status(400).json({ error: "Trebuie să selectezi o facultate!" });
@@ -1775,12 +1816,93 @@ app.get("/thesis_admin", (req, res) => {
 
 app.delete("/thesis_admin", (req, res) => {
     const { id } = req.body;
-    console.log(id);
+   
     if (!id) {
         return res.status(400).json({ error: "ID-ul tezei lipsește." });
     }
 
     const query = "DELETE FROM theses WHERE id = ?";
+
+    db.query(query, [id], (err, results) => {
+        if (err) {
+            console.error("Eroare la ștergerea tezei:", err);
+            return res.status(500).json({ error: "Eroare la ștergerea tezei." });
+        }
+
+        if (results.affectedRows === 0) {
+            return res.status(404).json({ error: "Teza nu a fost găsită." });
+        }
+
+        res.json({ message: "Teza a fost ștearsă cu succes." });
+    });
+});
+
+
+
+app.delete("/delet_student_admin", (req, res) => {
+    const { id } = req.body;
+   
+    if (!id) {
+        return res.status(400).json({ error: "ID-ul tezei lipsește." });
+    }
+
+    const query = "DELETE FROM studentii WHERE id = ?";
+
+    db.query(query, [id], (err, results) => {
+        if (err) {
+            console.error("Eroare la ștergerea tezei:", err);
+            return res.status(500).json({ error: "Eroare la ștergerea tezei." });
+        }
+
+        if (results.affectedRows === 0) {
+            return res.status(404).json({ error: "Teza nu a fost găsită." });
+        }
+
+        res.json({ message: "Teza a fost ștearsă cu succes." });
+    });
+});
+
+
+
+app.put("/Verify_Profesor", (req, res) => {
+    const { id, entered } = req.body;
+
+    if (!id) {
+        return res.status(400).json({ error: "ID-ul profesorului lipsește." });
+    }
+
+    if (entered !== 0 && entered !== 1) {
+        return res.status(400).json({ error: "Valoare invalidă pentru entered." });
+    }
+
+    const query = entered === 0
+        ? "UPDATE profesorii_neverificati SET entered = 1 WHERE id = ?"
+        : "UPDATE profesorii_neverificati SET entered = 0 WHERE id = ?";
+
+    db.query(query, [id], (err, results) => {
+        if (err) {
+            console.error("Eroare la actualizare:", err);
+            return res.status(500).json({ error: "Eroare la actualizare." });
+        }
+
+        if (results.affectedRows === 0) {
+            return res.status(404).json({ error: "Profesorul nu a fost găsit." });
+        }
+
+        res.json({ message: "Profesorul a fost verificat cu succes." });
+    });
+});
+
+
+
+app.delete("/delet_profesor_admin", (req, res) => {
+    const { id } = req.body;
+   
+    if (!id) {
+        return res.status(400).json({ error: "ID-ul tezei lipsește." });
+    }
+
+    const query = "DELETE FROM profesorii_neverificati WHERE id = ?";
 
     db.query(query, [id], (err, results) => {
         if (err) {

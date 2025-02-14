@@ -54,7 +54,7 @@ p {
     align-items: center; 
 }
 
-.InfoIcon, .DeleteOutlineIcon,.CreateIcon {
+.InfoIcon, .DeleteOutlineIcon,.CreateIcon,.CloseIcon {
     font-size: 40px  !important; 
     cursor: pointer; 
     transition: transform 0.3s ease;
