@@ -520,7 +520,7 @@ app.delete('/prof/:id', (req, res) => {
     const deleteAccepted = 'DELETE FROM AcceptedApplication WHERE id_thesis = ?';
     const deleteConfirmed = 'DELETE FROM confirmed WHERE id_thesis = ?';
 
-    // Executăm toate interogările într-o tranzacție pentru consistență
+   
     db.beginTransaction((err) => {
         if (err) {
             console.error("Error starting transaction:", err);
@@ -541,7 +541,7 @@ app.delete('/prof/:id', (req, res) => {
                 });
             }
 
-            // Șterge înregistrările asociate în alte tabele
+            
             db.query(deleteAplies, [thesisId], (err) => {
                 if (err) {
                     console.error("Error deleting from Applies:", err);
@@ -574,7 +574,7 @@ app.delete('/prof/:id', (req, res) => {
                                 });
                             }
 
-                            // Confirmăm tranzacția
+                           
                             db.commit((err) => {
                                 if (err) {
                                     console.error("Error committing transaction:", err);
@@ -1788,6 +1788,21 @@ app.get("/getAllProfessors", (req, res) => {
 });
 
 
+app.get("/getAllConfirmed", (req, res) => {
+   
+    const sql = "SELECT * FROM confirmed";
+
+    db.query(sql, [], (err, result) => {
+        if (err) {
+            console.error("Eroare la interogarea studenților:", err);
+            return res.status(500).json({ error: "Eroare la preluarea studenților" });
+        }
+        res.json(result);
+    });
+});
+
+
+
 
 app.get("/thesis_admin", (req, res) => {
     const { id } = req.query;
@@ -1815,53 +1830,172 @@ app.get("/thesis_admin", (req, res) => {
 
 
 app.delete("/thesis_admin", (req, res) => {
-    const { id } = req.body;
+  
    
-    if (!id) {
-        return res.status(400).json({ error: "ID-ul tezei lipsește." });
-    }
+    const {id} = req.body;
 
-    const query = "DELETE FROM theses WHERE id = ?";
+    const deleteThesis = 'DELETE FROM theses WHERE id = ?';
+    const deleteAplies = 'DELETE FROM Applies WHERE id_thesis = ?';
+    const deleteFavorites = 'DELETE FROM favorite WHERE id_thesis = ?';
+    const deleteAccepted = 'DELETE FROM AcceptedApplication WHERE id_thesis = ?';
+    const deleteConfirmed = 'DELETE FROM confirmed WHERE id_thesis = ?';
 
-    db.query(query, [id], (err, results) => {
+    
+    db.beginTransaction((err) => {
         if (err) {
-            console.error("Eroare la ștergerea tezei:", err);
-            return res.status(500).json({ error: "Eroare la ștergerea tezei." });
+            console.error("Error starting transaction:", err);
+            return res.status(500).json({ message: 'Error starting transaction' });
         }
 
-        if (results.affectedRows === 0) {
-            return res.status(404).json({ error: "Teza nu a fost găsită." });
-        }
+        db.query(deleteThesis, [id], (err, result) => {
+            if (err) {
+                console.error("Error deleting thesis:", err);
+                return db.rollback(() => {
+                    res.status(500).json({ message: 'Error deleting thesis' });
+                });
+            }
 
-        res.json({ message: "Teza a fost ștearsă cu succes." });
+            if (result.affectedRows === 0) {
+                return db.rollback(() => {
+                    res.status(404).json({ message: 'deleteThesis Thesis not found' });
+                });
+            }
+
+          
+            db.query(deleteAplies, [id], (err) => {
+                if (err) {
+                    console.error("Error deleting from Applies:", err);
+                    return db.rollback(() => {
+                        res.status(500).json({ message: 'Error deleting from Applies' });
+                    });
+                }
+
+                db.query(deleteFavorites, [id], (err) => {
+                    if (err) {
+                        console.error("Error deleting from favorite:", err);
+                        return db.rollback(() => {
+                            res.status(500).json({ message: 'Error deleting from favorite' });
+                        });
+                    }
+
+                    db.query(deleteAccepted, [id], (err) => {
+                        if (err) {
+                            console.error("Error deleting from AcceptedApplication:", err);
+                            return db.rollback(() => {
+                                res.status(500).json({ message: 'Error deleting from AcceptedApplication' });
+                            });
+                        }
+
+                        db.query(deleteConfirmed, [id], (err) => {
+                            if (err) {
+                                console.error("Error deleting from confirmed:", err);
+                                return db.rollback(() => {
+                                    res.status(500).json({ message: 'Error deleting from confirmed' });
+                                });
+                            }
+
+                            
+                            db.commit((err) => {
+                                if (err) {
+                                    console.error("Error committing transaction:", err);
+                                    return db.rollback(() => {
+                                        res.status(500).json({ message: 'Error committing transaction' });
+                                    });
+                                }
+
+                                res.status(200).json({ message: 'Thesis and associated records deleted successfully' });
+                            });
+                        });
+                    });
+                });
+            });
+        });
     });
 });
 
 
-
-app.delete("/delet_student_admin", (req, res) => {
+app.delete("/delete_student_admin", (req, res) => {
     const { id } = req.body;
    
     if (!id) {
-        return res.status(400).json({ error: "ID-ul tezei lipsește." });
+        return res.status(400).json({ error: "Student ID is missing." });
     }
 
-    const query = "DELETE FROM studentii WHERE id = ?";
+   
+    const deleteStudent = "DELETE FROM studentii WHERE id = ?";
+    const deleteApplies = "DELETE FROM Applies WHERE id_stud = ?";
+    const deleteFavorites = "DELETE FROM favorite WHERE id_user = ?";
+    const deleteAccepted = "DELETE FROM AcceptedApplication WHERE stud_id = ?";
+    const deleteConfirmed = "DELETE FROM confirmed WHERE id_stud = ?";
+    const deleteMessages = "DELETE FROM messages WHERE id_stud = ?";
 
-    db.query(query, [id], (err, results) => {
+    db.beginTransaction((err) => {
         if (err) {
-            console.error("Eroare la ștergerea tezei:", err);
-            return res.status(500).json({ error: "Eroare la ștergerea tezei." });
+            console.error("Error starting transaction:", err);
+            return res.status(500).json({ error: "Error starting transaction." });
         }
 
-        if (results.affectedRows === 0) {
-            return res.status(404).json({ error: "Teza nu a fost găsită." });
-        }
+        db.query(deleteStudent, [id], (err, results) => {
+            if (err) {
+                console.error("Error deleting student:", err);
+                return db.rollback(() => res.status(500).json({ error: "Error deleting student." }));
+            }
 
-        res.json({ message: "Teza a fost ștearsă cu succes." });
+            if (results.affectedRows === 0) {
+                return db.rollback(() => res.status(404).json({ error: "Student not found." }));
+            }
+
+            
+            db.query(deleteApplies, [id], (err) => {
+                if (err) {
+                    console.error("Error deleting from Applies:", err);
+                    return db.rollback(() => res.status(500).json({ error: "Error deleting from Applies." }));
+                }
+
+                
+                db.query(deleteFavorites, [id], (err) => {
+                    if (err) {
+                        console.error("Error deleting from favorite:", err);
+                        return db.rollback(() => res.status(500).json({ error: "Error deleting from favorite." }));
+                    }
+
+                   
+                    db.query(deleteAccepted, [id], (err) => {
+                        if (err) {
+                            console.error("Error deleting from AcceptedApplication:", err);
+                            return db.rollback(() => res.status(500).json({ error: "Error deleting from AcceptedApplication." }));
+                        }
+
+                       
+                        db.query(deleteConfirmed, [id], (err) => {
+                            if (err) {
+                                console.error("Error deleting from confirmed:", err);
+                                return db.rollback(() => res.status(500).json({ error: "Error deleting from confirmed." }));
+                            }
+
+                            db.query(deleteMessages, [id], (err) => {
+                                if (err) {
+                                    console.error("Error deleting from messages:", err);
+                                    return db.rollback(() => res.status(500).json({ error: "Error deleting from messages." }));
+                                }
+
+                            
+                                db.commit((err) => {
+                                    if (err) {
+                                        console.error("Error committing transaction:", err);
+                                        return db.rollback(() => res.status(500).json({ error: "Error committing transaction." }));
+                                    }
+
+                                    res.json({ message: "Student and related records successfully deleted." });
+                                });
+                            });
+                        });
+                    });
+                });
+            });
+        });
     });
 });
-
 
 
 app.put("/Verify_Profesor", (req, res) => {
@@ -1902,18 +2036,112 @@ app.delete("/delet_profesor_admin", (req, res) => {
         return res.status(400).json({ error: "ID-ul tezei lipsește." });
     }
 
-    const query = "DELETE FROM profesorii_neverificati WHERE id = ?";
 
-    db.query(query, [id], (err, results) => {
+
+   
+    const deleteStudent = "DELETE FROM profesorii_neverificati WHERE id = ?";
+    const deleteApplies = "DELETE FROM Applies WHERE id_prof = ?";
+    const deleteFavorites = "DELETE FROM favorite WHERE id_user = ?";
+    const deleteAccepted = "DELETE FROM AcceptedApplication WHERE id_prof = ?";
+    const deleteConfirmed = "DELETE FROM confirmed WHERE id_prof = ?";
+    const deleteMessages = "DELETE FROM messages WHERE id_prof = ?";
+
+    db.beginTransaction((err) => {
         if (err) {
-            console.error("Eroare la ștergerea tezei:", err);
-            return res.status(500).json({ error: "Eroare la ștergerea tezei." });
+            console.error("Error starting transaction:", err);
+            return res.status(500).json({ error: "Error starting transaction." });
         }
 
-        if (results.affectedRows === 0) {
-            return res.status(404).json({ error: "Teza nu a fost găsită." });
-        }
+        db.query(deleteStudent, [id], (err, results) => {
+            if (err) {
+                console.error("Error deleting student:", err);
+                return db.rollback(() => res.status(500).json({ error: "Error deleting student." }));
+            }
 
-        res.json({ message: "Teza a fost ștearsă cu succes." });
+            if (results.affectedRows === 0) {
+                return db.rollback(() => res.status(404).json({ error: "Student not found." }));
+            }
+
+            
+            db.query(deleteApplies, [id], (err) => {
+                if (err) {
+                    console.error("Error deleting from Applies:", err);
+                    return db.rollback(() => res.status(500).json({ error: "Error deleting from Applies." }));
+                }
+
+                
+                db.query(deleteFavorites, [id], (err) => {
+                    if (err) {
+                        console.error("Error deleting from favorite:", err);
+                        return db.rollback(() => res.status(500).json({ error: "Error deleting from favorite." }));
+                    }
+
+                   
+                    db.query(deleteAccepted, [id], (err) => {
+                        if (err) {
+                            console.error("Error deleting from AcceptedApplication:", err);
+                            return db.rollback(() => res.status(500).json({ error: "Error deleting from AcceptedApplication." }));
+                        }
+
+                       
+                        db.query(deleteConfirmed, [id], (err) => {
+                            if (err) {
+                                console.error("Error deleting from confirmed:", err);
+                                return db.rollback(() => res.status(500).json({ error: "Error deleting from confirmed." }));
+                            }
+
+                            db.query(deleteMessages, [id], (err) => {
+                                if (err) {
+                                    console.error("Error deleting from messages:", err);
+                                    return db.rollback(() => res.status(500).json({ error: "Error deleting from messages." }));
+                                }
+
+                            
+                                db.commit((err) => {
+                                    if (err) {
+                                        console.error("Error committing transaction:", err);
+                                        return db.rollback(() => res.status(500).json({ error: "Error committing transaction." }));
+                                    }
+
+                                    res.json({ message: "Profesor and related records successfully deleted." });
+                                });
+                            });
+                        });
+                    });
+                });
+            });
+        });
     });
 });
+
+
+
+
+app.delete('/delete_confirmation_admin', (req, res) => {
+    const { id, id_stud } = req.body; 
+    
+  
+    const deleteConfirmedSql = 'DELETE FROM confirmed WHERE id = ?';
+    db.query(deleteConfirmedSql, [id], (err, result) => {
+        if (err) {
+            console.error("Error deleting confirmation:", err);
+            return res.status(500).json({ message: 'Error deleting confirmation' });
+        }
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: 'Confirmation not found' });
+        }
+
+    
+        const updateStudentSql = 'UPDATE studentii SET thesis_confirmed = 0 WHERE id = ?';
+        db.query(updateStudentSql, [id_stud], (err, result) => {
+            if (err) {
+                console.error("Error updating student:", err);
+                return res.status(500).json({ message: 'Error updating student' });
+            }
+
+            res.status(200).json({ message: 'Confirmation withdrawn and student updated successfully' });
+        });
+    });
+});
+

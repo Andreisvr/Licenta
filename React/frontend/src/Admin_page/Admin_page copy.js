@@ -10,64 +10,91 @@ import { AppContext } from "../components/AppContext";
 import CloseIcon from '@mui/icons-material/Close';
 
 export default function Admin_Page() {
-    const { handleThesisId } = useContext(AppContext); 
+    const { handleThesisId,handleConfirm } = useContext(AppContext); 
     const [theses, setAllTheses] = useState([]);
     const [professors, setAllProfessors] = useState([]);
     const [students, setAllStudents] = useState([]);
+    const [confirmed, setAllConfirmed] = useState([]);
+    const [finalList, setFinalList] = useState([]);
     const [facultyError, setFacultyError] = useState(false);
     const [faculty, setFaculty] = useState('');
     const [program, setProgram] = useState('');
     const [selectedList, setSelectedList] = useState('professors'); 
     const navigate = useNavigate();
-   
     useEffect(() => {
-        const savedFaculty = localStorage.getItem("selectedFaculty");
-        const savedProgram = localStorage.getItem("selectedProgram");
+        const admin = localStorage.getItem("admin");
+        if (admin === 'admin') {
+            const savedFaculty = localStorage.getItem("selectedFaculty");
+            const savedProgram = localStorage.getItem("selectedProgram");
     
-        const savedList = localStorage.getItem("lastViewedList");
-       
-        if (savedList) {
-        setSelectedList(savedList);  
-        }
-        if (savedFaculty) {
-            setFaculty(savedFaculty);
-        }
+            const savedList = localStorage.getItem("lastViewedList");
     
-        if (savedProgram) {
-            setProgram(savedProgram);
-        }
-        
-        if (faculty) {
-            setFacultyError(false);
-
-            fetch(`http://localhost:8081/getAllTheses?faculty=${faculty}`)
-                .then((response) => response.json())
-                .then((data) => {
-                    setAllTheses(data);
-                    console.log('Teze:', data);
+            if (savedList) {
+                setSelectedList(savedList);  
+            }
+            if (savedFaculty) {
+                setFaculty(savedFaculty);
+            }
+    
+            if (savedProgram) {
+                setProgram(savedProgram);
+            }
+    
+            if (faculty) {
+                setFacultyError(false);
+    
+                // Fetch all data concurrently using Promise.all
+                Promise.all([
+                    fetch(`http://localhost:8081/getAllTheses?faculty=${faculty}`).then(res => res.json()),
+                    fetch(`http://localhost:8081/getAllProfessors?faculty=${faculty}`).then(res => res.json()),
+                    fetch(`http://localhost:8081/getStudents?faculty=${faculty}`).then(res => res.json()),
+                    fetch(`http://localhost:8081/getAllConfirmed`).then(res => res.json())
+                ])
+                .then(([thesesData, professorsData, studentsData, confirmedData]) => {
+                    setAllTheses(thesesData);
+                    setAllProfessors(professorsData);
+                    setAllStudents(studentsData);
+                    setAllConfirmed(confirmedData);
+    
+                    // console.log('Teze:', thesesData);
+                    // console.log('Profesori:', professorsData);
+                    // console.log('Studenții:', studentsData);
+                    // console.log('Confirmed:', confirmedData);
+    
+                   
+                    const combinedList = combineInfo(confirmedData, studentsData, professorsData, thesesData);
+                    setFinalList(combinedList);
+                    //console.log("finalList:", combinedList);
                 })
-                .catch((error) => console.error("Error fetching theses:", error));
-
-            fetch(`http://localhost:8081/getAllProfessors?faculty=${faculty}`)
-                .then((response) => response.json())
-                .then((data) => {
-                    setAllProfessors(data);
-                    console.log('Profesori:', data);
-                })
-                .catch((error) => console.error("Error fetching professors:", error));
-
-            fetch(`http://localhost:8081/getStudents?faculty=${faculty}`)
-                .then((response) => response.json())
-                .then((data) => {
-                    setAllStudents(data);
-                    console.log('Studenții:', data);
-                })
-                .catch((error) => console.error("Error fetching students:", error));
-        } else {
-            setFacultyError(true);
+                .catch((error) => console.error("Error fetching data:", error));
+            } else {
+                setFacultyError(true);
+            }
         }
     }, [faculty]);
+    
 
+    function combineInfo(confirmed, students, professors, theses) {
+        return confirmed.map(item => {
+          
+          const student = students.find(s => s.id === item.id_stud);
+      
+          
+          const professor = professors.find(p => p.id === item.id_prof);
+      
+         
+          const thesis = theses.find(t => t.id === item.id_thesis);
+      
+    
+          return {
+            ...item,
+            student: student || {},
+            professor: professor || {},
+            thesis: thesis || {}
+          };
+        });
+    }
+    
     const handleSelection = (faculty, program) => {
        
             setFaculty(faculty);
@@ -99,7 +126,8 @@ export default function Admin_Page() {
     }
     
     async function HandleDelete_Thesis(id) {
-        if (!window.confirm("Sigur vrei să ștergi această teză?")) return;
+        if (!window.confirm("Are you sure you want to delete this thesis? It will be removed from all fields, even if it has been confirmed by someone.")) return;
+
     
         try {
             const response = await fetch("http://localhost:8081/thesis_admin", {
@@ -129,9 +157,10 @@ export default function Admin_Page() {
     
     
    async function Delet_student(id) {
-    if (!window.confirm(`Sigur vrei să elimini acest Student cu ID-ul ${id}?`)) return;
+    if (!window.confirm(`Are you sure you want to delete this student? It will be removed from all fields, even if it has been confirmed by someone. Student ID-ul ${id}?`)) return;
+    
     try {
-        const response = await fetch("http://localhost:8081/delet_student_admin", {
+        const response = await fetch("http://localhost:8081/delete_student_admin", {
             method: "DELETE",
             headers: {
                 "Content-Type": "application/json",
@@ -142,31 +171,29 @@ export default function Admin_Page() {
         const result = await response.json();
 
         if (!response.ok) {
-            throw new Error(result.error || "Eroare la ștergere.");
+            throw new Error(result.error || "Error removing");
         }
 
         console.log("Succes:", result.message);
-        alert("Studentul a fost ștears cu succes!");
+        alert("Studentul is removed!");
         
         
         window.location.reload();
     } catch (error) {
         console.error("Eroare:", error);
-        alert("A apărut o eroare la ștergere.");
+        alert("An error ocured");
     }
-
-    
-   } 
+   } ;
 
 
    async function VerifieProfesor(id,entered) {
-    if(entered == 0 ){
-    if (!window.confirm(`Sigur doriti sa acceptati acest user ca Profesor cu posibilitatea de a adauga teme de teza ID : ${id}?`)) return;
-    }else if(entered == 1 ){
-
-    if (!window.confirm(`Sigur doriti sa retrageti acest user ca Profesor fara posibilitatea de a adauga teme de teza ID : ${id}?`)) return;
-    }
    
+    if (entered == 0) {
+        if (!window.confirm(`Are you sure you want to approve this user as a Professor with the ability to add thesis topics? ID: ${id}`)) return;
+    } else if (entered == 1) {
+        if (!window.confirm(`Are you sure you want to revoke this user's Professor status, removing their ability to add thesis topics? ID: ${id}`)) return;
+    }
+    
     try {
         const response = await fetch("http://localhost:8081/Verify_Profesor", {
             method: "PUT",  
@@ -195,7 +222,9 @@ export default function Admin_Page() {
 
   async function Delete_Profesor(id)
    {
-    if (!window.confirm(`Sigur vrei să elimini acest Student cu ID-ul ${id}?`)) return;
+    
+    if (!window.confirm(`Are you sure you want to delete this Professor? It will be removed from all fields, even if it has been confirmed thesis. Professor ID-ul ${id}?`)) return;
+   
     try {
         const response = await fetch("http://localhost:8081/delet_profesor_admin", {
             method: "DELETE",
@@ -223,6 +252,50 @@ export default function Admin_Page() {
 }
 
 
+async function HandleDelete_Confirm(id, id_stud) {
+    console.log(id, id_stud);
+    if (!window.confirm(`Are you sure you want to delete this Confirmation? It will be removed from all fields, Confirmation ID-ul ${id}?`)) return;
+   
+    try {
+        const response = await fetch("http://localhost:8081/delete_confirmation_admin", {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ id, id_stud }),  
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.error || "Eroare la ștergere.");
+        }
+
+        console.log("Succes:", result.message);
+        alert("Profesorul a fost ștears cu succes!");
+        window.location.reload();
+    } catch (error) {
+        console.error("Eroare:", error);
+        alert("A apărut o eroare la ștergere.");
+    }
+}
+
+
+
+function formatDate(isoDateString) {
+    const date = new Date(isoDateString);
+    if (date.getTime() === 0) return "";
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  }
+
+  function HandleShowInfo(info)
+  {
+    handleConfirm(info);
+    navigate('/confirmed_info_admin')
+  }
 
     return (
         <div className="body_prof">
@@ -232,7 +305,7 @@ export default function Admin_Page() {
                         <button onClick={() => handleListSelection('professors')}>Professors</button>
                         <button onClick={() => handleListSelection('students')}>Students</button>
                         <button onClick={() => handleListSelection('theses')}>Theses</button>
-                        <button>Confirmed</button>
+                        <button onClick={() => handleListSelection('confirmed')}>Confirmed</button>
                        
                     </div>
                    
@@ -316,6 +389,36 @@ export default function Admin_Page() {
                             ))}
                         </div>
                     )}
+
+                    {selectedList === 'confirmed' && finalList.length > 0 && (
+                    <div className="list-container">
+                        {finalList.map((conf, index) => (
+                        <div key={index} className="list-item">
+                            <div className="informations">
+                            <p className="text_info"><strong>ID: </strong>{conf.id || 'No id'}</p>
+                            <p className="text_info"><strong>Title: </strong>{conf.thesis?.title || 'No title'}</p>
+                            <p className="text_info"><strong>Date: </strong>{formatDate(conf.date) || 'No date'}</p>
+                            
+                            
+                            <p className="text_info"><strong>Professor: </strong>{conf.professor?.name || 'No professor'}</p>
+            
+                            
+                            <p className="text_info"><strong>Student Name: </strong>{conf.student?.name || 'No student'}</p>
+                           <p className="text_info"><strong>Program study: </strong>{conf.student?.ProgramStudy || 'No program'}</p>
+
+                            
+                            </div>
+                        
+                            <div className="button_grp">
+                            <InfoIcon className="InfoIcon" onClick={() => HandleShowInfo(conf)}/>
+                            <DeleteOutlineIcon className="DeleteOutlineIcon" onClick={() => HandleDelete_Confirm(conf.id,conf.student.id)}/>
+                            </div>
+                        </div>
+                        ))}
+                    </div>
+                    )}
+
+
                 </div>
             </div>
         </div>

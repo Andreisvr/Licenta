@@ -12,7 +12,7 @@ function LogIn() {
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const navigate = useNavigate();
-  const { handleLogin } = useContext(AppContext); 
+  const { handleLogin,handleAdmin } = useContext(AppContext); 
 
   const handleGmailLogin = async (decodedToken) => {
     const gmailEmail = decodedToken.email;
@@ -27,12 +27,18 @@ function LogIn() {
 
       if (response.data.success) {
         const { name, email, prof, faculty, program } = response.data.user;
+        if(name=='admin'){
+          console.log('name');
+          handleAdmin(name);
+          navigate('/Admin_Page');
+        }else{
         const userType = prof === 1 ? 'professor' : 'student'; 
         console.log(email, gmailName, userType, program, faculty);
 
         handleLogin(name, email, userType, userType === 'student' ? program : null, faculty); 
        
         navigate('/prof'); 
+      }
       } else {
         alert('Apărea o eroare');
       }
@@ -57,7 +63,7 @@ function LogIn() {
     //     return;
     // }
 
-    // Validare parolă
+   
     if (password === '') {
         setPasswordError('Please enter a password');
         return;
@@ -68,29 +74,37 @@ function LogIn() {
     //     return;
     // }
 
-    //console.log('em pass', email, password);
     try {
-        const response = await axios.post('http://localhost:8081/login', {
-            email,
-            password,
-        });
-
-        if (response.data.success) {
+      const response = await axios.post('http://localhost:8081/login', {
+          email,
+          password,
+      });
+  
+      if (response.data.success) {
           const { name, email, prof, faculty, program } = response.data.user;
           const userType = prof === 1 ? 'professor' : 'student'; 
-          console.log(email, password, name, userType, program, faculty);
-          
-          handleLogin(name, email, userType, userType === 'student' ? program : null, faculty); 
-       
-          navigate('/prof');
-        } else {
-            setEmailError(response.data.message || 'Invalid credentials');
-        }
-    } catch (error) {
-        console.log("Error logging in:", error);
-        setEmailError('An error occurred. Please try again later.');
-    }
-  };
+  
+          if (name.toLowerCase() === 'admin') { 
+              // console.log('Admin detected');
+              handleAdmin(name);
+              navigate('/Admin_Page');
+          } else {
+              handleLogin(name, email, userType, userType === 'student' ? program : null, faculty);
+  
+              if (userType === 'professor') {
+                  navigate('/prof');
+              } else {
+                  navigate('/student');  
+              }
+          }
+      } else {
+          setEmailError(response.data.message || 'Invalid credentials');
+      }
+  } catch (error) {
+      console.error("Error logging in:", error);
+      setEmailError('An error occurred. Please try again later.');
+  }
+};
 
   return (
     <div className='body_login'>

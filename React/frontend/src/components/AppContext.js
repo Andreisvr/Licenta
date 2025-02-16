@@ -13,7 +13,9 @@ export const AppProvider = ({ children }) => {
     const [program, setProgram] = useState(''); 
     const [faculty, setFaculty] = useState(''); 
     const [thesis_id , setIdThesis] = useState('');
-
+    const [admin , setAdmin] = useState('');
+   
+    const [conf , setConfirm_info] = useState('');
     const [stud_id , setStud_id] = useState('');
 
     useEffect(() => {
@@ -43,9 +45,20 @@ export const AppProvider = ({ children }) => {
         localStorage.setItem('thesis_id', thesis_id); 
         
     }
+    const handleAdmin=(admin)=>{
+        setIdThesis(admin);
+        localStorage.setItem('admin', admin);    
+    }
+
     const handleStud_id=(stud_id)=>{
         setStud_id(stud_id); 
         localStorage.setItem('stud_id', stud_id); 
+     
+    }
+
+    const handleConfirm=(conf)=>{
+        setConfirm_info(conf); 
+       
      
     }
 
@@ -97,7 +110,8 @@ export const AppProvider = ({ children }) => {
             handleLogin, 
             handleLogout,
             thesis_id,handleThesisId,
-            stud_id,handleStud_id
+            stud_id,handleStud_id,
+            handleAdmin,admin,conf,handleConfirm
             
         }}>
             {children}

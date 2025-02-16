@@ -57,6 +57,7 @@ export default function Propouses({
         // e.stopPropagation();
         SendEmail('reject'); 
         console.log(`Rejecting proposal with ID: ${id}`);
+       
         fetch(`http://localhost:8081/proposaReject/${id}`, {
             method: "PATCH",
             headers: { "Content-Type": "application/json" },
@@ -74,6 +75,8 @@ export default function Propouses({
        
         window.location.reload();
     }
+
+    
     
 
 

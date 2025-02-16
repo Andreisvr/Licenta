@@ -203,7 +203,7 @@ export default function MyPropouse_Info()
     })
     .catch(error => console.error("Error withdrawing thesis:", error));
     navigate('/prof');
-    }
+    };
 
 
         async function SendEmail(answer) {

@@ -24,6 +24,7 @@ import ProfesorChatPage from './Profesor_Chat/Profesor_Chat';
 import Admin_Page from './Admin_page/Admin_page copy';
 import ThesisInfo_Admin from './Admin_page/Thesis/ThesisInfoForm_Admin';
 import ThesisModify_Admin from './Admin_page/Thesis/My_thesis_info';
+import Confirmed_Thesis_Info from './Admin_page/Confirmed_Thesis_Info';
 function App() {
 
     return (
@@ -53,7 +54,8 @@ function App() {
                 <Route path="/Admin_Page" element={<Admin_Page/>} />
                 <Route path="/thesisinfo_admin" element={<ThesisInfo_Admin />} />
                 <Route path="/thesis_modify_admin" element={<ThesisModify_Admin />} />
-
+                <Route path="/confirmed_info_admin" element={<Confirmed_Thesis_Info />} />
+                
             </Routes>
             
         </Router>

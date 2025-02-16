@@ -57,7 +57,11 @@ export default function AddResponse({
 
 
     async function handleConfirm(thesisId) {
+        
+        if (!window.confirm("Are you sure you want to confirm this thesis? After confirming, you won't be able to choose another one. If you make a mistake, please contact the admin.")) return;
 
+
+    
         if(prof_email !='propuse'){
         try {
             console.log('din theses')
@@ -161,7 +165,7 @@ export default function AddResponse({
 
     return (
         <form className="applied_form">
-            <p className="text title">Title: {getShortDescription(thesisName)}</p>
+            <p className="text title">Titde: {getShortDescription(thesisName)}</p>
                
                     <p className="text">Student: {student_name || "Loading..."}</p>
                     <p className="text">Faculty: {faculty} {study_program && `Program: ${study_program}`}</p>
