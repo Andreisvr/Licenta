@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router";
+import "../page_css/My_thesis_info.css";
 
-import "../../page_css/My_thesis_info.css";
+import { AppContext } from "../components/AppContext";
 
-import { AppContext } from "../../components/AppContext";
+import ArrowBackIcon from '@mui/icons-material/ArrowBack'; 
 
-export default function ThesisModify() {
+export default function ThesisModify_Admin() {
   
   const [thesisData, setThesisData] = useState(null);
   const { thesis_id } = useContext(AppContext); 
@@ -47,6 +48,11 @@ export default function ThesisModify() {
         return updatedData;
     });
 };
+
+const handleBack = () => {
+  navigate("/Admin_Page");
+};
+
   const handleApply = (e) => {
         e.preventDefault();  
         const formattedData = {
@@ -71,7 +77,7 @@ export default function ThesisModify() {
         })
         .catch((error) => console.error("Error:", error));
 
-        navigate('/prof');
+        navigate('/Admin_Page');
         
   };
 
@@ -90,7 +96,11 @@ export default function ThesisModify() {
   
   return (
     <div className="th_info_body">
+      
       <form className="left_form">
+      <button  className="back-button" onClick={handleBack}>
+                            <ArrowBackIcon />
+                        </button>
         <label className="label_modify">
           Title:
           <input className="input_modify"

@@ -1,13 +1,8 @@
 // MainPage.js
 import React from 'react';
-import '/Users/Andrei_Sviridov/Desktop/React/frontend/src/page_css/Test.css';
+// import '/Users/Andrei_Sviridov/Desktop/React/frontend/src/page_css/Test.css';
 import { useState,useContext } from 'react';
-import PersonIcon from '@mui/icons-material/Person';
-import SchoolIcon from '@mui/icons-material/School';
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import { useEffect } from 'react';
-import { AppContext } from '/Users/Andrei_Sviridov/Desktop/React/frontend/src/components/AppContext.js';
-import FacultyList from '/Users/Andrei_Sviridov/Desktop/React/frontend/src/components/Faculty_List.js';
+import { AppContext } from '../components/AppContext';
 import MenuIcon from "@mui/icons-material/Menu";
 import AddThesis from './Cards/thesis_card';
 import UpBar from '../components/up_bar';

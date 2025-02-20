@@ -2,7 +2,9 @@ import React from "react";
 import { useNavigate } from "react-router";
 import { useEffect,useContext,useState } from "react";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'; 
-import '/Users/Andrei_Sviridov/Desktop/React/frontend/src/page_css/student_role/MyPropouse_Info.css';
+
+import "../../page_css/MyPropouse_Info.css";
+
 import { AppContext } from "../../components/AppContext";
 
 export default function MyPropouse_Info()

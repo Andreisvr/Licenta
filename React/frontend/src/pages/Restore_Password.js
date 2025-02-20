@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import '/Users/Andrei_Sviridov/Desktop/React/frontend/src/page_css/Login.css';
 
+import "../page_css/Login.css";
 function RestorePass() {
   const [step, setStep] = useState(1);
   const [email, setEmail] = useState('');

@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import "/Users/Andrei_Sviridov/Desktop/React/frontend/src/page_css/UpBar.css";
+import "../page_css/UpBar.css"
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import IconButton from '@mui/material/IconButton';
 import Badge from '@mui/material/Badge';
 import PersonalForm from "./personal_cabinet";
-import Logo from '/Users/Andrei_Sviridov/Desktop/React/frontend/src/images/Logo-UVT-2017-02.ico';
+import  Logo from  "../images/Logo-UVT-2017-02.ico";
 import { AppContext } from "./AppContext";
 
 function notificationsLabel(count) {

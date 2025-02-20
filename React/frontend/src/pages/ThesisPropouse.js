@@ -1,11 +1,12 @@
 import React , {useContext} from "react";
-import '/Users/Andrei_Sviridov/Desktop/React/frontend/src/page_css/ThesisPropouse.css'
+
+
+import "../page_css/ThesisPropouse.css";
 import ThesisBox from "../components/Thesis_box";
 import ProfList from "../components/Prof_List.js";
 import FacultyList from "../components/Faculty_List.js";
 import Available from "../components/avaliable_search_option.js";
-import { AppContext } from '/Users/Andrei_Sviridov/Desktop/React/frontend/src/components/AppContext.js';
-
+import { AppContext } from "../components/AppContext.js";
 
 export default function ThesisPropose() {
 

@@ -2,7 +2,9 @@ import React, { useState, useEffect,useContext} from "react";
 import { useNavigate } from "react-router-dom";
 import ToggleOffIcon from "@mui/icons-material/ToggleOff";
 import ToggleOnIcon from "@mui/icons-material/ToggleOn";
-import "/Users/Andrei_Sviridov/Desktop/React/frontend/src/page_css/my_thesis_cards.css";
+
+import "../../page_css/my_thesis_cards.css";
+
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import CreateIcon from "@mui/icons-material/Create";
 import { AppContext } from "../../components/AppContext";

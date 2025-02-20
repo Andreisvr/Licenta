@@ -1,5 +1,6 @@
 import React, { useContext } from "react";
-import "/Users/Andrei_Sviridov/Desktop/React/frontend/src/page_css/UpBar.css";
+
+import "../page_css/UpBar.css"
 import { googleLogout } from "@react-oauth/google";
 import { AppContext } from './AppContext'; 
 import { useNavigate } from "react-router";

@@ -1,7 +1,9 @@
 import React, { useContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router";
-import '/Users/Andrei_Sviridov/Desktop/React/frontend/src/page_css/Prof_role/addthesis.css';
-import { AppContext } from '/Users/Andrei_Sviridov/Desktop/React/frontend/src/components/AppContext.js';
+
+
+import "../../page_css/addthesis.css";
+
+import { AppContext } from "../../components/AppContext";
 
 export default function AddThesis({ 
     thesisName, 

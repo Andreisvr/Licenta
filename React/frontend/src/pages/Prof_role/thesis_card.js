@@ -1,6 +1,7 @@
 import React from "react";
-import '/Users/Andrei_Sviridov/Desktop/React/frontend/src/page_css/Prof_role/addthesis.css';
-import { AppContext } from "../../components/AppContext";
+
+
+import "../../page_css/addthesis_form.css";
 
 export default function AddThesis({ thesisName, date_start, date_end, faculty, study_program, description, professor_name, requirements, onClick }) {
     

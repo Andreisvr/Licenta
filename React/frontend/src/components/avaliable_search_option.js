@@ -4,9 +4,9 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Fade from '@mui/material/Fade';
 import { IconButton } from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu'; // Icon for the menu
+import MenuIcon from '@mui/icons-material/Menu';
 
-const facultyPrograms = ["Proposed", "Available", "Blocked"]; // Only 3 options
+const facultyPrograms = ["Proposed", "Available", "Blocked"]; 
 
 export default function Available() {
   const [anchorElFaculty, setAnchorElFaculty] = React.useState(null);

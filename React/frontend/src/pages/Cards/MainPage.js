@@ -1,9 +1,9 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import '/Users/Andrei_Sviridov/Desktop/React/frontend/src/page_css/Prof_role/prof_cab.css';
-import AddThesis from "./thesis_card.js";
-import { AppContext } from '/Users/Andrei_Sviridov/Desktop/React/frontend/src/components/AppContext.js';
 
+import "../../page_css/prof_cab.css";
+import AddThesis from "./thesis_card.js";
+import { AppContext } from "../../components/AppContext.js";
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import MyConfirmed from "./MyConfiremd_thesis.js";
 import AddResponse from "../student-role/Confirmation_card_stud.js";

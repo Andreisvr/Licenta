@@ -1,5 +1,6 @@
 import React,{ useState } from "react";
-import "/Users/Andrei_Sviridov/Desktop/React/frontend/src/page_css/Thesis_box.css";
+
+import "../page_css/Thesis_box.css"
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import { useNavigate } from "react-router";

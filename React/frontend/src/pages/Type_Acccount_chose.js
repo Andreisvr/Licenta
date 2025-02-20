@@ -1,9 +1,9 @@
 import React from "react";
 import { useNavigate } from "react-router-dom"; 
-import '/Users/Andrei_Sviridov/Desktop/React/frontend/src/page_css/Type_Account.css';
-import profesorGif from '/Users/Andrei_Sviridov/Desktop/React/frontend/src/images/teach_12146114.gif';
-import studentGif from '/Users/Andrei_Sviridov/Desktop/React/frontend/src/images/student_12525336.gif';
 
+import   "../page_css/Type_Account.css";
+import  profesorGif from "../images/teach_12146114.gif";
+import studentGif from "../images/student_12525336.gif";
 function Type_account() {
     const navigate = useNavigate(); 
 

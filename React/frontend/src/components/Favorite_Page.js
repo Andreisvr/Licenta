@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from "react";
 import { AppContext } from "./AppContext";
-import '/Users/Andrei_Sviridov/Desktop/React/frontend/src/page_css/Favorite_page.css'
+import  "../page_css/Favorite_page.css"
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'; 
 import { useNavigate } from "react-router";
 

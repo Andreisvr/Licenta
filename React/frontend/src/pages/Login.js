@@ -1,9 +1,11 @@
 import React, { useState, useContext } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import '/Users/Andrei_Sviridov/Desktop/React/frontend/src/page_css/Login.css';
+
+import "../page_css/Login.css";
 import GoogleBtn from '../components/login_btn';
 import axios from 'axios';
-import '/Users/Andrei_Sviridov/Desktop/React/frontend/src/images/wallpaperflare.com_wallpaper.jpg'
+
+import "../images/wallpaperflare.com_wallpaper.jpg";
 import { AppContext } from '../components/AppContext';
 
 function LogIn() {

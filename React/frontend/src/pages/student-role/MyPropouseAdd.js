@@ -1,6 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router';
-import '/Users/Andrei_Sviridov/Desktop/React/frontend/src/page_css/Prof_role/addthesis_form.css';
+
+import "../../page_css/addthesis_form.css";
 import { AppContext } from '../../components/AppContext';
 import ProfessorList from '../../components/Prof_List';
 
