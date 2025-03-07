@@ -1,0 +1,226 @@
+body {
+    font-family: 'Roboto', sans-serif;
+}
+
+.body_thesisinfo {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; 
+    height: auto; 
+    width: 100vw;
+    padding: 2rem;
+}
+
+.form-container {
+    display: flex;
+    width: 100%;
+    padding: 3vw;
+    overflow: hidden; 
+}
+
+.left-form {
+    min-height: 85vh; 
+    
+    margin-top: 2vh;
+    width: 55%; 
+    padding: 1rem;
+    background-color: #ffffff; 
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; 
+}
+
+.right-form {
+    max-height: 85vh;
+    margin-top: 2vh;
+    width: 30%; 
+    padding: 1rem; 
+    background-color: hsl(0, 0%, 100%); 
+    border-radius: 8px; 
+    margin-left: 3vw; 
+    display: flex;
+    flex-direction: column; 
+    justify-content: flex-start; 
+}
+
+
+
+
+h2 {
+    text-align: center; 
+}
+
+.faculty-name, .study-program {
+    text-align: center;
+    font-size: 1rem; 
+}
+
+.optional-message {
+    margin-top: 10%;
+    margin: 1rem;
+    border-radius: 10px;
+}
+
+.description {
+    font-weight: 300;
+    width: 85%;
+    height: 65%; 
+    margin-top: 2vh;
+    margin-left: 4%;
+    
+}
+.requirements {
+    font-weight: 300;
+    width: 85%;
+    height: 25%; 
+    margin-top: 2vh;
+    margin-left: 4% !important;
+   
+   
+}
+
+
+.apply-button {
+    padding: 0.5rem 1rem; 
+    border: none;
+    width: 10vw;
+    border-radius: 5px;
+    background-color: #484848; 
+    color: white;
+    font-size: large;
+    cursor: pointer;
+}
+
+.send-button {
+    align-self: center; 
+    padding: 0.5rem 1rem; 
+    border: none;
+    width: 10vw;
+    border-radius: 5px;
+    background-color: #484848; 
+    color: white;
+    font-size: large;
+    cursor: pointer;
+    margin-top: 103%;
+}
+
+.apply-button:hover, .send-button:hover {
+    background-color: #0056b3; 
+}
+
+.in_date, .off_date {
+    font-size: small;
+}
+
+.date {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end; 
+    align-items: center; 
+    gap: 1rem;
+}
+
+
+.favorite-button {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+}
+
+.icon-border {
+    color: black; 
+    opacity: 0.8; 
+}
+.icon-border:hover {
+    color: red;
+}
+.icon-clicked {
+    color: red; 
+}
+
+.status-container {
+    display: flex;
+    justify-content: center;
+    margin: 2vh 0; 
+}
+
+.status {
+    font-size: 1.2rem;
+    font-weight: bold; 
+    text-align: center;
+}
+
+
+
+.status-favorite-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1rem; 
+}
+
+.status {
+    flex-grow: 1; 
+    text-align: center;
+}
+
+.favorite-button {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+}
+
+
+
+.apply-status-favorite-container {
+    display: flex;
+    justify-content: space-between; 
+    align-items: center;
+    width: 90%; 
+    /* background-color: #0056b3; */
+    padding: 0 1rem; 
+    margin-bottom: 3vh; 
+}
+
+.apply-button {
+    padding: 0.6rem 1rem; 
+    border: none;
+    border-radius: 5px;
+    background-color: #484848; 
+    color: white;
+    font-size: large;
+    cursor: pointer;
+    margin-right: 1rem; 
+}
+
+.status {
+    font-size: 1.2rem; 
+    font-weight: bold;
+    text-align: center; 
+    flex-grow: 1; 
+}
+
+.header-container {
+    display: flex;
+    align-items: center; /* Center items vertically */
+    margin-bottom: 1rem; /* Space below the header */
+}
+
+.back-button {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+   
+}
+
+.back-button:hover {
+    color: #0056b3;
+}
+
+.thesisName {
+    text-align: center; 
+    
+    flex-grow: 1; 
+    margin-right: 2vw;
+}

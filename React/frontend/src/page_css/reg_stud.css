@@ -1,0 +1,161 @@
+/* Main container */
+.body_reg_stud {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    padding: 0 20px;
+    overflow: auto;
+  }
+  
+  .form_reg_stud {
+    background-color: #ffffff;
+    margin-top: 30vh;
+    margin-bottom: 10vh;
+    border-radius: 8px;
+    padding: 40px;
+    height: 95%;
+    width: 100%;
+    max-width: 500px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
+
+  .title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #333;
+  }
+  
+  .field_container, .field_container_reg_stud {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 95%;
+    margin-bottom: 15px;
+  }
+  
+  .inputBox {
+    width: 95%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+    transition: border-color 0.2s ease-in-out;
+  }
+
+
+  .year_select {
+    width: 95%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+   
+    background-color: white;
+    color: #333;
+    appearance: none;
+    cursor: pointer;
+}
+
+.year_select:focus {
+    border-color: #333;
+    outline: none;
+}
+
+.year_select option {
+    background-color: white;
+    color: black;
+}
+ 
+  
+  .inputBox:focus {
+    border-color: #333;
+    outline: none;
+  }
+  
+  .errorLabel {
+    font-size: 14px;
+    color: red;
+    margin-top: 5px;
+    font-weight: 500;
+  }
+  
+  .Reg_btn_reg_stud {
+    background-color: #333;
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    padding: 12px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 100%;
+    margin-top: 5%;
+  }
+  
+  .Reg_btn_reg_stud:hover {
+    background-color: #555;
+  }
+  
+  .googleBtnContainer {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    margin-bottom: 20px; 
+  }
+  
+  .buton_verify {
+    margin-top: 20%;
+    width: 100%;
+    padding: 12px;
+    background-color: #333;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  
+  .buton_verify:hover {
+    background-color: #555;
+  }
+  
+  @media (max-width: 768px) {
+    .form_reg_stud {
+      padding: 30px 20px;
+    }
+  
+    .title {
+      font-size: 20px;
+    }
+  
+    .inputBox {
+      padding: 10px;
+    }
+  
+    .Reg_btn_reg_stud, .buton_verify {
+      font-size: 14px;
+      padding: 10px;
+      margin-top: 10px;
+    }
+  }
+  
+
+  .buton_back {
+    margin-top: 20%;          
+    align-self: flex-start;  
+    padding: 12px;
+    background-color: #333;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;        
+    width: 20%;             
+    text-align: center;      
+  }
+.buton_back:hover {
+    background-color: #555;   
+}

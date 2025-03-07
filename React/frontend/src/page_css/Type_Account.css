@@ -1,0 +1,55 @@
+.body_choose {
+    display: flex;
+    flex-direction: column;
+    align-items: center; 
+    height: 100vh;
+    padding: 0 5%;
+}
+
+.types {
+    display: flex;
+    justify-content: center; 
+    width: 100%; 
+    gap: 7vw;
+}
+
+.profesor, .student {
+    width: 40%;
+    height: auto;
+    background-color: lightgray;
+    display: flex;
+    flex-direction: column; 
+    justify-content: center; 
+    align-items: center; 
+    border: 2px solid black;
+    text-align: center;
+    padding: 2vw;
+}
+.profesor:hover{
+    color: blue;
+    transform: scale(1.1);
+}
+
+.student:hover{
+    color: blue;
+    transform: scale(1.1);
+}
+
+img {
+    width: 40vh; 
+    height: auto; 
+}
+
+p {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.profesor {
+    background-color: rgb(255, 255, 255);
+}
+
+.student {
+    background-color: rgb(255, 255, 255);
+}
