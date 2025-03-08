@@ -28,12 +28,14 @@ export default function Applied({
     const SEND_URL = 'http://localhost:5002';
 
  
-    function handleAplication_delet(id,e) {
+    function handleAplication_delet(id,e,origin) {
        
         // e.preventDefault();
         // e.stopPropagation();
-
-        SendEmail('rejected'); 
+    if(origin ==='buton'){
+       
+        SendEmail('rejected');
+     }
        
         fetch(`${BACKEND_URL}/accept/${id}`, { 
             method: "DELETE",
@@ -122,7 +124,7 @@ export default function Applied({
             console.log("Application accepted successfully:", acceptedApplicationData);
     
             SendEmail('accepted'); 
-            handleAplication_delet(thesisId);
+            handleAplication_delet(thesisId,'function');
     
         } catch (error) {
             console.error("Error in handleAcceptStudent:", error);
@@ -130,13 +132,44 @@ export default function Applied({
     }
     
     async function SendEmail(answer) {
+
+
+        const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+        const prof_name = userInfo.name;
+        const prof_email = userInfo.email;
+        
         const subject = answer === 'accepted'  
-        ? 'Congratulations! Your application has been accepted'  
-        : 'We are sorry! Your application was not accepted';  
+            ? 'Congratulations! Your application has been accepted'  
+            : 'We are sorry! Your application was not accepted';  
     
-    const text = answer === 'accepted'  
-        ? `Hello, ${stud_name},\n\nCongratulations! Your application for the thesis "${thesisName}" has been accepted.`  
-        : `Hello, ${stud_name},\n\nUnfortunately, your application for the thesis "${thesisName}" was not accepted.`;  
+        const text = answer === 'accepted'  
+            ? `Dear ${stud_name},  
+    
+        We are pleased to inform you that your application for the thesis titled "${thesisName}" has been **accepted**.  
+
+        Thesis Details: \n 
+        - Title: ${thesisName}  \n 
+        - Faculty:${faculty} \n  
+        - Professor: ${prof_name} \n  
+        - Email: ${prof_email}\n   
+        - Link: https://frontend-hj0o.onrender.com\n 
+        
+        Next steps: Please confirm this thesis if you choose to proceed with it, or you may wait for another acceptance and confirm the thesis you prefer.\n 
+        Congratulations! We look forward to your success!  \n 
+
+        Best regards, \n 
+        [UVT]  \n 
+        [Thesis Team]`
+
+        : `Dear ${stud_name},  
+
+            We regret to inform you that your application for the thesis titled "${thesisName}" has    Not been accepted.  
+            We appreciate the effort and interest you have shown in this thesis topic. We encourage you to explore other available thesis opportunities and discuss alternative options with your faculty advisors.  
+            If you have any questions or need further guidance, please do not hesitate to reach out. \n 
+            Best wishes,\n
+             - Link: https://frontend-hj0o.onrender.com\n   
+            [UVT]  \n 
+            [Thesis Team]`;
     
         try {
             const response = await fetch(`${SEND_URL}/sendEmail`, {
@@ -154,9 +187,8 @@ export default function Applied({
         } catch (error) {
             console.error('Error sending email:', error);
         }
-
-       
     }
+    
     
 
     function formatDate(isoDateString) {
@@ -208,7 +240,7 @@ export default function Applied({
                             type="button" 
                             onClick={(e) => { 
                                 e.stopPropagation(); 
-                                handleAplication_delet(id,e); 
+                                handleAplication_delet(id,e,'buton'); 
                             }}
                         >
                             Decline

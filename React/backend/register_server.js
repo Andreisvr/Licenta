@@ -97,32 +97,23 @@ app.get('/Verify_Profesor', (req, res) => {
 });
 
 
-
 app.post('/reg', async (req, res) => {
     const { name, email, password, gmail_password, faculty, cv_link, entered } = req.body;
 
     let hashedPassword = '';
 
-    if (password) {
-        try {
-            hashedPassword = await bcrypt.hash(password, 10);
-        } catch (error) {
-            console.error('Eroare la criptarea parolei:', error);
-            return res.status(500).json({ message: 'Eroare la criptarea parolei.' });
-        }
-    }
-
     try {
-        
-        const [studentExists] = await db.query('SELECT * FROM studentii WHERE email = ?', [email]);
-        if (studentExists.length > 0) {
-            return res.status(409).json({ message: 'Email-ul este deja înregistrat ca student.' });
+       
+        if (password) {
+            hashedPassword = await bcrypt.hash(password, 10);
         }
 
         
-       
         if (entered === 1) {
+           
             await db.query('UPDATE profesorii SET entered = 1 WHERE email = ?', [email]);
+
+          
             await db.query('INSERT INTO profesorii_neverificati SET ?', {
                 faculty: faculty,
                 email: email,
@@ -133,8 +124,10 @@ app.post('/reg', async (req, res) => {
                 cv_link: cv_link,
                 prof: 1
             });
+
             res.json({ message: 'Profesorul a fost verificat cu succes!' });
         } else {
+            
             await db.query('INSERT INTO profesorii_neverificati SET ?', {
                 faculty: faculty,
                 email: email,
@@ -145,10 +138,13 @@ app.post('/reg', async (req, res) => {
                 cv_link: cv_link,
                 prof: 1
             });
+
             res.json({ message: 'Profesorul a fost înregistrat cu succes!' });
         }
     } catch (error) {
         console.error('Eroare la înregistrare:', error);
+
+      
         if (error.code === 'ER_DUP_ENTRY') {
             res.status(409).json({ message: 'Email-ul este deja înregistrat.' });
         } else {
@@ -160,19 +156,20 @@ app.post('/reg', async (req, res) => {
 
 
 
+
 app.post('/reg_stud', async (req, res) => {
 
     const { name, email, pass, gmail_pass, faculty, program,year } = req.body;
-    
-    const hashedPassword = await bcrypt.hash(pass, 10); 
+  
+   
+    if (pass) {
+        hashedPassword = await bcrypt.hash(pass, 10);
+    }
 
+    
     try {
 
-        const [professorExists] = await db.query('SELECT * FROM profesorii_neverificati WHERE email = ?', [email]);
-        if (professorExists.length > 0) {
-            return res.status(409).json({ message: 'Email-ul este deja înregistrat ca profesor nevalidat.' });
-        }
-
+       
         
         await db.query('INSERT INTO studentii SET ?', {
             Faculty: faculty,
@@ -196,6 +193,47 @@ app.post('/reg_stud', async (req, res) => {
     }
 });
 
+
+app.get('/verifica-email_st', (req, res) => {
+    const { email } = req.query;  
+
+    const query_2 = 'SELECT * FROM profesorii_neverificati WHERE email = ?';
+    db.query(query_2, [email], (err, results) => {
+        if (err) {
+            console.error("Eroare la verificarea email-ului:", err);
+            return res.status(500).json({ error: "Eroare la server." });
+        }
+
+        if (results.length > 0) {
+           
+            return res.json({ exists: true });
+        } else {
+            
+            return res.json({ exists: false });
+        }
+    });
+});
+
+
+app.get('/verifica-email', (req, res) => {
+    const { email } = req.query;  
+
+    const query_2 = 'SELECT * FROM studentii WHERE email = ?';
+    db.query(query_2, [email], (err, results) => {
+        if (err) {
+            console.error("Eroare la verificarea email-ului:", err);
+            return res.status(500).json({ error: "Eroare la server." });
+        }
+
+        if (results.length > 0) {
+           
+            return res.json({ exists: true });
+        } else {
+            
+            return res.json({ exists: false });
+        }
+    });
+});
 
 
 app.post('/login', (req, res) => {

@@ -26,7 +26,6 @@
     border: 1px solid #ddd;
 }
 
-
 .mesaje_lista {
     padding: 1vh;
     position: fixed;
@@ -70,16 +69,14 @@
     margin-top: 5px;
 }
 
-
 .mesaj.left {
     background-color: #f1f1f1;
     align-self: flex-start;  
     text-align: left;
 }
 
-
 .mesaj.right {
-   margin-right: 1vh;
+    margin-right: 1vh;
     background-color: #d1e7ff;
     align-self: flex-end; 
     text-align: right;
@@ -87,6 +84,7 @@
 
 
 .info {
+    
     position: fixed;
     top: 10%;
     left: 67%;
@@ -97,11 +95,75 @@
     border-radius: 10px;
     padding: 10px;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
     overflow: auto;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-    
+}
+
+
+.dropdown-button {
+    width: 100%;
+    padding: 12px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    text-align: center;
+    font-size: 16px;
+    cursor: pointer;
+    margin-bottom: 10px;
+    border: 0.5px solid white;
+
+}
+
+.calendar-icon {
+    font-size: 3rem !important; 
+    color: white;
+}
+
+.dropdown-button:hover {
+    background-color: #0056b3;
+}
+
+button {
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+    font-size: 16px;
+}
+
+.back_button {
+    background-color: transparent;
+    color: #333;
+    font-size: 24px;
+}
+
+.gmail-toggle-button {
+    background-color: #28a745;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 4px;
+}
+
+.gmail-toggle-button:hover {
+    background-color: #218838;
+}
+
+
+.additional-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+    margin-top: 10px;
+}
+
+
+.MuiIconButton-root {
+    color: #007bff;
 }
 
 .mesaje_input {
@@ -136,9 +198,7 @@
     border: none;
     outline: none;
 }
-.back_button{
-    cursor: pointer;
-}
+
 .send_btn {
     position: fixed;
     top: 83.7%;
@@ -146,7 +206,6 @@
     width: 3vw;
     height: 5vh;
     cursor: pointer;
-    color: black;
     background-color: #007bff;
     border-radius: 50%;
     display: flex;
@@ -172,19 +231,15 @@
     height: 6vh;
     cursor: pointer;
     color: black;
-
     border-radius: 6px;
     display: flex;
     justify-content: center;
     align-items: flex-start;
     transition: 0.3s;
-    border: none;
+    border: 0.1px solid #060505;
     font-size: 1.2rem;
     font-weight: bold;
-    border: .1px solid #060505;
-
 }
-
 
 @media (max-width: 768px) {
     .body_chat_student {

@@ -1,6 +1,5 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Main from './pages/main';
 import LogIn from './pages/Login';
 import UpBar from './components/up_bar';
 import Register from './pages/Cards/Register.js';
@@ -26,6 +25,8 @@ import ThesisInfo_Admin from './pages/ThesisInfoForm_Admin.js';
 import ThesisModify_Admin from './pages/My_thesis_info.js';
 import Confirmed_Thesis_Info from './pages/Confirmed_Thesis_Info.js';
 import MyConfirm_info_stud from './pages/student-role/Confirm_info.js';
+
+
 function App() {
 
     return (

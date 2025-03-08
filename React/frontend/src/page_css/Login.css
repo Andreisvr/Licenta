@@ -124,7 +124,7 @@ html,body{
       box-sizing: border-box;
       z-index: 1000;
       
-      border-bottom: 0.4px solid rgb(0, 0, 0);
+      border-bottom: 0.4px solid rgb(218, 211, 211);
   }
    
   .icon_login {

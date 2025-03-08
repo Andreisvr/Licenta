@@ -24,16 +24,17 @@ const transporter = nodemailer.createTransport({
  
 
 
-app.post('/reg_stud', (req, res) => {
+app.post('/reg_st', (req, res) => {
 
     
-    const { email, code } = req.body;
+    const { email, code,terms } = req.body;
 
     const mailOptions = {
         from: 'andrei.sviridov00@e-uvt.ro', 
         to: email,
         subject: 'Cod de verificare',
-        text: `Codul tău de verificare este: ${code}`,
+        text: `Codul tău de verificare este: ${code} \n
+        Terms and Condition ${terms}`,
     };
    
     transporter.sendMail(mailOptions, (error, info) => {
@@ -50,15 +51,16 @@ app.post('/reg_stud', (req, res) => {
 
 app.post('/reg', (req, res) => {
 
-    console.log('Request received:');
+   
     
-    const { email, code } = req.body;
+    const { email, code,terms } = req.body;
 
     const mailOptions = {
         from: 'andrei.sviridov00@e-uvt.ro', 
         to: email,
         subject: 'Cod de verificare',
-        text: `Codul tău de verificare este: ${code}`,
+        text: `Codul tău de verificare este: ${code} \n
+        Terms and Condition ${terms}`,
     };
    
 

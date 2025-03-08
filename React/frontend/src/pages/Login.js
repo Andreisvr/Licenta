@@ -43,8 +43,11 @@ const BACKEND_URL = 'http://localhost:8081';
         const userType = prof === 1 ? 'professor' : 'student'; 
        
         handleLogin(name, email, userType, userType === 'student' ? program : null, faculty); 
-        handleAdmin('user');
         navigate('/prof'); 
+      
+        handleAdmin('user');
+       
+       
       }
       } else {
         alert('Apărea o eroare');
@@ -98,11 +101,9 @@ const BACKEND_URL = 'http://localhost:8081';
           } else {
               handleLogin(name, email, userType, userType === 'student' ? program : null, faculty);
               handleAdmin('user');
-              if (userType === 'professor') {
-                  navigate('/prof');
-              } else {
-                  navigate('/student');  
-              }
+             
+                  navigate('/prof');  
+              
           }
       } else {
           setEmailError(response.data.message || 'Invalid credentials');

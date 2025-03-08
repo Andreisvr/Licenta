@@ -212,34 +212,60 @@ const SEND_URL = 'http://localhost:5002';
     };
 
 
-        async function SendEmail(answer) {
-            const subject = answer === 'accepted'  
+    async function SendEmail(answer) {
+        const subject = answer === 'accepted'  
             ? 'Congratulations! Your Propose has been accepted'  
             : 'We are sorry! Your Propose was not accepted';  
-
+    
         const text = answer === 'accepted'  
-            ? `Hello, ${thesisData?.stud_name},\n\nCongratulations! Your Propose for the thesis with title: "${thesisData?.title}" has been accepted.`  
-            : `Hello, ${thesisData?.stud_name},\n\nUnfortunately, your Propose for the thesis with title :"${thesisData?.title}" was not accepted.`;  
+            ? `Dear ${thesisData?.stud_name},  
+    
+        We are pleased to inform you that your propose for the thesis titled "${thesisData.title}" has been Accepted.  
 
-            try {
-                const response = await fetch(`${SEND_URL}/sendEmail`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email: thesisData?.stud_email, subject, text })
-                });
+        Thesis Details:\n 
+        - Title: ${thesisData.title}  \n 
+        - Faculty: ${thesisData.faculty}  \n 
+        - Professor: ${thesisData.prof_name} \n  
+        - Email: ${thesisData.prof_email}\n   
+        - Link: https://frontend-hj0o.onrender.com\n 
+        Next steps: Please confirm this thesis if you choose to proceed with it, or you may wait for another acceptance and confirm the thesis you prefer.  
 
-                if (!response.ok) {
-                    throw new Error('Failed to send email');
-                }
+        Congratulations! We look forward to your success!  
 
-                console.log(`Email sent successfully to ${thesisData?.stud_email}`);
+        Best regards,\n  
+        [UVT]  \n 
+        [Thesis Team]`
 
-            } catch (error) {
-                console.error('Error sending email:', error);
+        : `Dear ${thesisData?.stud_name},  
+
+            We regret to inform you that your propose for the thesis titled "${thesisData.title}" has Not been accepted.  
+
+            We appreciate the effort and interest you have shown in this thesis topic. We encourage you to explore other available thesis opportunities and discuss alternative options with your faculty advisors.  
+
+            If you have any questions or need further guidance, please do not hesitate to reach out.  
+
+            Best wishes,\n 
+            [UVT]  \n 
+            [Thesis Team]`;
+    
+        try {
+            const response = await fetch(`${SEND_URL}/sendEmail`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: thesisData?.stud_email, subject, text })
+            });
+    
+            if (!response.ok) {
+                throw new Error('Failed to send email');
             }
-
-        
+    
+            console.log(`Email sent successfully to ${thesisData?.stud_email}`);
+    
+        } catch (error) {
+            console.error('Error sending email:', error);
         }
+    }
+    
 
    function formatDate(isoDateString) {
     const date = new Date(isoDateString);

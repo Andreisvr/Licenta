@@ -90,10 +90,14 @@ export default function Applied_Info(){
         return `${day}/${month}/${year}`;
     }
 
-    function handleAplication_delet(id,e) {
+    function handleAplication_delet(id,e,origin) {
        
        // e.preventDefault();
        // e.stopPropagation();
+
+        if(origin === 'buton'){
+       SendEmail('rejected'); 
+        }
 
         fetch(`${BACKEND_URL}/accept/${id}`, { 
             method: "DELETE",
@@ -104,14 +108,14 @@ export default function Applied_Info(){
             setTheses(prevTheses => prevTheses.filter(thesis => thesis.id !== id));
         })
         .catch(error => console.error("Error withdrawing thesis:", error));
-        SendEmail('rejected'); 
+        
         navigate('/prof');
          window.location.reload();
         
     }
 
 
-    async function handleAcceptStudent(thesisId,e) {
+    async function handleAcceptStudent(thesisId,e,origin) {
         e.preventDefault(); 
         e.stopPropagation();
         try {
@@ -181,12 +185,12 @@ export default function Applied_Info(){
                 throw new Error("Failed to accept application");
             }
     
-            console.log("Application accepted successfully:", acceptedApplicationData);
-            console.log('accepted primit');
+           // console.log("Application accepted successfully:", acceptedApplicationData);
+          
             SendEmail('accepted'); 
-            console.log('accepted primit');
+           
              navigate('/prof')
-             handleAplication_delet(thesisId);
+             handleAplication_delet(thesisId,origin);
     
         } catch (error) {
             console.error("Error in handleAcceptStudent:", error);
@@ -194,14 +198,40 @@ export default function Applied_Info(){
     }
     
     async function SendEmail(answer) {
-        console.log('accepted primit',thesisData?.stud_name);
         const subject = answer === 'accepted'  
-        ? 'Congratulations! Your application has been accepted'  
-        : 'We are sorry! Your application was not accepted';  
+            ? 'Congratulations! Your application has been accepted'  
+            : 'We are sorry! Your application was not accepted';  
     
-    const text = answer === 'accepted'  
-        ? `Hello, ${thesisData?.stud_name},\n\nCongratulations! Your application for the thesis with title: "${thesisData.title}" has been accepted.`  
-        : `Hello, ${thesisData?.stud_name},\n\nUnfortunately, your application for the thesis with title :"${thesisData.title}" was not accepted.`;  
+        const text = answer === 'accepted'  
+            ? `Dear ${thesisData?.stud_name},  
+    
+        We are pleased to inform you that your application for the thesis titled "${thesisData.title}" has been Accepted.  
+
+        Thesis Details:\n 
+        - Title: ${thesisData.title}  \n 
+        - Faculty: ${thesisData.faculty}  \n 
+        - Professor: ${thesisData.prof_name} \n  
+        - Email: ${thesisData.prof_email}\n   
+        - Link: https://frontend-hj0o.onrender.com\n 
+        Next steps: Please confirm this thesis if you choose to proceed with it, or you may wait for another acceptance and confirm the thesis you prefer.  
+
+        Congratulations! We look forward to your success!  
+
+        Best regards,\n  
+        [UVT]  \n 
+        [Thesis Team]`
+
+        : `Dear ${thesisData?.stud_name},  
+
+            We regret to inform you that your application for the thesis titled "${thesisData.title}" has Not been accepted.  
+
+            We appreciate the effort and interest you have shown in this thesis topic. We encourage you to explore other available thesis opportunities and discuss alternative options with your faculty advisors.  
+
+            If you have any questions or need further guidance, please do not hesitate to reach out.  
+
+            Best wishes,\n 
+            [UVT]  \n 
+            [Thesis Team]`;
     
         try {
             const response = await fetch(`${SEND_URL}/sendEmail`, {
@@ -219,10 +249,8 @@ export default function Applied_Info(){
         } catch (error) {
             console.error('Error sending email:', error);
         }
-
-       
     }
-
+    
     const handleBack = () => {
         navigate("/prof");
             };
@@ -251,12 +279,12 @@ export default function Applied_Info(){
                                 <>
                                     <button className="accept-button"  onClick={(e) => {
                                     e.stopPropagation(); 
-                                    handleAcceptStudent(thesisData?.id,e); 
+                                    handleAcceptStudent(thesisData?.id,e,'funct'); 
                                 }} >Accept</button>
 
                                     <button className="decline-button" onClick={(e) => { 
                                     e.stopPropagation(); 
-                                    handleAplication_delet(thesisData?.id,e); 
+                                    handleAplication_delet(thesisData?.id,e,'buton'); 
                                 }}>Decline</button>
                                 </>
                         )}

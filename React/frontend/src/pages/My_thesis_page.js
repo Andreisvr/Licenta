@@ -4,6 +4,10 @@ import { useRef } from "react";
 import SendIcon from "@mui/icons-material/Send";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { AppContext } from "../components/AppContext";
+import IconButton from '@mui/material/IconButton'; 
+
+
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 
 import "../page_css/My_thesis_page.css";
 
@@ -24,6 +28,7 @@ const SEND_URL = 'http://localhost:5002';
     const [thesis, setThesis] = useState(null);
     const [message, setMessage] = useState("");
     const [messages, setMessages] = useState([]);  
+    const [isInfoVisible, setIsInfoVisible] = useState(true);
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -99,6 +104,9 @@ const SEND_URL = 'http://localhost:5002';
     }, [profesor, userInfo?.id]);
 
 
+    const toggleInfoVisibility = () => {
+        setIsInfoVisible(!isInfoVisible);
+    };
 
     const getShortDescription = (desc) => (desc ? `${desc.substring(0, 35)}${desc.length > 100 ? "..." : ""}` : "");
 
@@ -165,8 +173,8 @@ const SEND_URL = 'http://localhost:5002';
                  
             
                 <div className="info_mesaje">
-                    <p><strong></strong> {profesor?.name || ''}</p>
-                    <p><strong>,</strong> {getShortDescription(thesis?.description) || ''}</p>
+                    <p style={{ color: "#333" }}><strong>Name:</strong> {profesor?.name || ''}</p>
+                   
                 </div>
                 <div className="mesaje_input">
                     <input 
@@ -182,19 +190,39 @@ const SEND_URL = 'http://localhost:5002';
             
             
 
+            
             <div className="info">
-                {profesor && (
-                    <div>
-                        <h3>Profesor</h3>
-                        <p><strong>Nume:</strong> {profesor.name}</p>
+               
+                <button className="dropdown-button" onClick={toggleInfoVisibility}>
+                    {isInfoVisible ? "Hide Information" : "Show Information"}
+                </button>
+
+                {isInfoVisible && (
+                    <div className="information">
+                        <p><strong>Profesor Name:</strong> {profesor?.name}</p>
                         <p>Email: 
-                            <a href={`mailto:${profesor.email}`} className="email-link">
-                                {profesor.email}
+                            <a href={`mailto:${profesor?.email}`} className="email-link">
+                                {profesor?.email}
                             </a>
                         </p>
-                        <h3>Teza</h3>
-                        <p><strong>Titlu:</strong> {getShortDescription(thesis.title)}</p>
-                        <p><strong>Descriere:</strong> {getShortDescription(thesis.description)}</p>
+                        <p><strong>Title:</strong> {thesis?.title}</p>
+                        <p><strong>Description:</strong> {thesis?.description}</p>
+                    </div>
+                )}
+
+                
+                {!isInfoVisible && (
+                    <div className="additional-buttons">
+                        <IconButton  className="calendar-icon"
+                            component="a" 
+                            href="https://calendar.google.com/calendar/u/0/r" 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                        >
+                            <CalendarTodayIcon className="calendar-icon" />
+                        </IconButton>
+
+                        {/* <button className="gmail-toggle-button">On Gmail/Off Gmail</button> */}
                     </div>
                 )}
             </div>

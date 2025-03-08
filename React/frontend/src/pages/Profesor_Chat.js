@@ -4,10 +4,10 @@ import { useNavigate } from "react-router";
 import SendIcon from "@mui/icons-material/Send";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import IconButton from '@mui/material/IconButton'; 
-import LinkIcon from '@mui/icons-material/Link';
-
-
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import "../page_css/My_thesis_page.css";
+
+
 export default function ProfesorChatPage() {
 
     const navigate = useNavigate();
@@ -19,6 +19,7 @@ export default function ProfesorChatPage() {
     const [message, setMessage] = useState("");
     const [messages, setMessages] = useState([]);  
     const [stud,setStud] = useState('');
+    const [isInfoVisible, setIsInfoVisible] = useState(true);
 
   // const BACKEND_URL = 'https://backend-08v3.onrender.com';
 //  const SEND_URL = 'https://sender-emails.onrender.com';
@@ -136,15 +137,20 @@ const SEND_URL = 'http://localhost:5002';
     
    }
 
-    return (
+
+   const toggleInfoVisibility = () => {
+    setIsInfoVisible(!isInfoVisible);
+};
+
+ return (
         <div className="body_chat_student">
             <button className="back_button" onClick={go_back}>
                 <ArrowBackIcon />
             </button>
             <div className="chat_st">
-            <div className="mesaje_lista">
+                <div className="mesaje_lista">
                     {messages && messages.length > 0 ? (
-                        messages.map((msg, index) => (
+                        messages.map((msg) => (
                             <div key={msg.id} className={`mesaj ${msg.sender === "prof" ? "right" : "left"}`}>
                                 <p>{msg.mesaje}</p>
                                 <p>
@@ -155,15 +161,15 @@ const SEND_URL = 'http://localhost:5002';
                     ) : (
                         <p>No messages yet</p>
                     )}
-                     <div ref={messagesEndRef} />
+                    <div ref={messagesEndRef} />
                 </div>
-            
+
                 <div className="info_mesaje">
                     <p style={{ color: "#333" }}><strong>Name:</strong> {stud?.name || ''}</p>
-                    <p style={{ color: "#333" }}>,<strong> Program:</strong> {getShortDescription(stud?.ProgramStudy) || ''}</p>
-                    <p style={{ color: "#333" }}><strong>, Year:</strong> {stud?.study_year || ''}</p>
-
+                    <p style={{ color: "#333" }}><strong> Program:</strong> {getShortDescription(stud?.ProgramStudy) || ''}</p>
+                    <p style={{ color: "#333" }}><strong> Year:</strong> {stud?.study_year || ''}</p>
                 </div>
+
                 <div className="mesaje_input">
                     <input 
                         type="text" 
@@ -175,38 +181,40 @@ const SEND_URL = 'http://localhost:5002';
                 </div>
             </div>
 
-            
-            
-
             <div className="info">
                
-                    <div className="information"> 
-                      
+                <button className="dropdown-button" onClick={toggleInfoVisibility}>
+                    {isInfoVisible ? "Hide Information" : "Show Information"}
+                </button>
+
+                {isInfoVisible && (
+                    <div className="information">
                         <p><strong>Student Name:</strong> {userInfo?.name}</p>
                         <p>Email: 
                             <a href={`mailto:${userInfo?.email}`} className="email-link">
                                 {userInfo?.email}
                             </a>
                         </p>
-                        
                         <p><strong>Title:</strong> {thesis?.title}</p>
                         <p><strong>Description:</strong> {thesis?.description}</p>
                     </div>
-                    <div>
-                    <IconButton 
+                )}
+
+                
+                {!isInfoVisible && (
+                    <div className="additional-buttons">
+                        <IconButton  className="calendar-icon"
                             component="a" 
-                            href="https://console.cloud.google.com" 
+                            href="https://calendar.google.com/calendar/u/0/r" 
                             target="_blank" 
                             rel="noopener noreferrer"
                         >
-                            <LinkIcon />
+                            <CalendarTodayIcon className="calendar-icon" />
                         </IconButton>
-                       
+
+                        {/* <button className="gmail-toggle-button">On Gmail/Off Gmail</button> */}
                     </div>
-                    <div>
-                        <button>On Gmail/Off Gmail</button>
-                    </div>
-               
+                )}
             </div>
         </div>
     );
