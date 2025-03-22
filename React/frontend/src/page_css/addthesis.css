@@ -55,7 +55,6 @@
     margin: 5px 0; 
 }
 
-/* Stil pentru butoane */
 .button-container {
     display:flex;
     justify-content: space-between;
@@ -120,7 +119,6 @@
     background-color: #bd2130;
 }
 
-/* Add these styles to your CSS file */
 
 .modal {
     position: fixed;
@@ -169,8 +167,10 @@
 
 @media (max-width: 768px) {
     .applied_form {
+       min-width: 70%;
         width: 75%; 
         margin: 10px;
+        min-height: 35vh;
     }
 
     .button-container {

@@ -5,7 +5,7 @@
     width: 100%;
     height: 6%;
     
-    background-image: url('/Users/Andrei_Sviridov/Desktop/React/frontend/src/images/up_bar_back.png'); 
+    background-image: url('../images/up_bar_back.png'); 
     background-size: cover;
     background-position: center; 
     color: white;
@@ -20,14 +20,13 @@
 }
 
 
-.logo_box{
-    display: flex;
-    align-items: center;
-   
+.logo_box {
+    position: absolute;
     right: 75%;
-   
-
+    top: 75%;
+    transform: translateY(-50%);
 }
+
 .logo{
     width: 23%;
     height: 23%; 
@@ -112,4 +111,82 @@
 
 .main_btn:hover {
     background-color: #0056b3;
+}
+
+@media screen and (max-width: 1024px) {
+   
+  
+    .logo_box {
+        right: 62%;
+        top: 105%;
+   
+       
+    }
+
+    .icon {
+        font-size: 18px;
+        padding: 5px;
+    }
+
+    .form_account {
+        min-width: 180px;
+        font-size: 12px;
+    }
+
+    .log_btn, .main_btn {
+        font-size: 0.9rem;
+    }
+}
+
+
+@media screen and (max-width: 768px) {
+   
+    .logo_box{
+        right: 63%;
+        top: 95%;
+    
+    }
+
+    .logo {
+        width: 50px;
+       
+    }
+
+   
+
+    .form_account {
+        min-width: 180px;
+        font-size: 12px;
+    }
+
+    .log_btn, .main_btn {
+        font-size: 0.9rem;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    
+    .logo_box{
+        right: 47%;
+        top: 88%;
+       
+    }
+     
+    .logo {
+        width: 45px;
+    }
+
+    .icon {
+        font-size: 16px;
+    }
+
+    .form_account {
+        min-width: 160px;
+        font-size: 11px;
+        padding: 15px;
+    }
+
+    .log_btn, .main_btn {
+        font-size: 0.8rem;
+    }
 }

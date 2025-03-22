@@ -1,8 +1,10 @@
 import React, { useContext, useEffect, useState } from "react";
 
 
-import "../../page_css/addthesis.css";
+import { useNavigate } from "react-router";
 
+import "../../page_css/addthesis.css";
+import BACKEND_URL from "../../server_link";
 import { AppContext } from "../../components/AppContext";
 
 export default function AddThesis({ 
@@ -22,7 +24,7 @@ export default function AddThesis({
 }) { 
     
     
-        
+ const navigate = useNavigate(); 
     const { name, email, logined, type } = useContext(AppContext);
 
     const [allAplies, setAllAplies] = useState([]);
@@ -39,7 +41,7 @@ export default function AddThesis({
 
     function handleMyAplication_delet(id) {
        
-        fetch(`http://localhost:8081/delMyAplication/${id}`, { 
+        fetch(`${BACKEND_URL}/delMyAplication/${id}`, { 
             method: "DELETE",
             headers: { "Content-Type": "application/json" }
         })
@@ -49,13 +51,14 @@ export default function AddThesis({
         })
         .catch(error => console.error("Error withdrawing thesis:", error));
       
-        window.location.reload();
+      //  window.location.reload();
+      navigate("/prof");
     }
 
     function handleAplication_delet(id) {
        
 
-        fetch(`http://localhost:8081/accept/${id}`, { 
+        fetch(`${BACKEND_URL}/accept/${id}`, { 
             method: "DELETE",
             headers: { "Content-Type": "application/json" }
         })
@@ -65,7 +68,8 @@ export default function AddThesis({
         })
         .catch(error => console.error("Error withdrawing thesis:", error));
        
-        window.location.reload();
+       // window.location.reload();
+       navigate("/prof");
     }
 
     async function handleAcceptStudent(thesisId) {
@@ -80,7 +84,7 @@ export default function AddThesis({
             console.log(studentId);
     
             
-            const response = await fetch(`http://localhost:8081/aplies/${studentId}`, {
+            const response = await fetch(`${BACKEND_URL}/aplies/${studentId}`, {
                 method: "GET",
                 headers: { "Content-Type": "application/json" },
             });
@@ -122,7 +126,7 @@ export default function AddThesis({
             
     
         
-            const acceptResponse = await fetch("http://localhost:8081/acceptedApplications", {
+            const acceptResponse = await fetch(`${BACKEND_URL}/acceptedApplications`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(acceptedApplicationData)

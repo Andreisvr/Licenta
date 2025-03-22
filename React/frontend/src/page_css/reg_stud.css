@@ -1,10 +1,13 @@
-/* Main container */
+
 .body_reg_stud {
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
     padding: 0 20px;
+    background-image: url('../images/back3.jpg'); 
+    background-size: cover;
+    background-position: center; 
     overflow: auto;
   }
   
@@ -123,8 +126,28 @@
   }
   
   @media (max-width: 768px) {
+    
     .form_reg_stud {
-      padding: 30px 20px;
+      padding: 300px 20px;
+    }
+  
+    .title {
+      font-size: 20px;
+    }
+  
+    .inputBox {
+      padding: 10px;
+    }
+  
+    .Reg_btn_reg_stud, .buton_verify {
+      font-size: 14px;
+      padding: 10px;
+      margin-top: 10px;
+    }
+  }
+  @media (max-width: 1024px) {
+    .form_reg_stud {
+      padding: 300px 20px;
     }
   
     .title {

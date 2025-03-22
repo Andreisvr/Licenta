@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, MenuItem, Button, Fade } from '@mui/material';
+import BACKEND_URL from '../server_link';
 
 export default function ProfessorList({ faculty, onSelect }) {
     const [professors, setProfessors] = useState([]);
@@ -8,12 +9,13 @@ export default function ProfessorList({ faculty, onSelect }) {
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
 
+ 
     useEffect(() => {
         if (faculty) {
             setLoading(true); 
             const fetchProfessors = async () => {
                 try {
-                    const response = await fetch(`http://localhost:8081/get-professors?faculty=${faculty}`);
+                    const response = await fetch(`${BACKEND_URL}/get-professors?faculty=${faculty}`);
                     if (!response.ok) throw new Error('Failed to fetch professors');
                     const data = await response.json();
                     setProfessors(data);

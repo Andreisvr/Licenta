@@ -1,5 +1,11 @@
 
 import React ,{useEffect} from "react";
+import { AppContext } from "../../components/AppContext";
+import { useContext } from "react";
+import { useNavigate } from "react-router";
+
+import BACKEND_URL from "../../server_link";
+import SEND_URL from "../../email_link";
 
 export default function AddResponse({ 
     thesisName, 
@@ -9,19 +15,21 @@ export default function AddResponse({
     data,
     cover_letter,
     prof_email,
+    prof_name,
     id_thesis,
     id_prof,
     id_stud,
-    
+    stud_email,
   
     id, 
  }) {
+    const navigate = useNavigate();
+    const { handleThesisId} = useContext(AppContext); 
+   
+    async function handleResponse_delet(id) {
+       
 
-    
-    function handleResponse_delet(id) {
-        console.log(id);
-
-        fetch(`http://localhost:8081/response/${id}`, { 
+        fetch(`${BACKEND_URL}/response/${id}`, { 
             method: "DELETE",
             headers: { "Content-Type": "application/json" }
         })
@@ -30,15 +38,16 @@ export default function AddResponse({
            
         })
         .catch(error => console.error("Error withdrawing thesis:", error));
-       
-        window.location.reload();
+        
+      
+    
     }
 
     async function handleChangeState(stud_id) {
 
         {
          
-            fetch(`http://localhost:8081/proposalAcceptConfirm/${id_thesis}`, {
+            fetch(`${BACKEND_URL}/proposalAcceptConfirm/${id_thesis}`, {
                 method: "PATCH", 
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ state: "confirmed" }), 
@@ -48,8 +57,9 @@ export default function AddResponse({
                
             })
             .catch(error => console.error("Error accepting thesis:", error));
+            
+            
            
-            window.location.reload();
         }
         
     }
@@ -76,9 +86,8 @@ export default function AddResponse({
                 cover_letter:cover_letter
             };
     
-            console.log("1Data accepted:", acceptedApplicationData);
-    
-            const confirmResponse = await fetch("http://localhost:8081/confirmation", {
+           
+            const confirmResponse = await fetch(`${BACKEND_URL}/confirmation`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(acceptedApplicationData),
@@ -92,16 +101,18 @@ export default function AddResponse({
                 throw new Error("Failed to confirm application");
             }
     
-            console.log("Application confirmed successfully:", acceptedApplicationData);
-    
+           
+            handleChangeState(studentId)
+            SendEmail();
+            handleResponse_delet(studentId);
             
-              handleResponse_delet(studentId);
+            await new Promise((resolve) => setTimeout(resolve, 350));
+
+            window.location.reload();
     
         } catch (error) {
             console.error("Error in Confirm Aplication Student:", error);
-            const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-            const studentId = userInfo.id;
-    
+           
             
         }}else{
 
@@ -121,7 +132,7 @@ export default function AddResponse({
         
                
         
-                const confirmResponse = await fetch("http://localhost:8081/confirmationPropouse", {
+                const confirmResponse = await fetch(`${BACKEND_URL}/confirmationPropouse`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(acceptedApplicationData),
@@ -133,10 +144,25 @@ export default function AddResponse({
                     throw new Error("Failed to confirm application");
                 }
         
-                console.log("Application confirmed successfully:", acceptedApplicationData);
-        
-                   handleChangeState(studentId)
-                  handleResponse_delet(studentId);
+                
+                const profResponse = await fetch(`${BACKEND_URL}/getProfessor/${id_prof}`, {
+                    method: "GET",
+                    headers: { "Content-Type": "application/json" },
+                });
+                
+                if (!profResponse.ok) {
+                    throw new Error("Failed to fetch professor details");
+                }
+                
+                const professorData = await profResponse.json();
+              
+                handleChangeState(studentId)
+                SendEmail(professorData);
+                handleResponse_delet(studentId);
+               
+                await new Promise((resolve) => setTimeout(resolve, 350));
+
+               window.location.reload();
         
             } catch (error) {
                 console.error("Error in  Confirm Propouse:", error);
@@ -151,6 +177,66 @@ export default function AddResponse({
     }
 
 
+    async function SendEmail(professorData) {
+        let subject = 'Congratulations! Your Thesis Application Has Been Confirmed';
+
+        let text = `Dear ${student_name},\n\n
+        Congratulations! We are pleased to inform you that your thesis application titled: "${thesisName}" has been confirmed. 
+        Your thesis will be supervised by Professor ${prof_name}. You can contact them via email: ${prof_email} or website chat for further instructions or questions.\n\n
+        We wish you the best of luck with your thesis work!\n\n
+        Kind regards,\nThe Thesis Department`;
+        
+        try {
+            const response = await fetch(`${SEND_URL}/sendEmail`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: stud_email, subject, text })
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to send email');
+            }
+
+            console.log(`Email sent successfully to ${stud_email}`);
+
+        } catch (error) {
+            console.error('Error sending email:', error);
+        }
+
+        subject = 'Student Thesis Confirmation';
+        
+        text = `Dear Professor ${prof_name},\n\n
+        We are happy to inform you that your student, ${student_name} (email: ${stud_email}), has successfully confirmed their thesis titled: "${thesisName}". 
+        This thesis is now officially assigned to you as the supervising professor. Please feel free to reach out to the student for any further steps or assistance.\n\n
+        Kind regards,\nThe Thesis Department`;
+        
+        try {
+            const response = await fetch(`${SEND_URL}/sendEmail`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: professorData.email, subject, text})
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to send email');
+            }
+
+            console.log(`Email sent successfully to ${prof_email}`);
+
+        } catch (error) {
+            console.error('Error sending email:', error);
+        }
+
+    
+    }
+
+
+    function goInfo(id){
+        handleThesisId(id);
+       
+        navigate('/Confirm_Info')
+    }
+
 
      
     function formatDate(isoDateString) {
@@ -164,12 +250,13 @@ export default function AddResponse({
     const getShortDescription = (desc) => (desc ? `${desc.substring(0, 25)}${desc.length > 100 ? "..." : ""}` : "");
 
     return (
-        <form className="applied_form">
-            <p className="text title">Titde: {getShortDescription(thesisName)}</p>
+        <form className="applied_form"  onClick={() => {goInfo(id_thesis); }}>
+            <p className="text title">Tite: {getShortDescription(thesisName)}</p>
                
-                    <p className="text">Student: {student_name || "Loading..."}</p>
+                    <p className="text">Profesor Email: {prof_email || "Loading..."}</p>
                     <p className="text">Faculty: {faculty} {study_program && `Program: ${study_program}`}</p>
                     <p className="text">Applied Date: {formatDate(data)}</p>
+                    
                    <br/>
                         <button 
                             className="chose_btn" 

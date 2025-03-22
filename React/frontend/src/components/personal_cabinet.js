@@ -13,7 +13,7 @@ function PersonalForm() {
         navigate('/login');
     }
 
-    // Obține datele utilizatorului din localStorage
+  
     const userInfo = JSON.parse(localStorage.getItem('userInfo'));
 
     return (
@@ -23,8 +23,7 @@ function PersonalForm() {
                     <div>
                       
                         <h2>{userInfo.name}</h2>
-                        {/* <h2>{userInfo.email}</h2> */}
-                        {/* <h2>{userInfo.faculty}</h2> */}
+                       
                         <button onClick={() => {
                             googleLogout();
                             handleLogout(); 

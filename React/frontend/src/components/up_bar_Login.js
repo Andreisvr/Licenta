@@ -7,8 +7,9 @@ import IconButton from '@mui/material/IconButton';
 import Badge from '@mui/material/Badge';
 import PersonalForm from "./personal_cabinet";
 import Logo from "../images/Logo-UVT-2017-02.ico";
-import { AppContext } from "./AppContext";
 import BACKEND_URL from "../server_link";
+
+import { AppContext } from "./AppContext";
 
 function notificationsLabel(count) {
     if (count === 0) {
@@ -20,7 +21,7 @@ function notificationsLabel(count) {
     return `${count} notifications`;
 }
 
-function UpBar() {
+function UpBar_Log() {
 
     const { logined } = useContext(AppContext);
 
@@ -91,7 +92,7 @@ function UpBar() {
     }, [showForm]);
 
     return (
-        <div className="upbar">
+        <div className="upbar-log">
             <IconButton className="logo_box" onClick={handleLogoClick}>
                 <img src={Logo} alt="Logo" className="logo" />
             </IconButton>
@@ -112,13 +113,13 @@ function UpBar() {
                         }
                     }}
                 >
-                    <FavoriteBorderIcon className='icon' />
+                    <FavoriteBorderIcon className='icon_login' />
                 </Badge>
             </IconButton>
 
             <div item>
                 <IconButton onClick={handleClickForm} className="personal_icon">
-                    <AccountBoxIcon className='icon' />
+                    <AccountBoxIcon className='icon_login' />
                 </IconButton>
             </div>
 
@@ -127,4 +128,4 @@ function UpBar() {
     );
 }
 
-export default UpBar;
+export default UpBar_Log;

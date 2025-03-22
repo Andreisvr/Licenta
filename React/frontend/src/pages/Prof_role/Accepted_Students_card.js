@@ -1,6 +1,10 @@
 
 import React, { useContext, useEffect, useState } from "react";
 
+import { useNavigate } from "react-router";
+import BACKEND_URL from "../../server_link";
+
+
 export default function Accepted({ 
     thesisName, 
     faculty, 
@@ -15,14 +19,16 @@ export default function Accepted({
     id, 
  }) {
 
+      const navigate = useNavigate(); 
+ 
 
     const [allAplies, setAllAplies] = useState([]);
     const [theses, setTheses] = useState([]); 
    
-    function handleAplication_delet(id) {
+    async function handleAplication_delet(id) {
        
         console.log(id);
-        fetch(`http://localhost:8081/accept/${id}`, { 
+        fetch(`${BACKEND_URL}/accept/${id}`, { 
             method: "DELETE",
             headers: { "Content-Type": "application/json" }
         })
@@ -32,7 +38,9 @@ export default function Accepted({
         })
         .catch(error => console.error("Error withdrawing thesis:", error));
        
-        window.location.reload();
+        await new Promise((resolve) => setTimeout(resolve, 350));
+
+        navigate("/prof");
         
     }
 
@@ -48,7 +56,7 @@ export default function Accepted({
             console.log(studentId);
     
             
-            const response = await fetch(`http://localhost:8081/aplies/${studentId}`, {
+            const response = await fetch(`${BACKEND_URL}/aplies/${studentId}`, {
                 method: "GET",
                 headers: { "Content-Type": "application/json" },
             });
@@ -90,7 +98,7 @@ export default function Accepted({
             
     
         
-            const acceptResponse = await fetch("http://localhost:8081/acceptedApplications", {
+            const acceptResponse = await fetch(`${BACKEND_URL}/acceptedApplications`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(acceptedApplicationData)

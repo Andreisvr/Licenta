@@ -3,6 +3,8 @@ import React  from "react";
 import { useContext } from "react";
 import { useNavigate } from "react-router";
 import { AppContext } from "../../components/AppContext";
+import BACKEND_URL from "../../server_link";
+
 export default function MyApplied({ 
     thesisName, 
     faculty, 
@@ -12,11 +14,14 @@ export default function MyApplied({
     study_year,
     stud_name,
     prof_email,
+    professor_id,
     id, 
  }) {
     const navigate = useNavigate();
-    const { handleThesisId} = useContext(AppContext); 
+    const { handleThesisId,handleStud_id} = useContext(AppContext); 
    
+   
+
     function formatDate(isoDateString) {
         const date = new Date(isoDateString);
         if (date.getTime() === 0) return ''; 
@@ -27,9 +32,9 @@ export default function MyApplied({
     }
 
 
-    const handleWithdraw = (id) => {
+    const handleWithdraw =  async (id) => {
         
-        fetch(`http://localhost:8081/myaply/${id}`, { 
+        fetch(`${BACKEND_URL}/myaply/${id}`, { 
             method: "DELETE",
             headers: { "Content-Type": "application/json" },
         })
@@ -38,14 +43,21 @@ export default function MyApplied({
             
         })
         .catch(error => console.error("Error withdrawing thesis:", error));
+       
+        await new Promise((resolve) => setTimeout(resolve, 350));
+
         window.location.reload();
+        
     };
 
     function go_info(){
         handleThesisId(id);
+        handleStud_id(professor_id);
         navigate('/Applied_info')
 
+
     }
+    console.log(professor_id);
     const getShortDescription = (desc) => (desc ? `${desc.substring(0, 25)}${desc.length > 100 ? "..." : ""}` : "");
 
     return (

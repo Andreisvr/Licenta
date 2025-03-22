@@ -1,6 +1,7 @@
 import React, { useEffect, useState,useContext } from "react";
 import FacultyList from "../components/Faculty_List";
 import "../page_css/Admin_Page_css.css";
+import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 
 import InfoIcon from '@mui/icons-material/Info';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
@@ -9,9 +10,10 @@ import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
 import { useNavigate } from "react-router";
 import { AppContext } from "../components/AppContext";
 import CloseIcon from '@mui/icons-material/Close';
+import BACKEND_URL from "../server_link";
 
 export default function Admin_Page() {
-    const { handleThesisId,handleConfirm } = useContext(AppContext); 
+    const { handleThesisId,handleConfirm,handleAdmin } = useContext(AppContext); 
     const [theses, setAllTheses] = useState([]);
     const [professors, setAllProfessors] = useState([]);
     const [students, setAllStudents] = useState([]);
@@ -21,9 +23,18 @@ export default function Admin_Page() {
     const [faculty, setFaculty] = useState('');
     const [program, setProgram] = useState('');
     const [selectedList, setSelectedList] = useState('professors'); 
+     
+    
+
     const navigate = useNavigate();
     useEffect(() => {
         const admin = localStorage.getItem("admin");
+
+        
+        if (admin !== 'admin') {
+          navigate("/login"); 
+          return; 
+        }
         if (admin === 'admin') {
             const savedFaculty = localStorage.getItem("selectedFaculty");
             const savedProgram = localStorage.getItem("selectedProgram");
@@ -44,12 +55,12 @@ export default function Admin_Page() {
             if (faculty) {
                 setFacultyError(false);
     
-                // Fetch all data concurrently using Promise.all
+                
                 Promise.all([
-                    fetch(`http://localhost:8081/getAllTheses?faculty=${faculty}`).then(res => res.json()),
-                    fetch(`http://localhost:8081/getAllProfessors?faculty=${faculty}`).then(res => res.json()),
-                    fetch(`http://localhost:8081/getStudents?faculty=${faculty}`).then(res => res.json()),
-                    fetch(`http://localhost:8081/getAllConfirmed`).then(res => res.json())
+                    fetch(`${BACKEND_URL}/getAllTheses?faculty=${faculty}`).then(res => res.json()),
+                    fetch(`${BACKEND_URL}/getAllProfessors?faculty=${faculty}`).then(res => res.json()),
+                    fetch(`${BACKEND_URL}/getStudents?faculty=${faculty}`).then(res => res.json()),
+                    fetch(`${BACKEND_URL}/getAllConfirmed`).then(res => res.json())
                 ])
                 .then(([thesesData, professorsData, studentsData, confirmedData]) => {
                     setAllTheses(thesesData);
@@ -57,15 +68,11 @@ export default function Admin_Page() {
                     setAllStudents(studentsData);
                     setAllConfirmed(confirmedData);
     
-                    // console.log('Teze:', thesesData);
-                    // console.log('Profesori:', professorsData);
-                    // console.log('Studenții:', studentsData);
-                    // console.log('Confirmed:', confirmedData);
-    
+                  
                    
                     const combinedList = combineInfo(confirmedData, studentsData, professorsData, thesesData);
                     setFinalList(combinedList);
-                    //console.log("finalList:", combinedList);
+                   
                 })
                 .catch((error) => console.error("Error fetching data:", error));
             } else {
@@ -131,7 +138,7 @@ export default function Admin_Page() {
 
     
         try {
-            const response = await fetch("http://localhost:8081/thesis_admin", {
+            const response = await fetch(`${BACKEND_URL}/thesis_admin`, {
                 method: "DELETE",
                 headers: {
                     "Content-Type": "application/json",
@@ -148,7 +155,7 @@ export default function Admin_Page() {
             console.log("Succes:", result.message);
             alert("Teza a fost ștearsă cu succes!");
             
-            
+            navigate("/prof");
             window.location.reload();
         } catch (error) {
             console.error("Eroare:", error);
@@ -161,7 +168,7 @@ export default function Admin_Page() {
     if (!window.confirm(`Are you sure you want to delete this student? It will be removed from all fields, even if it has been confirmed by someone. Student ID-ul ${id}?`)) return;
     
     try {
-        const response = await fetch("http://localhost:8081/delete_student_admin", {
+        const response = await fetch(`${BACKEND_URL}/delete_student_admin`, {
             method: "DELETE",
             headers: {
                 "Content-Type": "application/json",
@@ -196,7 +203,7 @@ export default function Admin_Page() {
     }
     
     try {
-        const response = await fetch("http://localhost:8081/Verify_Profesor", {
+        const response = await fetch(`${BACKEND_URL}/Verify_Profesor`, {
             method: "PUT",  
             headers: {
                 "Content-Type": "application/json",
@@ -227,7 +234,7 @@ export default function Admin_Page() {
     if (!window.confirm(`Are you sure you want to delete this Professor? It will be removed from all fields, even if it has been confirmed thesis. Professor ID-ul ${id}?`)) return;
    
     try {
-        const response = await fetch("http://localhost:8081/delet_profesor_admin", {
+        const response = await fetch(`${BACKEND_URL}/delet_profesor_admin`, {
             method: "DELETE",
             headers: {
                 "Content-Type": "application/json",
@@ -258,7 +265,7 @@ async function HandleDelete_Confirm(id, id_stud) {
     if (!window.confirm(`Are you sure you want to delete this Confirmation? It will be removed from all fields, Confirmation ID-ul ${id}?`)) return;
    
     try {
-        const response = await fetch("http://localhost:8081/delete_confirmation_admin", {
+        const response = await fetch(`${BACKEND_URL}/delete_confirmation_admin`, {
             method: "DELETE",
             headers: {
                 "Content-Type": "application/json",
@@ -281,6 +288,11 @@ async function HandleDelete_Confirm(id, id_stud) {
     }
 }
 
+function Logout()
+{
+    handleAdmin('logout');
+    navigate('/login');
+}
 
 
 function formatDate(isoDateString) {
@@ -312,7 +324,7 @@ function formatDate(isoDateString) {
                    
                 </div>
 
-                <div className="bottom_container">
+            <div className="bottom_container">
                 <FacultyList onSelect={handleSelection} />
 
                 {facultyError && (
@@ -421,6 +433,9 @@ function formatDate(isoDateString) {
 
 
                 </div>
+                <div className="add-button-container">
+            <ExitToAppIcon onClick={Logout} className="add_button" />
+        </div>
             </div>
         </div>
     );

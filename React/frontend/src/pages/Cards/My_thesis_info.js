@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router";
-
+import BACKEND_URL from "../../server_link";
 import "../../page_css/My_thesis_info.css";
+import ArrowBackIcon from '@mui/icons-material/ArrowBack'; 
 
 import { AppContext } from "../../components/AppContext";
 
@@ -10,13 +11,15 @@ export default function ThesisModify() {
   const [thesisData, setThesisData] = useState(null);
   const { thesis_id } = useContext(AppContext); 
   const navigate = useNavigate();
+ 
+
 
   useEffect(() => {
     console.log('Fetching thesis data for ID:', thesis_id);
     const fetchData = async () => {
         if (thesis_id) {
             try {
-                const response = await fetch(`http://localhost:8081/thesis/${thesis_id}`);
+                const response = await fetch(`${BACKEND_URL}/thesis/${thesis_id}`);
                 
                 if (!response.ok) {
                     throw new Error('Failed to fetch thesis data');
@@ -55,7 +58,7 @@ export default function ThesisModify() {
           end_date: thesisData.end_date ? formatDate(thesisData.end_date) : null,
       };
         console.log('data modfiy',formattedData);
-    fetch(`http://localhost:8081/update_thesis/${thesis_id}`, {
+    fetch(`${BACKEND_URL}/update_thesis/${thesis_id}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -74,6 +77,9 @@ export default function ThesisModify() {
         navigate('/prof');
         
   };
+  const handleBack = () => {
+    navigate("/prof");
+};
 
   if (!thesisData) {
     return <div>Loading thesis information...</div>;
@@ -88,9 +94,14 @@ export default function ThesisModify() {
   };
  
   
+  
   return (
     <div className="th_info_body">
+    
       <form className="left_form">
+      <button type="button" className="back-button" onClick={handleBack}>
+                            <ArrowBackIcon />
+                        </button>
         <label className="label_modify">
           Title:
           <input className="input_modify"
@@ -108,9 +119,10 @@ export default function ThesisModify() {
             onChange={handleChange}
           />
         </label>
+        <div></div>
         <label className="label_modify">
           Requirements:
-          <textarea
+          <textarea className="text_req"
             name="requirements"
             value={thesisData.requirements || ""}
             onChange={handleChange}

@@ -15,6 +15,7 @@ import MyPropouses from "../student-role/MyPropouse.js";
 import Propouses from "./propuses_card_prof.js";
 import MenuIcon from "@mui/icons-material/Menu";
 
+import BACKEND_URL from "../../server_link.js";
 
 export default function Cabinet() {
     const { name,email, logined, type } = useContext(AppContext);
@@ -71,7 +72,7 @@ export default function Cabinet() {
 
   
     useEffect(() => {
-        fetch("http://localhost:8081/prof", {
+        fetch(`${BACKEND_URL}/prof`, {
             method: "GET",
             headers: { "Content-Type": "application/json" },
         })
@@ -90,7 +91,7 @@ export default function Cabinet() {
         .catch((error) => console.error("Error fetching theses:", error));
 
         if (logined) {
-            fetch("http://localhost:8081/prof", {
+            fetch(`${BACKEND_URL}/prof`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email }),
@@ -105,7 +106,7 @@ export default function Cabinet() {
             })
             .catch((error) => console.error("Error fetching user info:", error));
 
-            fetch("http://localhost:8081/applies", {
+            fetch(`${BACKEND_URL}/applies`, {
                 method: "GET",
                 headers: { "Content-Type": "application/json" },
             })
@@ -141,7 +142,7 @@ export default function Cabinet() {
             alert("Not logined")
             return;
         }
-        fetch(`http://localhost:8081/show_My_applies/${studentId}`, {
+        fetch(`${BACKEND_URL}/show_My_applies/${studentId}`, {
             method: "GET",
             headers: { "Content-Type": "application/json" },
         })
@@ -177,7 +178,7 @@ export default function Cabinet() {
             return;
         }
     
-        fetch(`http://localhost:8081/show_My_thesis/${profId}`, {
+        fetch(`${BACKEND_URL}/show_My_thesis/${profId}`, {
             method: "GET",
             headers: { "Content-Type": "application/json" },
         })
@@ -234,7 +235,7 @@ export default function Cabinet() {
     
         const studentId = parsedUserInfo.id; 
        
-        fetch(`http://localhost:8081/Responses/${studentId}`, {
+        fetch(`${BACKEND_URL}/Responses/${studentId}`, {
             method: "GET",
             headers: { "Content-Type": "application/json" },
         })
@@ -287,7 +288,7 @@ export default function Cabinet() {
        
        
        const Profid= id;
-        fetch(`http://localhost:8081/Accepted/${Profid}`, {
+        fetch(`${BACKEND_URL}/Accepted/${Profid}`, {
             method: "GET",
             headers: { "Content-Type": "application/json" },
         })
@@ -314,7 +315,7 @@ export default function Cabinet() {
 
            
             try {
-                const response = await fetch(`http://localhost:8081/getProposals/${id}`);
+                const response = await fetch(`${BACKEND_URL}/getProposals/${id}`);
                 if (!response.ok) {
                     throw new Error('Failed to fetch proposals');
                 }
@@ -339,10 +340,10 @@ export default function Cabinet() {
 
         }
 
-    const handleSelection = (faculty, program) => {
-        setSelectedFaculty(faculty);
-        setSelectedProgram(program);
-    };
+    // const handleSelection = (faculty, program) => {
+    //     setSelectedFaculty(faculty);
+    //     setSelectedProgram(program);
+    // };
     
 
     const handleSearch = () => {
@@ -377,7 +378,7 @@ export default function Cabinet() {
         }
     
         try {
-            const response = await fetch(`http://localhost:8081/propoused/${name}`, {
+            const response = await fetch(`${BACKEND_URL}/propoused/${name}`, {
                 method: "GET",
                 headers: { "Content-Type": "application/json" },
             });
@@ -407,7 +408,7 @@ export default function Cabinet() {
       
         setViewType("MyChose");
        
-        fetch(`http://localhost:8081/confirmed?id_prof=${id}`, {
+        fetch(`${BACKEND_URL}/confirmed?id_prof=${id}`, {
             method: "GET",
             headers: { "Content-Type": "application/json" },
         })
@@ -509,7 +510,7 @@ export default function Cabinet() {
                     </div>
 
                 </div>
-               
+              
                 <div className={`bottom_container ${showLeftContainer ? "default" : "full-width"}`}>
                 {
   viewType === "ALL" && theses.length > 0 ? (
@@ -544,7 +545,8 @@ export default function Cabinet() {
         thesisName={respons.title}
         data={respons.data}
         faculty={respons.faculty}
-        study_program={respons.stud_program}
+        stud_email={respons.stud_email}
+        prof_name={respons.prof_name}
         student_name={respons.stud_name}
         professor_name={respons.prof_name}
         prof_email={respons.prof_email}
@@ -564,6 +566,7 @@ export default function Cabinet() {
         stud_name={aply.stud_name}
         prof_email={aply.prof_email}
         professor_name={aply.prof_name}
+        professor_id={aply.id_prof}
         viewType={viewType}
         id={aply.id}
       />
@@ -580,6 +583,7 @@ export default function Cabinet() {
         stud_email={aply.stud_email}
         stud_name={aply.stud_name}
         professor_name={aply.prof_name}
+        stud_id={aply.id_stud}
         viewType={viewType}
         study_year={aply.study_year}
         id={aply.id}
@@ -639,7 +643,7 @@ export default function Cabinet() {
         key={application.id}
         thesisName={application.title}
         professor_name={application.prof_name}
-        professor_id={application.professor_id}
+        professor_id={application.prof_id}
        
         applied_data={application.date} 
         description={application.description}

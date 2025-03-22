@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router';
 import "../../page_css/addthesis_form.css";
 import { AppContext } from '../../components/AppContext';
 import ProfessorList from '../../components/Prof_List';
+import BACKEND_URL from '../../server_link';
 
 export default function MyPropouseAdd() {
     const { logined, email, name} = useContext(AppContext);
@@ -92,7 +93,7 @@ export default function MyPropouseAdd() {
        
 
         try {
-            const response = await fetch(`http://localhost:8081/Propouses`, {
+            const response = await fetch(`${BACKEND_URL}/Propouses`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

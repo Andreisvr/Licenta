@@ -3,11 +3,16 @@ import { useNavigate } from 'react-router';
 
 import { AppContext } from '../../components/AppContext';
 import "../../page_css/addthesis_form.css";
+import BACKEND_URL from '../../server_link';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack'; 
+
 
 function ThesisForm() {
     const { logined } = useContext(AppContext);
     const navigate = useNavigate();
 
+   
+ 
     if (!logined) {
         console.log('Nu este logat');
     }
@@ -20,6 +25,10 @@ function ThesisForm() {
         requirements: '',
         cover_letter: '',
     });
+
+    const handleBack = () => {
+        navigate("/prof");
+    };
 
     const initialFormData = {
         title: '',
@@ -89,7 +98,7 @@ function ThesisForm() {
         console.log(adjustedData);
         
         try {
-            const response = await fetch('http://localhost:8081/add_form', {
+            const response = await fetch(`${BACKEND_URL}/add_form`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -111,6 +120,7 @@ function ThesisForm() {
 
     return (
         <form className="thesis-form" onSubmit={handleSubmit}>
+           
            <label>
                 Title:
                 <input 
@@ -187,8 +197,8 @@ function ThesisForm() {
             </label>
 
            
-            <label>
-                <input
+            <label className='check_b'>
+                <input 
                     type="checkbox"
                     name="isLetterRequired"
                     checked={formData.isLetterRequired}

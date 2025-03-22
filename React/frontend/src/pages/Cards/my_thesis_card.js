@@ -2,7 +2,7 @@ import React, { useState, useEffect,useContext} from "react";
 import { useNavigate } from "react-router-dom";
 import ToggleOffIcon from "@mui/icons-material/ToggleOff";
 import ToggleOnIcon from "@mui/icons-material/ToggleOn";
-
+import BACKEND_URL from "../../server_link";
 import "../../page_css/my_thesis_cards.css";
 
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
@@ -24,7 +24,8 @@ export default function MyThesis({
   const [isToggled, setIsToggled] = useState(false);
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
   const { handleThesisId } = useContext(AppContext); 
-  
+ 
+
   const navigate = useNavigate();  
 
 
@@ -41,7 +42,7 @@ const handleModifyClick = () => {
   };
 
   const handleWithdraw = (id) => {
-    fetch(`http://localhost:8081/prof/${id}`, {
+    fetch(`${BACKEND_URL}/prof/${id}`, {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
     })
@@ -49,12 +50,13 @@ const handleModifyClick = () => {
         if (!response.ok) throw new Error("Failed to withdraw thesis");
       })
       .catch((error) => console.error("Error withdrawing thesis:", error));
-    window.location.reload();
+    //window.location.reload();
+    navigate("/prof");
   };
 
   const handleStop = (id) => {
     if (state === "closed") return;
-    fetch(`http://localhost:8081/stop_thesis/${id}`, {
+    fetch(`${BACKEND_URL}/stop_thesis/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
     })
@@ -66,7 +68,7 @@ const handleModifyClick = () => {
 
   const handleOpen = (id) => {
     if (state === "closed") return;
-    fetch(`http://localhost:8081/open_thesis/${id}`, {
+    fetch(`${BACKEND_URL}/open_thesis/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
     })
@@ -110,7 +112,7 @@ const handleModifyClick = () => {
 
   return (
     <form className="applied_form">
-      <p className="text title">TitleM: {getShortDescription(thesisName)}</p>
+      <p className="text title">Title: {getShortDescription(thesisName)}</p>
       <p className="text">
         Faculty: {faculty} {study_program && `Program: ${study_program}`}
       </p>

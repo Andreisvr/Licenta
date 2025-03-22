@@ -1,6 +1,11 @@
 // AddApplies.js
 import React ,{useEffect} from "react";
-//fgfkmdl,sas,ladfghfgdsaSDFGHJKLJHGFDSADSFGH
+
+import { useNavigate } from "react-router";
+
+import BACKEND_URL from "../../server_link";
+
+
 export default function AddResponse({ 
     thesisName, 
     faculty, 
@@ -16,11 +21,13 @@ export default function AddResponse({
     id, 
  }) {
 
-    
+    const navigate = useNavigate(); 
+
+  
     function handleResponse_delet(id) {
         console.log(id);
 
-        fetch(`http://localhost:8081/response/${id}`, { 
+        fetch(`${BACKEND_URL}/response/${id}`, { 
             method: "DELETE",
             headers: { "Content-Type": "application/json" }
         })
@@ -30,7 +37,8 @@ export default function AddResponse({
         })
         .catch(error => console.error("Error withdrawing thesis:", error));
        
-        window.location.reload();
+        //window.location.reload();
+        navigate("/prof");
     }
 
 
@@ -51,7 +59,7 @@ export default function AddResponse({
             console.log('data accepted ',acceptedApplicationData);
 
     
-            const confirmResponse = await fetch("http://localhost:8081/confirmation", {
+            const confirmResponse = await fetch(`${BACKEND_URL}/confirmation`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(acceptedApplicationData)

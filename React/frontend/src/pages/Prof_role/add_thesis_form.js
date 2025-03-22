@@ -4,10 +4,12 @@ import { useNavigate } from 'react-router';
 import "../../page_css/addthesis_form.css";
 import FacultyList from '../../components/Faculty_List';
 import { AppContext } from '../../components/AppContext';
+import BACKEND_URL from '../../server_link';
 
 function ThesisForm() {
     const { name, email, logined, type } = useContext(AppContext);
     const navigate = useNavigate();
+  
 
     if (!logined) {
         console.log('nu este logat');
@@ -73,7 +75,7 @@ function ThesisForm() {
         };
 
         try {
-            const response = await fetch('http://localhost:8081/add_form', {
+            const response = await fetch(`${BACKEND_URL}/add_form`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

@@ -1,18 +1,25 @@
 import React, { useEffect, useState, useContext } from "react";
-import '/Users/Andrei_Sviridov/Desktop/React/frontend/src/page_css/ThesisInfo.css';
+
+import "../page_css/ThesisInfo.css";
 import { AppContext } from "../components/AppContext";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'; 
 import { useNavigate } from "react-router-dom"; 
+import BACKEND_URL from "../server_link";
 
 export default function ThesisInfo_Admin() {
+    
     const [thesisData, setThesisData] = useState(null);
    
     const navigate = useNavigate(); 
-   
+     
     const { thesis_id } = useContext(AppContext); 
     useEffect(() => {
-       
-        fetch(`http://localhost:8081/thesis_admin?id=${thesis_id}`)
+        const isAdmin = localStorage.getItem('admin');
+    if (isAdmin !== 'admin') {
+      
+      navigate("/login"); 
+    } else {
+        fetch(`${BACKEND_URL}/thesis_admin?id=${thesis_id}`)
                 .then((response) => response.json())
                 .then((data) => {
                     setThesisData(data);
@@ -21,7 +28,7 @@ export default function ThesisInfo_Admin() {
                 .catch((error) => console.error("Error fetching theses:", error));
 
         
-    
+            }
     }, [thesis_id]);
 
    

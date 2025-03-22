@@ -4,9 +4,11 @@ import { useNavigate, Link } from 'react-router-dom';
 import "../page_css/Login.css";
 import GoogleBtn from '../components/login_btn';
 import axios from 'axios';
+import UpBar_Log from '../components/up_bar_Login';
 
 import "../images/wallpaperflare.com_wallpaper.jpg";
 import { AppContext } from '../components/AppContext';
+import BACKEND_URL from '../server_link';
 
 function LogIn() {
   const [email, setEmail] = useState('');
@@ -16,39 +18,45 @@ function LogIn() {
   const navigate = useNavigate();
   const { handleLogin,handleAdmin } = useContext(AppContext); 
 
+   
   const handleGmailLogin = async (decodedToken) => {
     const gmailEmail = decodedToken.email;
     const gmailName = `${decodedToken.given_name} ${decodedToken.family_name}`;
-    const gmail_password =  decodedToken.jti;
-    
+    const gmail_password = decodedToken.jti;
+
     try {
-      const response = await axios.post('http://localhost:8081/login', {
-        email: gmailEmail,
-        pass : gmail_password
-      });
+        const response = await fetch(`${BACKEND_URL}/login`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                email: gmailEmail,
+                pass: gmail_password
+            }),
+        });
 
-      if (response.data.success) {
-        const { name, email, prof, faculty, program } = response.data.user;
-        if(name=='admin'){
-          console.log('name');
-          handleAdmin(name);
-          navigate('/Admin_Page');
-        }else{
-        const userType = prof === 1 ? 'professor' : 'student'; 
-        console.log(email, gmailName, userType, program, faculty);
+        const data = await response.json();
 
-        handleLogin(name, email, userType, userType === 'student' ? program : null, faculty); 
-       
-        navigate('/prof'); 
-      }
-      } else {
-        alert('Apărea o eroare');
-      }
+        if (response.ok && data.success) {
+            const { name, email, prof, faculty, program } = data.user;
+            if (name === 'admin') {
+                handleAdmin('admin');
+                navigate('/Admin_Page');
+            } else {
+                const userType = prof === 1 ? 'professor' : 'student';
+                handleLogin(name, email, userType, userType === 'student' ? program : null, faculty);
+                navigate('/prof');
+                handleAdmin('user');
+            }
+        } else {
+            alert('A apărut o eroare');
+        }
     } catch (error) {
-      console.log("Error logging in:", error);
-      setEmailError('An error occurred. Please try again later.');
+        console.error("Error logging in:", error);
+        setEmailError('An error occurred. Please try again later.');
     }
-  };
+};
 
   const onButtonClick = async () => {
     setEmailError('');
@@ -77,40 +85,44 @@ function LogIn() {
     // }
 
     try {
-      const response = await axios.post('http://localhost:8081/login', {
-          email,
-          password,
+      const response = await fetch(`${BACKEND_URL}/login`, {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+              email,
+              password,
+          }),
       });
   
-      if (response.data.success) {
-          const { name, email, prof, faculty, program } = response.data.user;
-          const userType = prof === 1 ? 'professor' : 'student'; 
+      const data = await response.json();
   
-          if (name.toLowerCase() === 'admin') { 
-              // console.log('Admin detected');
-              handleAdmin(name);
+      if (response.ok && data.success) {
+          const { name, email, prof, faculty, program } = data.user;
+          const userType = prof === 1 ? 'professor' : 'student';
+  
+          if (name.toLowerCase() === 'admin') {
+              handleAdmin('admin');
               navigate('/Admin_Page');
           } else {
               handleLogin(name, email, userType, userType === 'student' ? program : null, faculty);
-  
-              if (userType === 'professor') {
-                  navigate('/prof');
-              } else {
-                  navigate('/student');  
-              }
+              handleAdmin('user');
+              navigate('/prof');
           }
       } else {
-          setEmailError(response.data.message || 'Invalid credentials');
+          setEmailError(data.message || 'Invalid credentials');
       }
   } catch (error) {
       console.error("Error logging in:", error);
       setEmailError('An error occurred. Please try again later.');
   }
+  
 };
 
   return (
     <div className='body_login'>
-     
+     <UpBar_Log/>
       <form className='form_login'>
         <h1 className='title'>Login</h1>
         <div className={'field_container'}>
@@ -136,11 +148,12 @@ function LogIn() {
           <Link className="link_forget" to="/restore_pass">Forget the password</Link>
           <Link className="link_register" to="/type">Register</Link>
         </div>
-        <div className='google_btn'>
-          <GoogleBtn onSuccessLogin={handleGmailLogin} />
-        </div>
+       
         <div className={'inputContainer'}>
           <input className={'Login_btn'} type="button" onClick={onButtonClick} value={'Log in'} />
+        
+          <GoogleBtn className='google_btn' onSuccessLogin={handleGmailLogin} />
+       
         </div>
       </form>
     </div>

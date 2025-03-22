@@ -31,6 +31,18 @@
   color: #333;
 }
 
+.text_req {
+  width: 80%; 
+  height: 150px;  
+  padding: 12px;  
+  font-size: 16px; 
+  margin-bottom: 15px; 
+  border: 1px solid #ccc;  
+  border-radius: 5px;  
+  resize: vertical; 
+}
+
+
 .input_modify[type="text"],
 .input_modify[type="number"],
 .input_modify[type="date"],

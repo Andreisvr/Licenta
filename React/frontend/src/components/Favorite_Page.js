@@ -3,6 +3,7 @@ import { AppContext } from "./AppContext";
 import  "../page_css/Favorite_page.css"
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'; 
 import { useNavigate } from "react-router";
+import BACKEND_URL from "../server_link";
 
 export default function Favorite() {
     const [favoriteIds, setFavoriteIds] = useState([]); 
@@ -11,6 +12,8 @@ export default function Favorite() {
     const [error, setError] = useState(null);
     const navigate = useNavigate(); 
     const { logined } = useContext(AppContext);
+   
+    
 
     useEffect(() => {
         if (logined) {
@@ -22,9 +25,9 @@ export default function Favorite() {
                 setLoading(false);
                 return;
             }
-
+           
             
-            fetch(`http://localhost:8081/Favorites/${userId}`, {
+            fetch(`${BACKEND_URL}/Favorites/${userId}`, {
                 method: "GET",
                 headers: { "Content-Type": "application/json" },
             })
@@ -50,7 +53,7 @@ export default function Favorite() {
             
             Promise.all(
                 favoriteIds.map(id_thesis =>
-                    fetch(`http://localhost:8081/ThesisDetails/${id_thesis}`, {
+                    fetch(`${BACKEND_URL}/ThesisDetails/${id_thesis}`, {
                         method: "GET",
                         headers: { "Content-Type": "application/json" },
                     })
@@ -112,8 +115,11 @@ export default function Favorite() {
 
 function FavoriteCard({ item }) {
     const { title, description, faculty, prof_name, id, study_program, state } = item;
-    const [userInfo, setUserInfo] = useState(null);
-   
+    
+    const navigate = useNavigate(); 
+    
+    
+    
     async function handleRemove(e) {
         e.preventDefault();
     
@@ -126,7 +132,7 @@ function FavoriteCard({ item }) {
         const userInfo = JSON.parse(storedUserInfo);
     
         try {
-            const response = await fetch('http://localhost:8081/fav', {
+            const response = await fetch(`${BACKEND_URL}/fav`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
@@ -146,7 +152,10 @@ function FavoriteCard({ item }) {
         } catch (error) {
             console.error('Eroare în timpul ștergerii din favorite:', error);
         }
+        await new Promise((resolve) => setTimeout(resolve, 350));
+
         window.location.reload();
+        //navigate('/prof');
     }
     
    

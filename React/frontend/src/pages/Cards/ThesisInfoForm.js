@@ -6,6 +6,8 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'; 
 import { useNavigate } from "react-router-dom"; 
+import BACKEND_URL from "../../server_link";
+
 
 export default function ThesisInfo() {
     const [thesisData, setThesisData] = useState(null);
@@ -16,7 +18,8 @@ export default function ThesisInfo() {
     const navigate = useNavigate(); 
     const [showForm, setShowForm] = useState(false);
     const [coverLetter, setCoverLetter] = useState("");
-
+    
+   
     useEffect(() => {
         const savedThesis = localStorage.getItem('selectedThesis');
         const userinfo = localStorage.getItem('userInfo');
@@ -40,7 +43,7 @@ export default function ThesisInfo() {
         const checkFavorite = async () => {
             try {
                 const response = await fetch(
-                    `http://localhost:8081/check?userId=${userInfo.id}&thesisId=${thesisData.id}`, 
+                    `${BACKEND_URL}/check?userId=${userInfo.id}&thesisId=${thesisData.id}`, 
                     {
                         method: 'GET', 
                         headers: {
@@ -100,7 +103,7 @@ export default function ThesisInfo() {
         }
         console.log(thesisData.isRequiredLetter,coverLetter.length);
         try {
-            const response = await fetch('http://localhost:8081/thesisinfo', { 
+            const response = await fetch(`${BACKEND_URL}/thesisinfo`, { 
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -148,7 +151,7 @@ export default function ThesisInfo() {
         if (!clicked) {
 
             try {
-                const response = await fetch('http://localhost:8081/fav', {
+                const response = await fetch(`${BACKEND_URL}/fav`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -171,7 +174,7 @@ export default function ThesisInfo() {
 
         } else {
             try {
-                const response = await fetch('http://localhost:8081/fav', {
+                const response = await fetch(`${BACKEND_URL}/fav`, {
                     method: 'DELETE',
                     headers: {
                         'Content-Type': 'application/json',
@@ -249,9 +252,9 @@ export default function ThesisInfo() {
 
                     {applied && <p className="applied-message">You have already applied.</p>}
 
-                        <span className={`status ${clicked ? "status-open" : "status-closed"}`}>
+                        {/* <span className={`status ${clicked ? "status-open" : "status-closed"}`}>
                             {thesisData.state}
-                        </span>
+                        </span> */}
                         <button className="favorite-button" onClick={handleClick}>
                             {clicked ? (
                                 <FavoriteIcon fontSize="large" className="icon-clicked" />

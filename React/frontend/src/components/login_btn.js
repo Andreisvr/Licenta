@@ -3,7 +3,8 @@ import { GoogleLogin, googleLogout } from '@react-oauth/google';
 import {jwtDecode} from 'jwt-decode';
 import { AppContext } from './AppContext';
 
-function GoogleBtn({ onSuccessLogin }) {  
+
+function GoogleBtn({ onSuccessLogin, isRegister = false }) {  
     const { setName, setEmail, setDecodedToken, setLogined, type, setType, handleLogin } = useContext(AppContext);
 
     const responseMessage = (response) => {
@@ -13,14 +14,14 @@ function GoogleBtn({ onSuccessLogin }) {
             const lastName = decodedToken.family_name;
             const email = decodedToken.email;
 
-            setName(`${firstName} ${lastName}`);
-            setEmail(email);
-            setDecodedToken(decodedToken);
-            setLogined(true);
-            
-
-            
-            handleLogin(`${firstName} ${lastName}`, email, type);
+            if (!isRegister) {
+                
+                setName(`${firstName} ${lastName}`);
+                setEmail(email);
+                setDecodedToken(decodedToken);
+                setLogined(true);
+                handleLogin(`${firstName} ${lastName}`, email, type);
+            }
 
             console.log('Login Success:', decodedToken);
             onSuccessLogin(decodedToken); 

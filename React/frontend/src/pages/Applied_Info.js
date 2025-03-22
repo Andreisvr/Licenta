@@ -4,6 +4,10 @@ import { useEffect,useContext,useState} from "react";
 import { AppContext } from "../components/AppContext";
 import { useNavigate } from "react-router";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import BACKEND_URL from "../server_link";
+import SEND_URL from "../email_link";
+import { useRef } from "react";
+import SendIcon from "@mui/icons-material/Send";
 
 export default function Applied_Info(){
     const navigate = useNavigate();
@@ -12,8 +16,58 @@ export default function Applied_Info(){
     const [isLoading, setIsLoading] = useState(true); 
     const [thesisData, setThesisData] = useState(null);
     const [allAplies, setAllAplies] = useState([]);
-    const [theses, setTheses] = useState([]); 
+    const [theses, setTheses] = useState([]);
+    const userInfo_info = JSON.parse(localStorage.getItem("userInfo"));
+    
+   const [messages, setMessages] = useState([]);
+    const [message, setMessage] = useState("");
+    const messagesEndRef = useRef(null);
+    
+    const stud_id =JSON.parse(localStorage.getItem("stud_id"));
+
+    const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    };
+    
+    useEffect(() => {
+        scrollToBottom(); 
+    }, [messages]); 
+
    
+    useEffect(() => {
+        console.log(userInfo_info.id, stud_id);
+    
+        if (type === 'student') {
+            fetch(`${BACKEND_URL}/read_messages_selection/${userInfo_info.id}/${stud_id}`, {
+                method: "GET",
+                headers: { "Content-Type": "application/json" },
+            })
+                .then((res) => res.json())
+                .then((data) => {
+                    
+                    const filteredMessages = data.filter(msg => msg.location === "Applies");
+                    setMessages(filteredMessages);  
+                    // console.log(filteredMessages); 
+                })
+                .catch((err) => console.error("Error fetching messages:", err));
+        } else if (type === 'professor') {
+            fetch(`${BACKEND_URL}/read_messages_selection/${stud_id}/${userInfo_info.id}`, {
+                method: "GET",
+                headers: { "Content-Type": "application/json" },
+            })
+                .then((res) => res.json())
+                .then((data) => {
+                
+                    const filteredMessages = data.filter(msg => msg.location === "Applies");
+                    setMessages(filteredMessages);  
+                    // console.log(filteredMessages);  
+                })
+                .catch((err) => console.error("Error fetching messages:", err));
+        }
+    }, []);
+    
+
+
     useEffect(() => {
         const fetchData = async () => {
             if (!thesis_id) {
@@ -22,7 +76,7 @@ export default function Applied_Info(){
             }
            
             try {
-                const response = await fetch(`http://localhost:8081/Applied_info/${thesis_id}`);
+                const response = await fetch(`${BACKEND_URL}/Applied_info/${thesis_id}`);
 
                 if (!response.ok) {
                     throw new Error('Failed to fetch thesis data');
@@ -51,12 +105,11 @@ export default function Applied_Info(){
         return <div>Loading...</div>;
     }
 
-    const handleWithdraw = (id,e) => {
-       
+    const handleWithdraw = async (id,e) => {
        
        
         console.log(id);
-        fetch(`http://localhost:8081/myaply/${id}`, { 
+        fetch(`${BACKEND_URL}/myaply/${id}`, { 
             method: "DELETE",
             headers: { "Content-Type": "application/json" },
         })
@@ -65,8 +118,11 @@ export default function Applied_Info(){
             
         })
         .catch(error => console.error("Error withdrawing thesis:", error));
+       
+        await new Promise((resolve) => setTimeout(resolve, 300));
+
         navigate('/prof');
-        window.location.reload();
+       
         
 
       
@@ -84,12 +140,16 @@ export default function Applied_Info(){
         return `${day}/${month}/${year}`;
     }
 
-    function handleAplication_delet(id,e) {
-       
+    async function handleAplication_delet(id,e,origin) {
         e.preventDefault();
-        e.stopPropagation();
-
-        fetch(`http://localhost:8081/accept/${id}`, { 
+       
+        if(origin === 'buton'){
+       SendEmail('rejected'); 
+        }
+       
+       
+       
+        fetch(`${BACKEND_URL}/accept/${id}`, { 
             method: "DELETE",
             headers: { "Content-Type": "application/json" }
         })
@@ -98,13 +158,16 @@ export default function Applied_Info(){
             setTheses(prevTheses => prevTheses.filter(thesis => thesis.id !== id));
         })
         .catch(error => console.error("Error withdrawing thesis:", error));
-        SendEmail('rejected'); 
-         window.location.reload();
-         navigate('/prof')
+        
+        await new Promise((resolve) => setTimeout(resolve, 300));
+
+        navigate('/prof');
+       
+        
     }
 
 
-    async function handleAcceptStudent(thesisId,e) {
+    async function handleAcceptStudent(thesisId,e,origin) {
         e.preventDefault(); 
         e.stopPropagation();
         try {
@@ -118,7 +181,7 @@ export default function Applied_Info(){
            
     
             
-            const response = await fetch(`http://localhost:8081/aplies/${studentId}`, {
+            const response = await fetch(`${BACKEND_URL}/aplies/${studentId}`, {
                 method: "GET",
                 headers: { "Content-Type": "application/json" },
             });
@@ -164,7 +227,7 @@ export default function Applied_Info(){
             
             
         
-            const acceptResponse = await fetch("http://localhost:8081/acceptedApplications", {
+            const acceptResponse = await fetch(`${BACKEND_URL}/acceptedApplications`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(acceptedApplicationData)
@@ -174,12 +237,11 @@ export default function Applied_Info(){
                 throw new Error("Failed to accept application");
             }
     
-            console.log("Application accepted successfully:", acceptedApplicationData);
-            console.log('accepted primit');
+          
             SendEmail('accepted'); 
-            console.log('accepted primit');
-             navigate('/prof')
-             handleAplication_delet(thesisId);
+           
+            
+            handleAplication_delet(thesisId,e,origin);
     
         } catch (error) {
             console.error("Error in handleAcceptStudent:", error);
@@ -187,17 +249,43 @@ export default function Applied_Info(){
     }
     
     async function SendEmail(answer) {
-        console.log('accepted primit',thesisData?.stud_name);
         const subject = answer === 'accepted'  
-        ? 'Congratulations! Your application has been accepted'  
-        : 'We are sorry! Your application was not accepted';  
+            ? 'Congratulations! Your application has been accepted'  
+            : 'We are sorry! Your application was not accepted';  
     
-    const text = answer === 'accepted'  
-        ? `Hello, ${thesisData?.stud_name},\n\nCongratulations! Your application for the thesis with title: "${thesisData.title}" has been accepted.`  
-        : `Hello, ${thesisData?.stud_name},\n\nUnfortunately, your application for the thesis with title :"${thesisData.title}" was not accepted.`;  
+        const text = answer === 'accepted'  
+            ? `Dear ${thesisData?.stud_name},  
+    
+        We are pleased to inform you that your application for the thesis titled "${thesisData.title}" has been Accepted.  
+
+        Thesis Details:\n 
+        - Title: ${thesisData.title}  \n 
+        - Faculty: ${thesisData.faculty}  \n 
+        - Professor: ${thesisData.prof_name} \n  
+        - Email: ${thesisData.prof_email}\n   
+        - Link: https://frontend-hj0o.onrender.com\n 
+        Next steps: Please confirm this thesis if you choose to proceed with it, or you may wait for another acceptance and confirm the thesis you prefer.  
+
+        Congratulations! We look forward to your success!  
+
+        Best regards,\n  
+        [UVT]  \n 
+        [Thesis Team]`
+
+        : `Dear ${thesisData?.stud_name},  
+
+            We regret to inform you that your application for the thesis titled "${thesisData.title}" has Not been accepted.  
+
+            We appreciate the effort and interest you have shown in this thesis topic. We encourage you to explore other available thesis opportunities and discuss alternative options with your faculty advisors.  
+
+            If you have any questions or need further guidance, please do not hesitate to reach out.  
+
+            Best wishes,\n 
+            [UVT]  \n 
+            [Thesis Team]`;
     
         try {
-            const response = await fetch('http://localhost:5002/sendEmail', {
+            const response = await fetch(`${SEND_URL}/sendEmail`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email: thesisData?.stud_email, subject, text })
@@ -212,10 +300,74 @@ export default function Applied_Info(){
         } catch (error) {
             console.error('Error sending email:', error);
         }
-
-       
     }
 
+
+    const sendMessage = () => {
+
+        
+
+        if (!message.trim()) return;
+    
+        let payload = {};
+    
+        if (type === "professor" || type === 1) {
+            
+            payload = {
+                message: message,
+                id_prof: userInfo_info?.id,  
+                id_stud: stud_id, 
+                sender: 'prof',  
+                location: 'Applies',
+            };
+        } else {
+            
+            payload = {
+                message: message,
+                id_prof: stud_id, 
+                id_stud: userInfo_info?.id,  
+                sender: 'stud', 
+                location: 'Applies',
+            };
+        }
+        
+       
+       
+
+       console.log(payload);
+    
+        fetch(`${BACKEND_URL}/send_message_select`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+        })
+        .then((res) => res.json())
+        .then((data) => {
+            console.log("Mesaj trimis cu succes:", data);
+    
+            if (data && data.message) {
+                const newMessage = {
+                    id: data.id,
+                    id_stud: data.id_stud,
+                    id_prof: data.id_prof,
+                    mesaje: data.message,
+                    created_at: new Date().toISOString(),
+                    sender: payload.sender,  
+                };
+    
+                setMessages((prevMessages) => [...prevMessages, newMessage]);
+    
+                
+                setMessage("");
+                
+            }
+        })
+        .catch((err) => console.error("Eroare la trimiterea mesajului:", err));
+    };
+    
+    
+
+    
     const handleBack = () => {
         navigate("/prof");
             };
@@ -244,12 +396,12 @@ export default function Applied_Info(){
                                 <>
                                     <button className="accept-button"  onClick={(e) => {
                                     e.stopPropagation(); 
-                                    handleAcceptStudent(thesisData?.id,e); 
+                                    handleAcceptStudent(thesisData?.id,e,'funct'); 
                                 }} >Accept</button>
 
                                     <button className="decline-button" onClick={(e) => { 
                                     e.stopPropagation(); 
-                                    handleAplication_delet(thesisData?.id,e); 
+                                    handleAplication_delet(thesisData?.id,e,'buton'); 
                                 }}>Decline</button>
                                 </>
                         )}
@@ -291,6 +443,34 @@ export default function Applied_Info(){
                        
 
                         
+                        <div className="mesaj_lista">
+                        {messages && messages.length > 0 ? (
+                            messages.map((msg, index) => (
+                                <div key={msg.id} className={`mesaj ${msg.sender === "prof" ? "right" : "left"}`}>
+                                    <p style={{color:'black'}}>{msg.message}</p>
+                                    <p>
+                                   
+                                        <strong>{msg.sender === "stud" ? "student" : "profesor"}</strong> - {new Date(msg.date).toLocaleString()}
+                                    </p>
+                                </div>
+                            ))
+                        ) : (
+                            <p>No messages yet</p>
+                        )}
+                        <div ref={messagesEndRef} />
+                         <div className="mesaj_input">
+                        
+                        <input 
+                            type="text" 
+                            className="mesaj_place" 
+                            value={message} 
+                             onChange={(e) => setMessage(e.target.value)} 
+                        />
+                        <SendIcon className="send_btn" onClick={sendMessage} />
+                    </div>
+                    
+                 </div>
+                
                     </form>
             </div>
         </div>

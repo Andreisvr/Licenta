@@ -7,7 +7,7 @@
 .favorites-container {
     display: flex;
     height: 100vh;  
-    background-image: url('/Users/Andrei_Sviridov/Desktop/React/frontend/src/images/back3.jpg');
+    background-image: url('../images/back3.jpg');
     background-size: cover;
     background-position: center;
     transition: width 0.3s ease, padding 0.3s ease;
