@@ -1,0 +1,609 @@
+\documentclass[12pt,a4paper]{report}
+\usepackage{amsmath,amsthm,amssymb,graphicx,hyperref}
+\usepackage[left=1.2in,right=1in,top=1in,bottom=1in]{geometry}
+\usepackage[romanian]{babel}
+\usepackage{graphicx}
+
+\newtheorem{thm}{Teorema}[section]
+\newtheorem{lem}[thm]{Lema}
+\newtheorem{cor}[thm]{Corolarul}
+\newtheorem{prop}[thm]{Propozi\c tia}
+\theoremstyle{definition}
+\newtheorem{defn}{Defini\c tia}[section]
+\theoremstyle{remark}
+\newtheorem{rem}{Remarca}[section]
+\newtheorem{exmp}{Exemplul}[section]
+\renewcommand\thesection{\arabic{section}}
+\renewcommand\thesubsection{\thesection.\arabic{subsection}}
+\renewcommand\thesubsubsection{\thesubsection.\arabic{subsubsection}}
+\begin{document}
+\thispagestyle{empty}
+\begin{center}
+\begin{figure}[h!]
+\vspace{-20pt}
+\begin{center}
+\includegraphics[width=100pt]{FMI-03.png}
+\end{center}
+\end{figure}
+
+
+{\large{\bf UNIVERSITATEA DE VEST DIN TIMI\c SOARA
+
+FACULTATEA DE MATEMATIC\u A \c SI INFORMATIC\u A
+
+PROGRAMUL DE STUDII DE LICEN\c T\u A : Informatic\u a  }}
+
+\vspace{120pt}
+{\huge {\bf LUCRARE DE LICEN\c T\u A}}
+
+\vspace{150pt}
+\end{center}
+
+{\large\noindent{\bf COORDONATOR:\hfill ABSOLVENT:}
+
+\noindent Prof. Dr. Marc Eduard Frîncu \hfill Sviridov Andrei}
+
+\vfill
+\begin{center}
+{\bf TIMI\c SOARA
+
+2025}
+\end{center}
+\newpage
+\thispagestyle{empty}
+\begin{center}
+{\large{\bf UNIVERSITATEA DE VEST DIN TIMI\c SOARA
+
+FACULTATEA DE MATEMATIC\u A \c SI INFORMATIC\u A
+
+
+PROGRAMUL DE STUDII DE LICEN\c T\u A  Informatic\u a }}
+
+\vspace{120pt}
+{\huge {\bf Aplicație online de centralizare și selecție a temelor de licență}}
+
+\vspace{150pt}
+\end{center}
+
+{\large\noindent{\bf COORDONATOR:\hfill ABSOLVENT:}
+
+\noindent Prof. Dr. Marc Eduard Frîncu \hfill Sviridov Andrei}
+
+\vfill
+\begin{center}
+{\bf TIMI\c SOARA
+
+2025}
+\end{center}\newpage
+\normalsize
+
+
+Abstract
+\newline
+Lucrarea prezintă dezvoltarea unei platforme software inovative pentru centralizarea și propunerea temelor de licență, cu scopul de a facilita interacțiunea între studenți și profesori. Platforma permite profesorilor să încarce, modifice sau șteargă subiecte, în timp ce studenții au posibilitatea de a aplica la teme prin completarea unei scrisori de intenție opționale sau pot propune teme noi, care vor fi aprobate sau respinse de profesori în funcție de cerințele acestora. Această soluție modernizează și optimizează fluxul de selecție a temelor de licență, creând un cadru mult mai eficient și transparent în procesul de interacțiune între profesori și studenți. Astfel, studenții pot comunica cu profesorul pe parcursul întregului proces de selecție și confirmare a temelor, iar profesorii au la dispoziție un instrument util pentru gestionarea temelor.
+
+Scopul principal al lucrării este să analizeze platformele existente în domeniu, să identifice limitările și deficiențele acestora, și să propună o soluție care să îmbunătățească semnificativ procesul de selecție a temelor de licență. În acest sens, au fost utilizate tehnologii web actuale, iar soluția propusă a fost testată pe baza feedback-ului primit de la un grup de utilizatori, pentru a asigura ușurința în utilizare și eficiența funcționării platformei. Rezultatul final este o platformă intuitivă, care aduce un set de funcționalități necesare ce sunt puse la dispoziție studenților și profesorilor, contribuind astfel la simplificarea și centralizarea întregului proces de selecție a temei de licență.
+
+
+\vspace{0.3cm}
+Abstract
+\newline
+ This paper presents the development of an innovative software platform for centralizing and proposing thesis topics, aimed at facilitating interaction between students and professors. The platform allows professors to upload, modify, or delete topics, while students have the possibility to apply for topics by submitting an optional letter of intent or can propose new topics, which will be approved or rejected by professors based on their requirements. This solution modernizes and optimizes the thesis selection process, creating a much more efficient and transparent framework for interaction between professors and students. In this way, students can communicate with the professor throughout the entire selection and confirmation process of the thesis topics, while professors have a useful tool at their disposal for managing the topics.
+
+The main objective of this paper is to analyze existing platforms in the field, identify their limitations and shortcomings, and propose a solution that significantly improves the thesis topic selection process. To achieve this, current web technologies have been used, and the proposed solution was tested based on feedback from a group of users to ensure ease of use and operational efficiency. The final result is an intuitive platform that provides a set of necessary functionalities made available to students and professors, thus contributing to the simplification and centralization of the entire thesis topic selection process.
+
+\tableofcontents
+
+\section{Introducerea}
+
+Obiectivul principal al acestei teze este de a crea o platformă pentru organizarea, structurarea într-un format unificat, centralizarea ,propunerea și acceptarea subiectelor de teză, în vederea abordării problemelor legate de procesarea cererilor de teză, evitarea pierderii mesajelor pe acest subiect și facilitarea interacțiunii dintre studenți și facultate.
+
+Profesorii vor putea încărca subiecte, iar studenții vor avea posibilitatea de a le selecta printr-un proces structurat: studentul își prezintă intenția de a alege o temă, urmată de aprobarea profesorului.
+
+\subsection{Obiectivele lucrării}
+
+\begin{itemize}
+    \item Studierea și identificarea platformelor asemănătoare pentru a propune o îmbunătățire sau o evoluție a aplicatiilor existente.
+    \item Studierea limbajelor, framework-urilor și metodelor utilizate în dezvoltarea web pentru a crea o platformă în corespondență cu cerințele actuale.
+    \item  Crearea și testarea platformei prin teste unitare și prin feedback din partea unui grup de utilizatori testeri.
+\end{itemize}
+
+\subsection{Rezultatele tezei}
+
+\begin{itemize}
+    \item Livrarea unei platforme ce va simplifica procesul de alegere și urmărire a temei de licență.
+    \item Informațiile colectate cu privire la propuneri, îmbunătățiri, neajunsuri și sugestii venite din partea utilizatorilor și testerilor, pe parcursul întregii dezvoltări și testări a aplicației.
+    
+\end{itemize}
+
+\subsection{Concluzii generale și pași viitori}
+
+ Teza de licență este o lucrare preponderent practică, incluzând aplicația web, codul sursă, rezultatele testării, raportul tehnic, ghid de utilizare, precum și justificarea metodelor și framework-urilor alese. Pașii viitori includ publicarea aplicației și testarea acesteia în utilizarea reală pentru a stabili direcțiile de dezvoltare ulterioară.
+
+
+ \newpage
+ 
+ \section{Descrierea problemei,}
+\subsection{Motivarea}
+Am ales tema cu titlul \textit{„Aplicație online de centralizare și selecție a temelor de licență”} în primul rând din cauza lipsei unei aplicații dedicate acestui proces. Aplicațiile existente fie sunt interne, fie nu sunt accesibile publicului larg, ceea ce face ca procesul de alegere a temei de licență să fie ineficient și predispus la probleme.
+
+Printre dificultățile identificate se numără:
+\begin{itemize}
+    \item \textbf{Mesaje pierdute:} Comunicarea dintre studenți și profesori poate fi fragmentată, ducând la pierderi de informații importante.
+    \item \textbf{Dificultăți pentru profesori:} Organizarea listelor de studenți selectați devine mai grea, în lipsa unui sistem centralizat.
+    \item \textbf{Lipsa transparenței:} Studenții nu au o imagine clară asupra temelor disponibile sau asupra statusului selecției lor.
+    \item \textbf{Management ineficient al procesului:} Nu există un flux bine definit al procesului de aplicare și selecție.
+\end{itemize}
+
+O astfel de aplicație ar rezolva aceste probleme prin:
+\begin{itemize}
+    \item O platformă accesibilă tuturor participanților, care să centralizeze temele de licență propuse.
+    \item Un sistem de organizare și filtrare a temelor, în funcție de preferințele.
+    \item O interfață intuitivă, care să permită atât profesorilor, cât și studenților să urmărească progresul în timp real.
+\end{itemize}
+
+Consider că dezvoltarea unei astfel de aplicații ar aduce beneficii semnificative atât pentru studenți, cât și pentru profesori, contribuind la eficientizarea procesului educațional.
+
+\subsection{Soluții Similare}\label{sec:solutii_similare}
+
+Pentru această temă de licență, soluțiile similare, sau cu aceeași destinație, sunt foarte greu de identificat. În general, acestea sunt instrumente web utilizate de universități în sisteme interne, inaccesibile publicului extern, ceea ce face dificilă evaluarea avantajelor și dezavantajelor lor, precum și identificarea îmbunătățirilor posibile în soluția propusă în această lucrare. Totuși, există multe alte servicii web care pot fi adaptate pentru a facilita alegerea temelor de licență, deși acestea nu sunt direct dedicate acestui scop. Această limitare le face să nu fie o soluție completă. Cu toate acestea, există câteva exemple publice care pot fi analizate:
+
+\subsection{Exemple de soluții similare}
+
+\textbf{1. Moodle (modul de proiecte academice)}  
+Moodle este o platformă open-source folosită de multe universități pentru gestionarea cursurilor și proiectelor academice.  
+
+- \textit{Avantaje:}  
+  - Posibilitatea de a organiza temele de licență ca activități sau proiecte în cadrul cursurilor.  
+  - Suport extins pentru colaborare între studenți și profesori.  
+  - Integrare ușoară cu alte instrumente educaționale.  
+
+- \textit{Dezavantaje:}  
+  - Interfață generică și lipsa personalizării specifice pentru alegerea temelor de licență.  
+ 
+
+\textbf{2. Trello (gestionarea proiectelor)}  
+Trello este o aplicație web de organizare a sarcinilor, care poate fi folosită pentru gestionarea temelor de licență sub formă de liste.  
+
+- \textit{Avantaje:}  
+  - Interfață prietenoasă și ușor de utilizat.  
+  - Posibilitatea de a adăuga comentarii și de a urmări progresul fiecărei teme.  
+  - Disponibilitate gratuită pentru funcționalitățile de bază.  
+
+- \textit{Dezavantaje:}  
+  - Lipsa funcționalităților specifice pentru managementul academic.  
+  - Necesitatea configurării manuale a tuturor listelor și cardurilor.  
+
+\textbf{3. Symplicity (management academic)}  
+Symplicity este o platformă profesională folosită de universități pentru a gestiona proiecte academice și alte procese educaționale.  
+
+- \textit{Avantaje:}  
+  - Funcționalități avansate pentru alocarea temelor și urmărirea progresului studenților.  
+  - Suport pentru integrarea cu sisteme administrative universitare.  
+
+- \textit{Dezavantaje:}  
+  - Costuri ridicate pentru implementare și licențiere.  
+  - Necesită integrare cu sistemele existente ale universității.  
+
+\subsection{Avantajele soluției propuse}
+
+Soluția propusă în această lucrare aduce elemente inovatoare și îmbunătățiri semnificative față de platformele existente, diferențiindu-se prin următoarele aspecte:  
+
+- Platformă dedicată exclusiv procesului de selecție a temelor de licență: Spre deosebire de soluțiile generale, care necesită adaptări și configurări complexe, această platformă este proiectată specific pentru a răspunde nevoilor profesorilor și studenților în procesul academic.  
+
+- Autonomie completă: Nu depinde de alte servicii externe sau de integrarea cu sisteme universitare complexe, fiind o soluție accesibilă tuturor utilizatorilor.  
+
+- Funcționalități extinse pentru profesori:  
+  - Publicarea și administrarea temelor de licență într-un mod simplu și eficient.  
+  - Limitarea numărului de locuri disponibile pentru fiecare temă, asigurând o gestionare echilibrată a aplicațiilor.  
+  - Acceptarea sau respingerea aplicațiilor studenților direct din interfața platformei.  
+  - Gestionarea propunerilor de teme trimise de studenți, cu opțiunea de a le accepta sau refuza.  
+
+- Posibilități noi pentru studenți: 
+  - Vizualizarea centralizată a tuturor temelor disponibile, eliminând dificultățile legate de accesul la informații dispersate.  
+  - Salvarea temelor preferate pentru a permite o analiză ulterioară.  
+  - Trimiterea propunerilor de teme de licență către profesori, ceea ce oferă o flexibilitate crescută în procesul de selecție.  
+
+- Interfață personalizată și intuitivă: Platforma este optimizată pentru a simplifica interacțiunea utilizatorilor, oferind un mediu accesibil și eficient pentru selectarea temelor de licență.  
+
+Prin aceste caracteristici, soluția propusă oferă un nivel superior de eficiență și flexibilitate, adresând direct nevoile utilizatorilor și eliminând limitările platformelor existente.
+
+\section{Cerințe funcționale}
+
+Atât profesorii, cât și studenții pot utiliza aplicația doar cu un e-mail instituțional \texttt{e-uvt} și trebuie să aibă acces la acest e-mail pentru confirmare. Profesorii trebuie să fie înrolați în cadrul facultății la care doresc să se înregistreze, deoarece se va verifica dacă datele introduse se regăsesc în lista oficială a cadrelor didactice afișată pe site-ul facultății. În caz contrar, va fi necesar să aștepte confirmarea din partea administratorului, iar doar după această validare vor primi drepturile de profesor și acces complet la funcționalitățile aplicației.  
+
+\subsection{Funcționalități pentru profesori}
+Profesorii pot:
+\begin{itemize}
+    \item Adăuga, edita și șterge teme de licență.
+    \item Stabili un număr limitat de locuri pentru fiecare temă.
+    \item Vizualiza aplicațiile studenților pentru teme.
+    \item Accepta sau respinge aplicațiile studenților.
+    \item Vizualiza și administra propunerile de teme trimise de studenți.
+    \item Comunicarea prin intermediul unui chat, atât în etapa de selectare, cât și după etapa de confirmare.
+
+\end{itemize}
+
+\subsection{Funcționalități pentru studenți}
+Studenții pot:
+\begin{itemize}
+    \item Vizualizarea listei temelor disponibile, organizate pe categorii (de exemplu, după profesor sau facultate).
+    \item Aplicarea la o temă disponibilă, cu posibilitatea de a completa o scrisoare de intenție.
+    \item Salvarea temelor de teză în lista de preferințe, pentru o analiză ulterioară.
+    \item Propunerea unei teze proprii către unul dintre profesorii facultății.
+    \item Comunicarea prin intermediul unui chat, atât în etapa de selectare, cât și după etapa de confirmare.
+\end{itemize}
+
+\subsection{Funcționalități pentru administrator}
+Administratorul poate:
+\begin{itemize}
+    \item Vizualizarea lista temelor, a profesorilor, a studenților și a temelor confirmate, organizate pe facultăți.
+    \item Acordarea sau retragerea drepturile de acces complet pentru orice cont de profesor.
+    \item Ștergerea oricarui cont, dacă este necesar, împreună cu toate informațiile asociate acestuia.
+    \item Editarea sau ștergerea tezele afișate de profesori, precum și tezele deja confirmate între student și profesor.
+\end{itemize}
+
+
+\subsection{Administrarea utilizatorilor}
+\begin{itemize}
+    \item Sistemul permite autentificarea și autorizarea a trei tipuri de conturi: pentru profesori, studenți și un administrator.
+    \item Rolurile utilizatorilor (profesor, student, administrator) sunt gestionate pentru a asigura un acces diferențiat la funcționalitățile sistemului, în funcție de procesul de aprobare a contului.
+\end{itemize}
+
+
+\subsection{Notificări și status}
+La înregistrare, conturile vor primi pe adresa de e-mail instituțională (\texttt{e-uvt}) o notificare ce conține un cod unic necesar pentru finalizarea procesului de înregistrare, împreună cu termenii și condițiile de utilizare ale aplicației.
+
+Utilizatorii sunt notificați prin e-mail în cazul unor modificări importante, precum acceptarea sau refuzul aplicațiilor și al propunerilor de teme.
+
+De asemenea, în momentul în care o temă acceptată de un profesor este confirmată de către un student, ambii utilizatori vor primi un e-mail cu toate informațiile necesare referitoare la lucrarea de licență.
+
+\section{Cerințe non-funcționale}
+
+\subsection{Ușurința utilizării}
+\begin{itemize}
+    \item Interfața utilizatorului va fi concepută pentru a fi intuitivă și ușor de utilizat, chiar și pentru utilizatorii cu experiență limitată în tehnologie. Elementele din cadrul aplicației vor fi clar delimitate și etichetate, iar fluxurile de utilizare vor fi simple, astfel încât utilizatorii să poată naviga cu ușurință între diferitele funcționalități ale aplicației. 
+    \item Designul va fi responsive, asigurându-se astfel accesibilitatea aplicației pe diverse dispozitive, inclusiv telefoane mobile, tablete și desktopuri. Aceasta va permite utilizatorilor să aibă o experiență plăcută indiferent de tipul de dispozitiv utilizat, fără a fi necesar să modifice setările sau să instaleze aplicații suplimentare. Toate elementele vizuale, cum ar fi butoanele și formularele, vor fi adaptabile la dimensiunea ecranului, asigurând o interfață optimizată pentru fiecare tip de dispozitiv.
+\end{itemize}
+
+\subsection{Performanță}
+\begin{itemize}
+  \item Aplicația va fi optimizată pentru a asigura un timp de încărcare rapid pentru toate paginile, în special pentru listele de teme și aplicațiile studenților. Timpul de răspuns al serverului va fi minim, iar datele vor fi prelucrate eficient de către server pentru a asigura o experiență de utilizare fluidă. Pentru orice informație primită sau încărcată, va fi introdusă o limită de dimensiune în biți, pentru a preveni suprasolicitarea sistemului, precum dimensiunea textului din propunerea de temă.
+\item De asemenea, aplicația va fi capabilă să gestioneze un număr mare de utilizatori simultan, fără a afecta performanța. În acest sens, infrastructura va fi scalabilă pentru a face față creșterii traficului pe măsură ce numărul de utilizatori crește.
+
+\end{itemize}
+
+\subsection{Securitate}
+\begin{itemize}
+    \item Aplicația va proteja datele utilizatorilor prin criptarea parolelor și utilizarea unui protocol de securitate HTTPS pentru toate comunicațiile între client și server. Aceste măsuri vor asigura că informațiile sensibile, precum datele de autentificare ale utilizatorilor, sunt stocate și transmise într-un mod securizat, prevenind accesul neautorizat.
+    \item Accesul la aplicație și la anumite funcționalități va fi controlat printr-un sistem de autentificare și autorizare. Utilizatorii vor fi obligați să se autentifice cu un cont de e-mail instituțional, iar permisiunile vor fi gestionate pe baza rolurilor (profesor, student, administrator). În plus, va fi implementat un sistem de validare a conturilor, pentru a preveni accesul neautorizat.
+    \item Aplicația va include și măsuri de protecție împotriva atacurilor comune, precum SQL injection, și cross-site request forgery (CSRF), pentru a asigura un nivel înalt de securitate.
+\end{itemize}
+
+\subsection{Portabilitate}
+\begin{itemize}
+    \item Aplicația va fi disponibilă pe internet și va fi accesibilă de pe orice dispozitiv cu conexiune la internet, fără a depinde de un sistem de operare sau hardware specific. Aceasta va fi realizată sub forma unei aplicații web, care poate fi utilizată pe platformele comune, precum Windows, macOS, Linux, iOS și Android. Utilizatorii nu vor fi nevoiți să instaleze software suplimentar sau să facă modificări la configurațiile lor.
+    \item În plus, aplicația va fi optimizată pentru a funcționa corect pe diverse browsere web, cum ar fi Google Chrome, Mozilla Firefox, Safari și Microsoft Edge. Astfel, indiferent de preferințele utilizatorilor sau de platforma aleasă, aplicația va oferi o experiență consistentă și performantă.
+\end{itemize}
+
+\newpage
+
+\section{Arhitectura aplicației }
+
+\subsection{Perspectiva Externă}
+
+În această secțiune sunt prezentate cele mai importante două moduri de utilizare a aplicației:
+\begin{itemize}
+    \item Alegerea temei de licență de către student.
+    \item Propunerea unei teme de licență de către student.
+\end{itemize}
+
+Figurile ilustrează aceste scenarii prin diagrame de tip Use Case, evidențiind interacțiunile dintre utilizatori și sistem.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{Propunere_UseCase.png}
+    \caption{Diagramă Use Case pentru propunerea unei teme de licență.}
+    \label{fig:usecase_propunere}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{Alegere_UseCase.png}
+    \caption{Diagramă Use Case pentru alegerea unei teme de licență.}
+    \label{fig:usecase_alegere}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{Swimlane.png}
+    \caption{Diagramă Swimlane pentru alegerea unei teme de licență.}
+    \label{fig:swimlane}
+\end{figure}
+
+\newpage
+
+\subsection{GUI}
+Această parte demonstrează treptat fluxul de utilizare al aplicației:
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{website/login.png}
+    \caption{Inițial, se va afișa doar pagina de login pentru autentificare. Autentificarea nu este obligatorie pentru a vizualiza lista de teme propuse.}
+    \label{fig:login}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{website/type_accoutn.png}
+    \caption{Prima etapă de înregistrare permite alegerea tipului de utilizator: profesor sau student. Pentru profesori se efectuează verificări suplimentare pentru confirmare și accesarea tuturor funcționalităților necesare.}
+    \label{fig:select_account}
+\end{figure}
+
+\newpage
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{website/main_page.png}
+    \caption{Aceasta este pagina unde se pot vizualiza și filtra toate temele propuse de profesori.}
+    \label{fig:register}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{website/Admin_page.png}
+    \caption{Pagină destinată administratorului, care va avea acces la toate datele necesare pentru menținerea website-ului.}
+    \label{fig:main}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{website/info_propose.png}
+    \caption{Apăsând pe un card din oricare secțiune, utilizatorii pot vizualiza informații suplimentare și pot accesa anumite acțiuni specifice, precum un chat între profesor și student.}
+    \label{fig:informatii_thesis}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{website/upload_thesis.png}
+    \caption{Profesorii pot încărca teme completând un formular. Studenții pot utiliza un formular similar pentru a propune teme către profesori.}
+    \label{fig:formular_thesis}
+\end{figure}
+
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{website/chat.png}
+    \caption{În lista temelor acceptate, studentul va putea confirma doar una, pentru a evita înscrierea la mai multe teme. După confirmare, va avea acces la un chat și la informații despre lucrarea de licență.}
+    \label{fig:confirmare}
+\end{figure}
+
+\clearpage
+
+\subsection{Perspectiva Internă}
+
+\subsection*{Diagramă pentru baza de date a aplicației}
+
+Structura bazei de date a aplicației este proiectată pentru a oferi modularitate și flexibilitate. Deși anumite câmpuri se repetă între tabele, acest lucru este intenționat pentru a păstra independența lor, facilitând modificările ulterioare ale structurii și simplificând procesul de dezvoltare.
+
+Această abordare modulară asigură că schimbările la nivelul bazei de date pot fi implementate fără a afecta alte tabele sau funcționalități. În plus, în timpul testărilor, dimensiunea redusă a datelor va avea un impact minim asupra vitezei aplicației. Chiar și după testare, în timpul funcționării aplicației, această structură va rămâne viabilă, deoarece volumul de date va fi unul mic, chiar și într-o universitate, fără a depăși câțiva gigabiți. O astfel de proiectare permite reducerea numărului de cereri către server, ceea ce contribuie la îmbunătățirea performanței pe partea de server, datorită reducerii cerințelor de comunicație între client și server. În ciuda unui volum mai mic de date stocat în baza de date, prioritatea a fost dată reducerii numărului de cereri către server, îmbunătățind astfel performanța generală a aplicației.
+Structura completă în format SQL poate fi accesată pe acest link:
+
+\href{https://github.com/Andreisvr/Licenta}{GitHub Link}.
+
+
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{DB/DB_img_1.png}
+    \caption{Diagramă pentru baza de date a aplicației .}
+    \label{fig:database}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{DB/DB_img_2.png}
+    \caption{Diagramă pentru baza de date a aplicației.}
+    \label{fig:database}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{DB/DB_img_3.png}
+    \caption{Diagramă pentru baza de date a aplicației.}
+    \label{fig:database}
+\end{figure}
+\clearpage
+\subsection{Structura unităților de cod}  
+Aceasta este structura unităților de cod, organizată și reprezentată în proiect prin foldere, ale căror denumiri sunt sugestive pentru a facilita o navigare mai simplă și eficientă.  
+ 
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{Codul_1.png}
+    \caption{}
+    \label{fig:database}
+\end{figure}
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{Codul_2.png}
+    \caption{}
+    \label{fig:database}
+\end{figure}
+
+\clearpage
+\newpage
+\subsection{Tehnologii, limbaje utilizate}
+
+În acest proiect este folosit framework-ul \textbf{React} pentru partea de \textit{frontend}, deoarece este un framework foarte popular, care oferă o gamă largă de soluții și asigură o mentenanță mai simplă pentru evoluția ulterioară a aplicației. Iar în timpul dezvoltării am utilizat materialele disponibile din documentația oficială React \cite{ReactJS}.
+ 
+
+Pentru partea de \textit{backend} și logica serverului, a fost utilizat \textbf{Express.js} \cite{ExpressJS} împreună cu \textbf{Node.js} \cite{NodeJS}. Această combinație a fost aleasă datorită performanței sale ridicate, a ușurinței de utilizare și a ecosistemului bogat de pachete disponibile.
+
+În ceea ce privește baza de date, a fost utilizat \textbf{MySQL} \cite{MySQL}, datorită fiabilității și performanței sale, dar și pentru că răspunde la toate cerințele acestui proiect.
+
+Am selectat această combinație de tehnologii și limbaje pentru a asigura o dezvoltare rapidă, o integrare eficientă între componentele aplicației și o experiență optimă pentru utilizator.
+
+\section{Detalii de implementare}
+
+\subsection{Decursul dezvoltării}
+
+Pentru a începe dezvoltarea aplicației, prima etapă a fost elaborarea unui set minim de funcționalități cu ajutorul cărora voi implementa un MVP. În acest set inițial au fost selectate:
+
+- Crearea a două tipuri de conturi pe care le poate genera utilizatorul: Student și Profesor;
+- Procesul complet de postare, aplicare, confirmare și ștergere a unei teme de licență;
+- Posibilitatea de căutare după numele licenței, data de postare sau numele profesorului.
+
+Acestea au constituit funcționalitatea de bază a aplicației. Ulterior, după implementarea acestora, am început identificarea unui nou set de funcționalități, care a inclus:
+
+- Crearea, înregistrarea și logarea folosind Google (Gmail);
+- Implementarea procesului de propunere a unei teme de licență către unul dintre profesorii din facultatea în care s-a înregistrat studentul.
+
+La acest nivel, aplicația devenise deja un MVP, iar primele teste de utilizare au început. În urma acestora, s-a identificat necesitatea următoarelor îmbunătățiri:
+
+- Profesorul să poată seta o scrisoare de intenție obligatorie pentru unele teme postate;
+- Posibilitatea de modificare și suspendare a temelor postate;
+- Modificarea procesului de selectare și propunere a tezei de licență pentru a evita neînțelegeri sau pierderea informațiilor importante.
+
+Astfel, procesul final a fost structurat în patru pași:
+
+1. Postarea unei teme de licență de către profesor;
+2. Aplicarea studentului la temă;
+3. Acceptarea sau respingerea aplicației de către profesor;
+4. În cazul acceptării, studentul trebuie să confirme doar una dintre toate acceptările primite, pentru a evita selectarea sa la mai multe teze simultan.
+
+De asemenea, au fost adăugate limite pentru dimensiunile textelor din postările utilizatorilor și pentru numărul de confirmări per teză, acestea fiind gestionate de profesor.
+
+În etapa ulterioară, au fost introduse noi funcționalități:
+
+- Chat între student și profesor, activ după confirmarea unei teze;
+- Trimiterea automată de notificări prin e-mail în cazul unor acțiuni importante, precum acceptarea la o teză;
+- Adăugarea unui nou tip de utilizator: Admin, cu posibilități extinse:
+  - Vizualizarea tuturor postărilor și utilizatorilor înregistrați;
+  - Ștergerea utilizatorilor și modificarea postărilor;
+  - Anularea unei confirmări, la cererea utilizatorilor.
+  -Chat între student și profesor, activ pe parcursul etapei de selectare a unei aplicații propuse de profesor sau a unei propuneri venite din partea studentului, separat de cel activ după confirmare, pentru a facilita o selecție mai precisă a studenților, având posibilitatea de a trimite informații sau întrebări de clarificare.
+  
+Tot pentru Admin, a fost implementată verificarea profesorilor:
+
+- Profesorii sunt validați manual de către Admin;
+- Automat, la momentul înregistrării, prin verificarea existenței e-mailului introdus într-o bază de date predefinită, bazată pe cadrele didactice UVT. Dacă există o corespondență, profesorul primește acces automat, însă Admin-ul poate revoca acest acces.
+- Pentru studenți, verificarea se face prin domeniul e-mailului introdus (e-uvt.ro), indicând apartenența la universitate.
+
+Pe partea de securitate:
+
+- Parolele introduse manual sunt criptate cu o cheie inaccesibilă publicului;
+- Înregistrarea și schimbarea parolei necesită un cod unic de confirmare trimis prin e-mail;
+- Logarea prin Google beneficiază de securitatea oferită de serviciile Google, fără stocarea unor informații sensibile;
+- Mesajele și propunerile sunt accesibile doar utilizatorilor care le-au creat sau primit;
+- Serverul și frontend-ul sunt securizate prin HTTPS pentru a preveni scurgeri de informații.
+
+Pentru găzduirea aplicației:
+
+- Baza de date este stocată în Google Cloud SQL;
+- Aplicația este distribuită prin serviciile Render.com, structurate astfel:
+  1. Un server ce gestionează logica backend și interacțiunea cu baza de date Google;
+  2. Un server responsabil de frontend;
+  3. Un server dedicat pentru trimiterea notificărilor prin e-mail.
+
+Această infrastructură a permis începerea testărilor publice, care au condus la:
+
+- Regândirea designului pentru o experiență mai intuitivă;
+- Îmbunătățirea responsivității pe dispozitive mobile;
+- Adăugarea unei funcționalități noi de chat între student și profesor, în interiorul unei aplicații de teză sau propuneri, pentru a facilita luarea unei decizii informate asupra unei propuneri sau aplicații primite.
+
+Ultima etapă constă în realizarea mai multor sesiuni de testare, pentru identificarea și corectarea erorilor logice, bug-urilor și implementarea altor îmbunătățiri necesare.
+
+Pe toată perioada dezvoltării aplicației, pentru identificarea și corectarea erorilor, pentru optimizarea performanței aplicației și pentru o reprezentare mai simplă, mai clară și mai ușor de înțeles a codului, a fost utilizată inteligența artificială disponibilă prin \cite{chatgpt}. Aceasta a ajutat semnificativ la procesul de debugging, oferind indicații pentru diversele erori în cod, de sintaxă sau logice, întâmpinate. În plus, au fost consultate forumuri destinate dezvoltatorilor web, precum \cite{stackoverflow}, care au oferit răspunsuri și sugestii valoroase provenite din experiența altor dezvoltatori. Aceste resurse au fost esențiale pentru a rezolva probleme tehnice complexe și pentru a înțelege mai bine cele mai bune practici în dezvoltarea de aplicații web, contribuind astfel la îmbunătățirea continuă a aplicației.
+
+\subsection{Teste}  
+
+Testele asupra acestei aplicații au fost de două tipuri:  
+
+1. Teste unitare în cod – Aici am utilizat teste simple pentru componentele din aplicație. Aceste teste sunt folosite pentru a verifica dacă acestea sunt randate corect. În cazul în care apar erori de orice tip, acestea vor împiedica randarea și vor afișa obiectele care conțin erori.  
+
+2. Teste de utilizare a aplicației – Prima parte a constat în consultarea profesorului de licență asupra rezultatelor intermediare, precum și evaluarea experienței de utilizare de către alte persoane. După publicarea aplicației, am desfășurat trei runde de testare cu utilizatori externi, iar feedbackul a fost colectat printr-un formular Google Forms. O parte din rezultate a acestor runde pot fi consultate mai jos.
+Pentru rezultatele complete : 
+\newline
+
+\href{https://github.com/Andreisvr/Licenta}{GitHub Rezultatele Testarilor}.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=\textwidth]{Screenshot 2025-03-23 at 15.49.33.png} 
+    \caption{Rezultatele primite din Google Forms.}
+    \label{fig:rezultate_google_forms}
+\end{figure}
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=\textwidth]{Screenshot 2025-03-23 at 15.51.43.png} 
+    \caption{Rezultatele primite din Google Forms.}
+    \label{fig:rezultate_google_forms}
+\end{figure}
+
+
+
+\newpage
+
+\section{LSEP - Probleme Legale, Sociale, Etice și Profesionale}
+
+În această secțiune, discutăm despre problemele legale, sociale, etice și profesionale (LSEPI) asociate cu aplicația de centralizare și selecție a temelor de licență.
+
+\subsection{Probleme Legale}
+Aplicația respectă reglementările legale, inclusiv protecția datelor personale conform GDPR. Datele utilizatorilor sunt stocate în mod securizat și accesibile doar utilizatorilor autorizați. Verificarea utilizatorilor se face prin validarea adreselor de e-mail și prin autentificarea Google.
+
+\subsection{Probleme Sociale}
+Aplicația contribuie la eficientizarea procesului de selecție a temelor de licență, facilitând comunicarea între studenți și profesori. Designul este accesibil și pe dispozitive mobile, iar procesul este transparent și ușor de gestionat.
+
+\subsection{Probleme Etice}
+Aplicația respectă principiile etice prin asigurarea transparenței procesului de selecție, protejarea confidențialității datelor și prevenirea discriminării. De asemenea, studenții și profesorii pot colabora eficient prin chat-ul dedicat, iar informațiile sensibile sunt stocate minim.
+
+\subsection{Probleme Profesionale}
+Aplicația respectă bunele practici în dezvoltarea software-ului, fiind bazată pe principii agile. Securitatea datelor este asigurată prin criptarea parolelor și prin utilizarea autentificării Google. Accesul la sistem este diferențiat, iar doar utilizatorii autorizați pot modifica datele.
+
+\subsection{Concluzie}
+Aplicația respectă standardele legale, sociale, etice și profesionale, contribuind la un mediu academic mai eficient și mai sigur. Măsurile de securitate, design-ul intuitiv și procesul clar de validare a utilizatorilor asigură respectarea principiilor fundamentale de responsabilitate socială și etică profesională.
+
+\newpage
+
+\section{Concluzii și direcții viitoare de dezvoltare}
+
+În urma dezvoltării aplicației de selectare și centralizare a temelor de licență, prima concluzie este că rezultatul obținut este deja mai performant decât soluțiile existente, dat fiind faptul că aplicațiile similare prezentate la \ref{sec:solutii_similare}
+ nu sunt orientate direct spre procesul de selectare a temelor de licență. Această aplicație a simplificat substanțial procesul și, totodată, a centralizat aceste teze pentru reutilizare, ceea ce înseamnă că obiectivul principal al acestei lucrări a fost atins. Pe lângă acest obiectiv, au fost adăugate și alte funcționalități care contribuie la o flexibilitate mai mare atât pentru profesori, cât și pentru studenți. Aceștia au posibilitatea de a comunica prin intermediul aplicației atât în timpul procesului de selecție, cât și după finalizarea acestuia, atunci când tema de licență a fost atribuită unui student.
+
+În ceea ce privește direcțiile viitoare, primul pas pentru această aplicație este publicarea într-un sistem intern universitar, unde va fi testată de utilizatorii reali. Acest proces este esențial pentru corectarea eventualelor erori de cod sau de logică a aplicației, precum și pentru îmbunătățirea vitezei de răspuns, optimizarea și restructurarea designului propus, în cazul în care utilizatorii întâmpină dificultăți de navigare în interiorul aplicației. 
+
+Un alt pas important în dezvoltare ar fi integrarea cu alte servicii sau aplicații din sistemul universitar, cum ar fi autentificarea utilizând sistemul existent la UVT, pentru a reduce riscurile de scurgere a informațiilor sau atacuri asupra sistemului. 
+
+O altă direcție viitoare de dezvoltare este implementarea unui sistem de analiză a aplicațiilor realizate de studenți, a propunerilor făcute de aceștia către profesori privind teme proprii de licență, precum și colectarea altor informații care ar putea îmbunătăți substanțial viitoarele propuneri de teze.
+
+
+\begin{thebibliography}{99}  % Numărul 99 este doar un exemplu; este folosit pentru alinierea referințelor
+
+\bibitem{ReactJS}
+ReactJS. \textit{React - Documentație oficială}. \href{https://reactjs.org/docs/getting-started.html}{https://reactjs.org/docs/getting-started.html}.
+
+\bibitem{ExpressJS}
+Express.js. \textit{Documentație oficială}. \href{https://expressjs.com/en/starter/installing.html}{https://expressjs.com/en/starter/installing.html}.
+
+\bibitem{NodeJS}
+Node.js. \textit{Documentație oficială}. \href{https://nodejs.org/en/docs/}{https://nodejs.org/en/docs/}.
+
+\bibitem{MySQL}
+MySQL. \textit{Documentație oficială}. \href{https://dev.mysql.com/doc/}{https://dev.mysql.com/doc/}.
+
+
+\bibitem{MaterialUI}
+Material-UI. \textit{Material-UI - Documentație oficială}. \href{https://mui.com/}{https://mui.com/}.
+
+\bibitem{chatgpt} 
+OpenAI, \emph{ChatGPT}, \url{https://chatgpt.com}, 
+
+\bibitem{github} 
+GitHub, \emph{GitHub}, \url{https://github.com}, 
+
+\bibitem{stackoverflow} 
+Stack Overflow, \emph{Stack Overflow}, \url{https://stackoverflow.com/questions}, 
+
+\end{thebibliography}
+
+\end{document} 
