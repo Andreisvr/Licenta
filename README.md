@@ -79,6 +79,7 @@ DB_HOST=localhost
 DB_USER=root
 DB_PASSWORD=
 DB_NAME=user_db_licenta
+SALT=10
 ```
 
 > Folosește `phpMyAdmin` din XAMPP pentru a crea baza de date `user_db_licenta`.
