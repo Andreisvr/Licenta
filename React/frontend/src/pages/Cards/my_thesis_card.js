@@ -2,12 +2,13 @@ import React, { useState, useEffect,useContext} from "react";
 import { useNavigate } from "react-router-dom";
 import ToggleOffIcon from "@mui/icons-material/ToggleOff";
 import ToggleOnIcon from "@mui/icons-material/ToggleOn";
-
+import BACKEND_URL from "../../server_link";
 import "../../page_css/my_thesis_cards.css";
 
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import CreateIcon from "@mui/icons-material/Create";
 import { AppContext } from "../../components/AppContext";
+// React component for displaying and managing a user's thesis
 
 export default function MyThesis({
   thesisName,
@@ -21,29 +22,30 @@ export default function MyThesis({
   id,
   state,
 }) {
+  // State to track whether the thesis is paused or open
   const [isToggled, setIsToggled] = useState(false);
-  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
-  const { handleThesisId } = useContext(AppContext); 
- 
-  // const BACKEND_URL = 'https://backend-08v3.onrender.com';
-  const BACKEND_URL = 'http://localhost:8081';
-  const SEND_URL = 'http://localhost:5002';
 
+  // State to control visibility of the confirmation dialog when deleting
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+
+  // Access the function from context to store the current thesis ID
+  const { handleThesisId } = useContext(AppContext); 
+
+  // React Router hook to navigate between pages
   const navigate = useNavigate();  
 
-
+  // Update the toggle state based on the thesis state (if not open, set as toggled)
   useEffect(() => {
     setIsToggled(state !== "open");
   }, [state]);
 
- 
-const handleModifyClick = () => {
-   
+  // Handle the click event to navigate to the thesis modification page
+  const handleModifyClick = () => {
     handleThesisId(id); 
-  
     navigate(`/MyThesisInfo`);
   };
 
+  // Function to withdraw (delete) the thesis from the backend
   const handleWithdraw = (id) => {
     fetch(`${BACKEND_URL}/prof/${id}`, {
       method: "DELETE",
@@ -53,9 +55,11 @@ const handleModifyClick = () => {
         if (!response.ok) throw new Error("Failed to withdraw thesis");
       })
       .catch((error) => console.error("Error withdrawing thesis:", error));
-    window.location.reload();
+    // After deletion, navigate to the professor's dashboard
+    navigate("/prof");
   };
 
+  // Function to pause the thesis (if it's not already closed)
   const handleStop = (id) => {
     if (state === "closed") return;
     fetch(`${BACKEND_URL}/stop_thesis/${id}`, {
@@ -68,6 +72,7 @@ const handleModifyClick = () => {
       .catch((error) => console.error("Error updating thesis state:", error));
   };
 
+  // Function to reopen the thesis (if it's not closed permanently)
   const handleOpen = (id) => {
     if (state === "closed") return;
     fetch(`${BACKEND_URL}/open_thesis/${id}`, {
@@ -80,15 +85,17 @@ const handleModifyClick = () => {
       .catch((error) => console.error("Error updating thesis state:", error));
   };
 
+  // Toggles the state between active and paused
   const toggleState = () => {
     if (!isToggled) {
-      handleStop(id);
+      handleStop(id); // pause thesis
     } else {
-      handleOpen(id);
+      handleOpen(id); // reopen thesis
     }
-    setIsToggled(!isToggled);
+    setIsToggled(!isToggled); // update UI toggle state
   };
 
+  // Utility function to format ISO date strings into "dd/mm/yyyy"
   function formatDate(isoDateString) {
     const date = new Date(isoDateString);
     if (date.getTime() === 0) return "";
@@ -98,23 +105,29 @@ const handleModifyClick = () => {
     return `${day}/${month}/${year}`;
   }
 
+  // Opens the delete confirmation dialog
   const handleDeleteClick = () => {
     setIsConfirmDialogOpen(true);
   };
 
+  // Executes the delete action and closes the confirmation dialog
   const handleConfirmDelete = () => {
     handleWithdraw(id);
     setIsConfirmDialogOpen(false);
   };
 
+  // Cancels the delete action by closing the dialog
   const handleCancelDelete = () => {
     setIsConfirmDialogOpen(false);
   };
+
+  // Returns a shortened version of the description for preview purposes
   const getShortDescription = (desc) => (desc ? `${desc.substring(0, 25)}${desc.length > 100 ? "..." : ""}` : "");
+
 
   return (
     <form className="applied_form">
-      <p className="text title">TitleM: {getShortDescription(thesisName)}</p>
+      <p className="text title">Title: {getShortDescription(thesisName)}</p>
       <p className="text">
         Faculty: {faculty} {study_program && `Program: ${study_program}`}
       </p>

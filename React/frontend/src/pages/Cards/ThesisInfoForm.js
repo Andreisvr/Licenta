@@ -6,43 +6,51 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'; 
 import { useNavigate } from "react-router-dom"; 
+import BACKEND_URL from "../../server_link";
 
 export default function ThesisInfo() {
+    // State to store the thesis details loaded from localStorage
     const [thesisData, setThesisData] = useState(null);
-    const {  type } = useContext(AppContext);
+    // Get the user type (professor/student) from global AppContext
+    const { type } = useContext(AppContext);
+    // State to track if the thesis is marked as favorite by the user
     const [clicked, setClicked] = useState(false);
+    // State to store user info loaded from localStorage
     const [userInfo, setUserInfo] = useState(null);
+    // State to track if the user already applied to this thesis
     const [applied, setApplied] = useState(false);
+    // Hook to programmatically navigate between routes
     const navigate = useNavigate(); 
+    // State to control the visibility of the application form
     const [showForm, setShowForm] = useState(false);
+    // State to store the user's input for the cover letter
     const [coverLetter, setCoverLetter] = useState("");
-      // const BACKEND_URL = 'https://backend-08v3.onrender.com';
-//  const SEND_URL = 'https://sender-emails.onrender.com';
-const BACKEND_URL = 'http://localhost:8081';
-const SEND_URL = 'http://localhost:5002';
-
+    
+    // On component mount, load thesis data and user info from localStorage
     useEffect(() => {
         const savedThesis = localStorage.getItem('selectedThesis');
         const userinfo = localStorage.getItem('userInfo');
-    
+        
         if (savedThesis) {
+            // Parse and set the selected thesis details
             setThesisData(JSON.parse(savedThesis));
         }
     
         if (userinfo) {
+            // Parse and set the logged-in user's information
             const parsedUserInfo = JSON.parse(userinfo);
             setUserInfo(parsedUserInfo);
-            
         }
     }, []);
 
-
+    // When userInfo or thesisData changes, check if thesis is in user's favorites
     useEffect(() => {
         if (!userInfo || !thesisData) return;
     
-       
+        // Async function to check if thesis is marked as favorite by user
         const checkFavorite = async () => {
             try {
+                // Send GET request to backend to check favorite status
                 const response = await fetch(
                     `${BACKEND_URL}/check?userId=${userInfo.id}&thesisId=${thesisData.id}`, 
                     {
@@ -58,9 +66,7 @@ const SEND_URL = 'http://localhost:5002';
                 }
     
                 const result = await response.json();
-               // console.log('eezultatul:', result);
-    
-                
+                // Update clicked state based on backend response
                 setClicked(result.isFavorite);  
             } catch (error) {
                 console.error('Eroare în timpul verificării favoritei:', error);
@@ -70,17 +76,20 @@ const SEND_URL = 'http://localhost:5002';
         checkFavorite();
     }, [userInfo, thesisData]);
     
+    // When user clicks the "Apply" button, show the application form
     const handleApplyClick = () => {
         setShowForm(true); 
     };
     
+    // Handle submitting the application form
     const handleSubmitApply = async () => {
-        
+        // If a cover letter is required but too short, show alert and stop
         if (thesisData.isRequiredLetter && coverLetter.length < 10) {
             alert("Scrisoarea de intenție trebuie să aibă cel puțin 10 caractere!");
             return;
         }
 
+        // Prepare the application data to send to backend
         const appliedData = {
             title: thesisData.title,
             id_thesis: thesisData.id,
@@ -93,17 +102,20 @@ const SEND_URL = 'http://localhost:5002';
             stud_email: userInfo.email,
             prof_email: thesisData.email,
             applied_data: new Date().toISOString(),
-            year:userInfo.study_year,
-             coverLetter:coverLetter 
+            year: userInfo.study_year,
+            coverLetter: coverLetter 
         };
-        console.log('xzxx',appliedData);
+        console.log('Application data:', appliedData);
        
+        // Double-check for cover letter requirement and length before submitting
         if (thesisData.isLetterRequired && coverLetter.length < 10) {
             alert("Scrisoarea de intenție trebuie să aibă cel puțin 10 caractere!");
             return;
         }
-        console.log(thesisData.isRequiredLetter,coverLetter.length);
+        console.log(thesisData.isRequiredLetter, coverLetter.length);
+        
         try {
+            // Send POST request to backend with application data
             const response = await fetch(`${BACKEND_URL}/thesisinfo`, { 
                 method: 'POST',
                 headers: {
@@ -112,6 +124,7 @@ const SEND_URL = 'http://localhost:5002';
                 body: JSON.stringify(appliedData),
             });
     
+            // Handle specific 400 error response from backend
             if (response.status === 400) {
                 const errorResponse = await response.json();
                 alert(errorResponse.error); 
@@ -123,6 +136,7 @@ const SEND_URL = 'http://localhost:5002';
                 throw new Error('Network response was not ok');
             }
     
+            // Parse success result and update applied state
             const result = await response.json();
             console.log('Application submitted:', result);
             setApplied(true);
@@ -132,6 +146,7 @@ const SEND_URL = 'http://localhost:5002';
         }
     }
 
+    // Helper function to format ISO date string to dd/mm/yyyy format
     function formatDate(isoDateString) {
         const date = new Date(isoDateString);
         if (date.getTime() === 0) {
@@ -144,13 +159,16 @@ const SEND_URL = 'http://localhost:5002';
         return `${day}/${month}/${year}`;
     }
 
+    // Show loading text until thesis data is loaded
     if (!thesisData) return <p>Loading...</p>;
 
+    // Handle favorite/unfavorite click on the thesis
     const handleClick = async() => {
+        // Toggle the clicked state
         setClicked(!clicked);
     
         if (!clicked) {
-
+            // If not previously favorite, add to favorites in backend
             try {
                 const response = await fetch(`${BACKEND_URL}/fav`, {
                     method: 'POST',
@@ -168,12 +186,12 @@ const SEND_URL = 'http://localhost:5002';
                 }
             
                 const result = await response.json();
-                console.log('rez:', result);
+                console.log('Added to favorites:', result);
             } catch (error) {
                 console.error('Eroare în timpul adăugării la favorite:', error);
             }
-
         } else {
+            // If already favorite, remove from favorites in backend
             try {
                 const response = await fetch(`${BACKEND_URL}/fav`, {
                     method: 'DELETE',
@@ -191,20 +209,24 @@ const SEND_URL = 'http://localhost:5002';
                 }
             
                 const result = await response.json();
-                console.log('Șters cu succes din favorite:', result);
+                console.log('Removed from favorites:', result);
             } catch (error) {
                 console.error('Eroare în timpul ștergerii din favorite:', error);
             }
         }
     };
     
+    // Handle back button click: navigate to /prof route
     const handleBack = () => {
         navigate("/prof");
     };
+
+    // Hide the application form
     function hideForm(){
         setShowForm(false);
     }
-   
+
+
 
     return (
         <div className="body_thesisinfo">
@@ -253,9 +275,9 @@ const SEND_URL = 'http://localhost:5002';
 
                     {applied && <p className="applied-message">You have already applied.</p>}
 
-                        <span className={`status ${clicked ? "status-open" : "status-closed"}`}>
+                        {/* <span className={`status ${clicked ? "status-open" : "status-closed"}`}>
                             {thesisData.state}
-                        </span>
+                        </span> */}
                         <button className="favorite-button" onClick={handleClick}>
                             {clicked ? (
                                 <FavoriteIcon fontSize="large" className="icon-clicked" />

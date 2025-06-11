@@ -3,6 +3,8 @@ import { AppContext } from "./AppContext";
 import  "../page_css/Favorite_page.css"
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'; 
 import { useNavigate } from "react-router";
+import BACKEND_URL from "../server_link";
+
 
 export default function Favorite() {
     const [favoriteIds, setFavoriteIds] = useState([]); 
@@ -11,12 +13,14 @@ export default function Favorite() {
     const [error, setError] = useState(null);
     const navigate = useNavigate(); 
     const { logined } = useContext(AppContext);
-    // const BACKEND_URL = 'https://backend-08v3.onrender.com';
-    const BACKEND_URL = 'http://localhost:8081';
+   
 
 
+    // Fetch favorite thesis IDs when user is logged in
+    
     useEffect(() => {
         if (logined) {
+            // Get user info from localStorage
             const userInfo = JSON.parse(localStorage.getItem("userInfo"));
             const userId = userInfo?.id;
 
@@ -26,7 +30,7 @@ export default function Favorite() {
                 return;
             }
            
-            
+            // Fetch favorite thesis IDs for the current user
             fetch(`${BACKEND_URL}/Favorites/${userId}`, {
                 method: "GET",
                 headers: { "Content-Type": "application/json" },
@@ -38,6 +42,7 @@ export default function Favorite() {
                     return response.json();
                 })
                 .then(favorites => {
+                    // Extract and store thesis IDs from favorites
                     setFavoriteIds(favorites.map(fav => fav.id_thesis)); 
                 })
                 .catch(error => {
@@ -48,6 +53,7 @@ export default function Favorite() {
         }
     }, [logined]);
   
+    // Fetch detailed data for each favorite thesis ID
     useEffect(() => {
         if (favoriteIds.length > 0) {
             
@@ -70,6 +76,7 @@ export default function Favorite() {
                 )
             )
                 .then(thesisData => {
+                    // Filter out any null responses and update state
                     setData(thesisData.filter(Boolean));
                     setLoading(false);
                 })
@@ -81,13 +88,12 @@ export default function Favorite() {
         }
     }, [favoriteIds]);
 
-    // if (loading) {
-    //     return <p>Loading...</p>;
-    // }
-
+    // Navigate back to /prof page
     const handleBack = () => {
         navigate("/prof");
     };
+
+    // Show error message if error occurs
     if (error) {
         return <p>Error: {error}</p>;
     }
@@ -99,29 +105,24 @@ export default function Favorite() {
                         </button>
             <div className="m_container">
                 {data.length === 0 ? (
-                    
+                    // Display message if no favorites found
                     <p className="not_found">No favorites found.</p>
-                   
                 ) : (
+                    // Map through fetched favorite thesis data and render FavoriteCard components
                     data.map((item, index) => (
                         <FavoriteCard key={index} item={item} />
                     ))
                 )}
             </div>
-          
         </div>
     );
 }
 
 function FavoriteCard({ item }) {
-    const { title, description, faculty, prof_name, id, study_program, state } = item;
-    const [userInfo, setUserInfo] = useState(null);
+    // useNavigate hook for navigation
+    const navigate = useNavigate(); 
     
-    
-    // const BACKEND_URL = 'https://backend-08v3.onrender.com';
-    const BACKEND_URL = 'http://localhost:8081';
-
-    
+    // Handler to remove a thesis from favorites
     async function handleRemove(e) {
         e.preventDefault();
     
@@ -134,6 +135,7 @@ function FavoriteCard({ item }) {
         const userInfo = JSON.parse(storedUserInfo);
     
         try {
+            // Send DELETE request to remove favorite
             const response = await fetch(`${BACKEND_URL}/fav`, {
                 method: 'DELETE',
                 headers: {
@@ -141,7 +143,7 @@ function FavoriteCard({ item }) {
                 },
                 body: JSON.stringify({
                     userId: userInfo.id,
-                    thesisId: id,
+                    thesisId: item.id,
                 }),
             });
     
@@ -150,28 +152,37 @@ function FavoriteCard({ item }) {
             }
     
             const result = await response.json();
-            console.log('Șters cu succes din favorite:', result);
+            console.log('Successfully removed from favorites:', result);
         } catch (error) {
-            console.error('Eroare în timpul ștergerii din favorite:', error);
+            console.error('Error removing from favorites:', error);
         }
+        // Small delay before reloading page to reflect changes
+        await new Promise((resolve) => setTimeout(resolve, 350));
+
         window.location.reload();
+        //navigate('/prof');
     }
     
-   
+    // Handler to show thesis details and store selected thesis in localStorage
+    function ShowThesis()
+    {
+        localStorage.setItem('selectedThesis', JSON.stringify(item));
+        // console.log(item);
+        navigate('/thesisinfo')
+    }
 
-   
+    // Helper to shorten the description text
     const getShortDescription = (desc) => (desc ? `${desc.substring(0, 100)}${desc.length > 100 ? "..." : ""}` : "");
 
     return (
-        <form className="applied_form">
-            <p className="text title">Title: {title || "No title"}</p>
-            <p className="text">Description: {getShortDescription(description) || "No description"}</p>
-            <p className="text">Faculty: {faculty || "No faculty"}</p>
-            <p className="text">Professor: {prof_name || "No professor"}</p>
-            <p className="text">Study Program: {study_program || "No study program"}</p>
-            <p className="text">State: {state || "No state"}</p>
+        <form className="applied_form" onClick={ShowThesis}>
+            <p className="text title">Title: {item.title || "No title"}</p>
+            <p className="text">Description: {getShortDescription(item.description) || "No description"}</p>
+            <p className="text">Faculty: {item.faculty || "No faculty"}</p>
+            <p className="text">Professor: {item.prof_name || "No professor"}</p>
+            <p className="text">Study Program: {item.study_program || "No study program"}</p>
+            <p className="text">State: {item.state || "No state"}</p>
             <button className="withdraw_btn" onClick={handleRemove}>Remove</button>
-            
         </form>
     );
 }

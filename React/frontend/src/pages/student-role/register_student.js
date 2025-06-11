@@ -1,10 +1,16 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import GoogleBtn from '../../components/login_btn';
+import BACKEND_URL from '../../server_link';
+import SEND_URL from '../../email_link';
 
 import "../../page_css/reg_stud.css";
 import FacultyList from '../../components/Faculty_List';
+
+
+
 function RegFormStudent() {
+
   const [email, setEmail] = useState('');
   const [fullName, setFullName] = useState('');
   const [faculty, setFaculty] = useState('');
@@ -27,10 +33,6 @@ function RegFormStudent() {
   const [studyYearError, setStudyYearError] = useState('');
 
   const navigate = useNavigate();
-  // const BACKEND_URL = 'https://backend-08v3.onrender.com';
-//  const SEND_URL = 'https://sender-emails.onrender.com';
-const BACKEND_URL = 'http://localhost:8081';
-const SEND_URL = 'http://localhost:5002';
 
  
   useEffect( () => {
@@ -158,206 +160,215 @@ By using the Platform, you confirm that you have read and accepted these Terms a
     }
 
   };
+// Called on successful Google login with the decoded token data
+const onSuccessLogin = (decodedToken) => {
+  // Clear any previous faculty or program errors
+  setFacultyError('');
+  setProgramError('');
 
-  const onSuccessLogin = (decodedToken) => {
-    setFacultyError('');
-    setProgramError('');
+  // Extract email and a unique token from the decoded JWT
+  const email = decodedToken.email;
+  const gmailPass = decodedToken.jti;
 
-
-    const email = decodedToken.email;
-    const gmailPass = decodedToken.jti;
-
-    if (!faculty) {
-      showErrorPopup('Please select a faculty');
-      setFacultyError('Please select a faculty');
-      return;
-    }
-
-    if (!program) {
-      showErrorPopup('Please select a study program');
-      setProgramError('Please select a study program');
-      return;
-    }
-
-    if (!studyYear) {
-      setStudyYearError('Please select a study year');
-      return;
-    }
-  
-
-    setUserData({
-      fullName: decodedToken.name,
-      email: email,
-      gmailPass: gmailPass,
-      faculty: faculty,
-      program: program,
-      year:studyYear
-    });
-   
-    setShowTermsForm(true);
-    
-  };
-
-
-
-
-  async function verificaEmail(email) {
-    try {
-        const response = await fetch(`${BACKEND_URL}/verifica-email_st?email=${email}`, {
-            method: 'GET',
-        });
-        const data = await response.json();
-      
-       
-        return data.exists;
-    } catch (error) {
-        console.error('Eroare la cererea API:', error);
-        return false; 
-    }
+  // Validate that user selected a faculty, otherwise show error popup and message
+  if (!faculty) {
+    showErrorPopup('Please select a faculty');
+    setFacultyError('Please select a faculty');
+    return;
   }
 
-  
-  const onButtonClick = async () => {
-    setEmailError('');
-    setFullNameError('');
-    setFacultyError('');
-    setProgramError('');
-    setPasswordError('');
-    setConfirmPasswordError('');
-    setStudyYear('');
+  // Validate that user selected a study program, otherwise show error popup and message
+  if (!program) {
+    showErrorPopup('Please select a study program');
+    setProgramError('Please select a study program');
+    return;
+  }
 
-    if (!fullName) {
-      setFullNameError('Please enter your full name');
-      return;
-    }
+  // Validate that user selected a study year, otherwise show error message
+  if (!studyYear) {
+    setStudyYearError('Please select a study year');
+    return;
+  }
 
-    if (!faculty) {
-      setFacultyError('Please select a faculty');
-      return;
-    }
+  // Save the user data from the token and selections to state
+  setUserData({
+    fullName: decodedToken.name,
+    email: email,
+    gmailPass: gmailPass,
+    faculty: faculty,
+    program: program,
+    year: studyYear
+  });
 
-    if (!program) {
-      setProgramError('Please select a study program');
-      return;
-    }
-
-    if (!email) {
-      setEmailError('Please enter your email');
-      return;
-    }
-
-    if (!studyYear) {
-      setStudyYearError('Please select a study year');
-      return;
-    }
-
-    if (!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)) {
-      setEmailError('Please enter a valid email');
-      return;
-    }
-
-    if (!password) {
-      setPasswordError('Please enter a password');
-      return;
-    }
-
-    if (password.length < 8) {
-      setPasswordError('The password must be 8 characters or longer');
-      return;
-    }
-
-    if (!/[A-Z]/.test(password) && !/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
-      setPasswordError('The password must contain at least one uppercase letter or one special character');
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      setConfirmPasswordError('Passwords do not match');
-      return;
-    }
-    setUserData({
-      program: program,
-      faculty: faculty,
-      fullName: fullName,
-      email: email,
-      password: password,
-      year:studyYear
-    });
-    setShowTermsForm(true);
-  };
-
-  const handleVerification = async (event) => {
-    event.preventDefault();
-    
-    if (verificationCode === generatedCode) {
-        
-        const userDataToSend = {
-            name: UserData.fullName,
-            email: UserData.email,
-            pass: password,
-            gmail_pass: UserData.gmailPass,
-            faculty: UserData.faculty,
-            program: UserData.program,
-            year:UserData.year
-        };
-        
-        
-          const emailExists = await verificaEmail(userDataToSend.email);
-        console.log('dd',emailExists);
-    
-          if (emailExists) {
-              alert('Email-ul este deja înregistrat. Vă rugăm să folosiți altul.');
-              return; 
-          }
-       
-
-        try {
-            const response = await fetch(`${BACKEND_URL}/reg_stud`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(userDataToSend),
-            }); 
-
-            if (response.ok) {
-                const data = await response.json();
-               
-                navigate('/login'); 
-            } else {
-                const errorData = await response.json();
-                alert(`Eroare la înregistrare: ${errorData.message}`);
-            }
-        } catch (error) {
-            console.error('Eroare la trimiterea datelor:', error);
-            alert('A apărut o eroare la înregistrare. Vă rugăm să încercați din nou.');
-        }
-    } else {
-        alert('Codul de verificare este incorect. Vă rugăm să încercați din nou.');
-    }
+  // Show the terms acceptance form after successful login and validation
+  setShowTermsForm(true);
 };
 
+// Async function to check if an email already exists in backend database
+async function verificaEmail(email) {
+  try {
+    // Call backend API to verify if email exists
+    const response = await fetch(`${BACKEND_URL}/verifica-email_st?email=${email}`, {
+      method: 'GET',
+    });
 
-  const handleSelection = (faculty, program) => {
-    setFaculty(faculty);
-    setProgram(program);
-  };
+    // Parse JSON response
+    const data = await response.json();
 
-  const handleGoBack = () => {
-    setShowTermsForm(false);
-    setEmail('');
-    setFullName('');
-    setFaculty('');
-    setProgram('');
-    setPassword('');
-    setConfirmPassword('');
-    setEmailError('');
-    setFullNameError('');
-    setFacultyError('');
-    setProgramError('');
-    setPasswordError('');
-    setConfirmPasswordError('');
-  };
+    // Return true if email exists, false otherwise
+    return data.exists;
+  } catch (error) {
+    console.error('Eroare la cererea API:', error);
+    return false; // In case of error, assume email doesn't exist to avoid blocking
+  }
+}
+
+// Handler for when user clicks the submit button on registration form
+const onButtonClick = async () => {
+  // Clear all previous validation error messages
+  setEmailError('');
+  setFullNameError('');
+  setFacultyError('');
+  setProgramError('');
+  setPasswordError('');
+  setConfirmPasswordError('');
+  setStudyYear('');
+
+  // Validate required fields and set errors if missing
+  if (!fullName) {
+    setFullNameError('Please enter your full name');
+    return;
+  }
+  if (!faculty) {
+    setFacultyError('Please select a faculty');
+    return;
+  }
+  if (!program) {
+    setProgramError('Please select a study program');
+    return;
+  }
+  if (!email) {
+    setEmailError('Please enter your email');
+    return;
+  }
+  if (!studyYear) {
+    setStudyYearError('Please select a study year');
+    return;
+  }
+
+  // Validate email format with regex
+  if (!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)) {
+    setEmailError('Please enter a valid email');
+    return;
+  }
+
+  // Validate password presence and complexity
+  if (!password) {
+    setPasswordError('Please enter a password');
+    return;
+  }
+  if (password.length < 8) {
+    setPasswordError('The password must be 8 characters or longer');
+    return;
+  }
+  if (!/[A-Z]/.test(password) && !/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+    setPasswordError('The password must contain at least one uppercase letter or one special character');
+    return;
+  }
+
+  // Confirm password matches
+  if (password !== confirmPassword) {
+    setConfirmPasswordError('Passwords do not match');
+    return;
+  }
+
+  // Save all validated user data to state and show terms acceptance form
+  setUserData({
+    program: program,
+    faculty: faculty,
+    fullName: fullName,
+    email: email,
+    password: password,
+    year: studyYear
+  });
+  setShowTermsForm(true);
+};
+
+// Handles submission of the verification code form
+const handleVerification = async (event) => {
+  event.preventDefault();
+
+  // Check if entered verification code matches the generated one
+  if (verificationCode === generatedCode) {
+    // Prepare user data object to send to backend
+    const userDataToSend = {
+      name: UserData.fullName,
+      email: UserData.email,
+      pass: password,
+      gmail_pass: UserData.gmailPass,
+      faculty: UserData.faculty,
+      program: UserData.program,
+      year: UserData.year
+    };
+
+    // Check if email already exists in backend
+    const emailExists = await verificaEmail(userDataToSend.email);
+    console.log('dd', emailExists);
+
+    if (emailExists) {
+      alert('Email-ul este deja înregistrat. Vă rugăm să folosiți altul.');
+      return; // Stop if email already registered
+    }
+
+    try {
+      // Send registration data to backend
+      const response = await fetch(`${BACKEND_URL}/reg_stud`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(userDataToSend),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        // On success, navigate to login page
+        navigate('/login');
+      } else {
+        // Show backend error message if registration failed
+        const errorData = await response.json();
+        alert(`Eroare la înregistrare: ${errorData.message}`);
+      }
+    } catch (error) {
+      console.error('Eroare la trimiterea datelor:', error);
+      alert('A apărut o eroare la înregistrare. Vă rugăm să încercați din nou.');
+    }
+  } else {
+    alert('Codul de verificare este incorect. Vă rugăm să încercați din nou.');
+  }
+};
+
+// Sets the selected faculty and program from dropdowns or other UI inputs
+const handleSelection = (faculty, program) => {
+  setFaculty(faculty);
+  setProgram(program);
+};
+
+// Resets all registration form fields and error messages and hides the terms form
+const handleGoBack = () => {
+  setShowTermsForm(false);
+  setEmail('');
+  setFullName('');
+  setFaculty('');
+  setProgram('');
+  setPassword('');
+  setConfirmPassword('');
+  setEmailError('');
+  setFullNameError('');
+  setFacultyError('');
+  setProgramError('');
+  setPasswordError('');
+  setConfirmPasswordError('');
+};
+
 
   return (
     <div className='body_reg_stud'>
@@ -369,6 +380,16 @@ By using the Platform, you confirm that you have read and accepted these Terms a
             <FacultyList onSelect={handleSelection} />
             <label className="errorLabel">{facultyError}</label>
           </div>
+          <div className={'field_container'}>
+              <select value={studyYear} onChange={(ev) => setStudyYear(ev.target.value)} className={'year_select'}>
+                <option value="">Select study year</option>
+                <option value="1">1st Year</option>
+                <option value="2">2nd Year</option>
+                <option value="3">3rd Year</option>
+                <option value="4">4th Year</option>
+              </select>
+              <label className="errorLabel">{studyYearError}</label>
+            </div>
           <br />
           <div className={'field_container'}>
             <input
@@ -412,16 +433,7 @@ By using the Platform, you confirm that you have read and accepted these Terms a
             />
             <label className="errorLabel">{confirmPasswordError}</label>
           </div>
-          <div className={'field_container'}>
-              <select value={studyYear} onChange={(ev) => setStudyYear(ev.target.value)} className={'year_select'}>
-                <option value="">Select study year</option>
-                <option value="1">1st Year</option>
-                <option value="2">2nd Year</option>
-                <option value="3">3rd Year</option>
-                <option value="4">4th Year</option>
-              </select>
-              <label className="errorLabel">{studyYearError}</label>
-            </div>
+         
         
             <GoogleBtn onSuccessLogin={onSuccessLogin} isRegister={true} />
 

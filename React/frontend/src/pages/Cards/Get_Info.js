@@ -1,7 +1,7 @@
-export async  function GetAllApplies(id) {
-// const BACKEND_URL = 'https://backend-08v3.onrender.com';
-const BACKEND_URL = 'http://localhost:8081';
 
+import BACKEND_URL from "../../server_link";
+
+export async  function GetAllApplies(id) {
 
 
     try {
@@ -34,7 +34,7 @@ const BACKEND_URL = 'http://localhost:8081';
 
 export async function GetAllAccepted(id) {
     try {
-        const response = await fetch(`https://backend-08v3.onrender.com/Accepted/${id}`, {
+        const response = await fetch(`${BACKEND_URL}/Accepted/${id}`, {
             method: "GET",
             headers: { "Content-Type": "application/json" },
         });

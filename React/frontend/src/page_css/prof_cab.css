@@ -6,6 +6,7 @@
 }
 
 
+
 .left_container {
     width: 18%;
     height: 100%;
@@ -188,6 +189,36 @@
 .add-button-container{
     background-color: transparent;
 }
+
+
+
+.export_info {
+    position: fixed;
+    top: 12vh; 
+    right: 1.2vw; 
+    background-color: rgb(235, 235, 235);
+    border-radius: 50%; 
+    padding: 10px;
+    cursor: pointer;
+    
+}
+
+.export_info{
+    background-color: transparent;
+}
+
+
+
+.export_button {
+    font-size:3.4rem !important;
+    color: #333;
+    
+
+}
+.export_button:hover{
+    color: #007BFF;
+}
+
 .add_button {
     font-size:4rem !important;
     color: #333;
@@ -278,9 +309,10 @@
 
 
 @media (max-width: 768px) {
+  
     .right_container {
         flex-direction: column;
-           justify-content: center;
+        justify-content: center;
         overflow: auto;
     }
 
@@ -295,21 +327,30 @@
         display: flex; 
         flex-direction: column ; 
         width: 100%;
-        padding: 10px;
-        margin: 0;
+     
+       margin-top: 35vh;
         justify-content: center;
         align-items: center;
-        overflow-x: hidden; 
-      
+       
         
     }
+
+   .button-group{
     
+   margin-top: 15%;
+    width: 60%;
+    
+   }
+   
+
+
     .top_container.default{
-         display: flex; 
+
+        display: flex; 
         flex-direction: column ; 
         width: 100%;
-        padding: 10px;
-        margin: 0;
+      
+      
         justify-content: center;
         align-items: center; 
        
@@ -335,14 +376,7 @@
     flex-direction: column ; 
    }
 
-    .bottom_container {
-        margin-top: 35vh; 
-    
-        flex-wrap: nowrap; 
-        margin-left: 0%;
-       
-       
-    }
+  
 
     .top_container.default,.top_container.full-width {
         position: relative;

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 import "../page_css/ThesisInfo.css"
+
 export default function ThesisInfo() {
     const [thesisData, setThesisData] = useState(null);
 

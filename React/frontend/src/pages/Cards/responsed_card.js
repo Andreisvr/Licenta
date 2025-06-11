@@ -1,6 +1,11 @@
 // AddApplies.js
 import React ,{useEffect} from "react";
-//fgfkmdl,sas,ladfghfgdsaSDFGHJKLJHGFDSADSFGH
+
+import { useNavigate } from "react-router";
+
+import BACKEND_URL from "../../server_link";
+
+
 export default function AddResponse({ 
     thesisName, 
     faculty, 
@@ -16,11 +21,9 @@ export default function AddResponse({
     id, 
  }) {
 
-      // const BACKEND_URL = 'https://backend-08v3.onrender.com';
-//  const SEND_URL = 'https://sender-emails.onrender.com';
-const BACKEND_URL = 'http://localhost:8081';
-const SEND_URL = 'http://localhost:5002';
-    
+    const navigate = useNavigate(); 
+
+  
     function handleResponse_delet(id) {
         console.log(id);
 
@@ -34,7 +37,8 @@ const SEND_URL = 'http://localhost:5002';
         })
         .catch(error => console.error("Error withdrawing thesis:", error));
        
-        window.location.reload();
+        //window.location.reload();
+        navigate("/prof");
     }
 
 

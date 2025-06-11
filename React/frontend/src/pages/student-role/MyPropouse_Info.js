@@ -2,203 +2,263 @@ import React from "react";
 import { useNavigate } from "react-router";
 import { useEffect,useContext,useState } from "react";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'; 
-
+import { useRef } from "react";
+import SendIcon from "@mui/icons-material/Send";
 import "../../page_css/MyPropouse_Info.css";
 
 import { AppContext } from "../../components/AppContext";
+import BACKEND_URL from "../../server_link";
+import SEND_URL from "../../email_link";
 
 export default function MyPropouse_Info()
 {
 
     const navigate = useNavigate();
     const [thesisData, setThesisData] = useState(null);
-    const [userInfo, setUserInfo] = useState(null);
+  
     const [theses, setTheses] = useState([]); 
+    const userInfo_info = JSON.parse(localStorage.getItem("userInfo"));
+    
+    
+    const stud_id =JSON.parse(localStorage.getItem("stud_id"));
+
     const { thesis_id,type} = useContext(AppContext); 
     const [studyYear, setStudyYear] = useState([]);
     const [isLoading, setIsLoading] = useState(true); 
+    const [messages, setMessages] = useState([]);
+    const [message, setMessage] = useState("");
+    const messagesEndRef = useRef(null);
 
-// const BACKEND_URL = 'https://backend-08v3.onrender.com';
-//  const SEND_URL = 'https://sender-emails.onrender.com';
-const BACKEND_URL = 'http://localhost:8081';
-const SEND_URL = 'http://localhost:5002';
-
-    useEffect(() => {
-        const fetchData = async () => {
-            if (!thesis_id) {
-                console.warn("thesis_id is undefined or null, skipping fetch.");
-                return;
-            }
-
-            try {
-                const response = await fetch(`${BACKEND_URL}/MyPropouse/${thesis_id}`);
-
-                if (!response.ok) {
-                    throw new Error('Failed to fetch thesis data');
-                }
-
-                const data = await response.json();
-
-                if (data.length > 0) {
-                    setThesisData(data[0]); 
-                } else {
-                    console.warn("No data found for thesis_id:", thesis_id);
-                }
-            } catch (error) {
-                console.error('Error fetching proposals:', error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        fetchData();
-    }, [thesis_id]);
-
-    useEffect(() => {
-        if (!thesisData?.stud_id) return;  
-        const id = thesisData?.stud_id;
-       
-    
-        const fetchStudyYear = async () => {
-            try {
-               
-                const response = await fetch(`${BACKEND_URL}/student_info/${id}`);
-                
-                if (!response.ok) {
-                    throw new Error("Failed to fetch study year");
-                }
-    
-                const data = await response.json();
-               
-    
-                setStudyYear(data.study_year); 
-              
-            } catch (error) {
-                console.error("Error fetching study year:", error);
-            }
-        };
-    
-        fetchStudyYear();
-    }, [thesisData]);
     
 
-    if (isLoading) {
-        return <div>Loading...</div>;
+  // Scrolls the view to the bottom of the messages container smoothly
+const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+};
+
+// Calls scrollToBottom every time the messages array changes, keeping the view scrolled to the newest message
+useEffect(() => {
+    scrollToBottom(); 
+}, [messages]);
+
+// Fetch messages related to a proposal depending on user type (student or professor)
+useEffect(() => {
+    console.log(userInfo_info.id, stud_id);
+
+    if (type === 'student') {
+        // If user is student, fetch messages where user is sender and stud_id is receiver
+        fetch(`${BACKEND_URL}/read_messages_selection/${userInfo_info.id}/${stud_id}`, {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+        })
+            .then(res => res.json())
+            .then(data => {
+                // Filter messages only related to "Propose" location
+                const filteredMessages = data.filter(msg => msg.location === "Propose");
+                setMessages(filteredMessages);
+            })
+            .catch(err => console.error("Error fetching messages:", err));
+    } else if (type === 'professor') {
+        // If user is professor, fetch messages with reversed sender/receiver roles
+        fetch(`${BACKEND_URL}/read_messages_selection/${stud_id}/${userInfo_info.id}`, {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+        })
+            .then(res => res.json())
+            .then(data => {
+                const filteredMessages = data.filter(msg => msg.location === "Propose");
+                setMessages(filteredMessages);
+            })
+            .catch(err => console.error("Error fetching messages:", err));
     }
-   
+}, []);
 
-    const handleBack = () => {
-        navigate("/prof");
+// Fetch the thesis proposal data for the given thesis_id whenever thesis_id changes
+useEffect(() => {
+    const fetchData = async () => {
+        if (!thesis_id) {
+            console.warn("thesis_id is undefined or null, skipping fetch.");
+            return;
+        }
+
+        try {
+            const response = await fetch(`${BACKEND_URL}/MyPropouse/${thesis_id}`);
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch thesis data');
+            }
+
+            const data = await response.json();
+
+            if (data.length > 0) {
+                setThesisData(data[0]); 
+            } else {
+                console.warn("No data found for thesis_id:", thesis_id);
+            }
+        } catch (error) {
+            console.error('Error fetching proposals:', error);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
-   
+    fetchData();
+}, [thesis_id]);
 
+// Fetch the study year for the student associated with the thesis once thesisData is available
+useEffect(() => {
+    if (!thesisData?.stud_id) return;  
+    const id = thesisData.stud_id;
 
-    function handlePropouse_Accepted(id) {
-        console.log(`Accepting proposal with ID: ${id}`);
-        fetch(`${BACKEND_URL}/proposalAcceptConfirm/${id}`, {
-            method: "PATCH", 
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ state: "accepted" }), 
-        })
-        .then(response => {
-            if (!response.ok) throw new Error("Failed to accept thesis");
-            setTheses(prevTheses =>
-                prevTheses.map(thesis =>
-                    thesis.id === id ? { ...thesis, state: "accepted" } : thesis
-                )
-            );
-        })
-        .catch(error => console.error("Error accepting thesis:", error));
-        
-        SendEmail('accepted'); 
-        window.location.reload();
-        navigate("/prof");
-    }
-    
-    async function handlePropouse_reject(id,e) {
+    const fetchStudyYear = async () => {
+        try {
+            const response = await fetch(`${BACKEND_URL}/student_info/${id}`);
+            
+            if (!response.ok) {
+                throw new Error("Failed to fetch study year");
+            }
 
-      //  e.preventDefault();
-       // e.stopPropagation();
-        console.log(`Rejecting proposal with ID: ${id}`);
-        fetch(`${BACKEND_URL}/proposaReject/${id}`, {
-            method: "PATCH",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ state: "rejected" }), 
-        })
-        .then(response => {
-            if (!response.ok) throw new Error("Failed to reject thesis");
-            setTheses(prevTheses =>
-                prevTheses.map(thesis =>
-                    thesis.id === id ? { ...thesis, state: "rejected" } : thesis
-                )
-            );
-        })
-        .catch(error => console.error("Error rejecting thesis:", error));
-        navigate('/prof')
-        SendEmail('reject'); 
-        window.location.reload();
-    }
-    
+            const data = await response.json();
 
-
-    
-    async function handleAcceptStudent(thesisId,e) {
-        e.preventDefault();
-        e.stopPropagation();
-         try {
-           const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-           const studentId = userInfo.id;
-         
-           
-           if (!studentId) {
-               console.error(" ID not found");
-               return;
-           }
-           
-           
-           const acceptedApplicationData = {
-               id_thesis: thesisData?.id,
-               faculty:thesisData?.faculty,
-               title:thesisData?.title,
-               id_prof:thesisData?.prof_id,
-               prof_name:thesisData?.prof_name,
-               prof_email: 'propose',
-               stud_id:thesisData?.stud_id,
-               stud_email:thesisData?.stud_email,
-               stud_name:thesisData?.stud_name,
-               stud_program:thesisData?.study_program,
-               date: new Date().toISOString().split('T')[0],
-               origin:'propose'
-           };
-   
-           console.log('acceptedApplicationData',acceptedApplicationData);
-           
-       
-           const acceptResponse = await fetch(`${BACKEND_URL}/acceptedApplications`, {
-               method: "POST",
-               headers: { "Content-Type": "application/json" },
-               body: JSON.stringify(acceptedApplicationData)
-           });
-   
-           if (!acceptResponse.ok) {
-               throw new Error("Failed to accept application");
-           }
-   
-           console.log("Application accepted successfully:", acceptedApplicationData);
-   
-           navigate('/prof')
-           handlePropouse_Accepted(thesisId);
+            setStudyYear(data.study_year); 
           
-       } catch (error) {
-           console.error("Error in handleAcceptStudent:", error);
-       }
-   }
+        } catch (error) {
+            console.error("Error fetching study year:", error);
+        }
+    };
 
-   function handleWithdrawApplication(id,e) {
+    fetchStudyYear();
+}, [thesisData]);
+
+// Show loading indicator while data is being fetched
+if (isLoading) {
+    return <div>Loading...</div>;
+}
+
+// Navigate back to professor dashboard
+const handleBack = () => {
+    navigate("/prof");
+};
+
+// Accept a proposal by updating its state to "accepted"
+async function handlePropouse_Accepted(id) {
+    console.log(`Accepting proposal with ID: ${id}`);
+
+    fetch(`${BACKEND_URL}/proposalAcceptConfirm/${id}`, {
+        method: "PATCH", 
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ state: "accepted" }), 
+    })
+    .then(response => {
+        if (!response.ok) throw new Error("Failed to accept thesis");
+
+        // Update the local state to reflect accepted status
+        setTheses(prevTheses =>
+            prevTheses.map(thesis =>
+                thesis.id === id ? { ...thesis, state: "accepted" } : thesis
+            )
+        );
+    })
+    .catch(error => console.error("Error accepting thesis:", error));
+
+    // Trigger an email notification for acceptance
+    SendEmail('accepted'); 
+    
+    // Small delay before navigating away to ensure UI updates
+    await new Promise(resolve => setTimeout(resolve, 300));
+
+    navigate("/prof");
+}
+
+// Reject a proposal by updating its state to "rejected"
+async function handlePropouse_reject(id, e) {
     e.preventDefault();
     e.stopPropagation();
-   
+    console.log(`Rejecting proposal with ID: ${id}`);
+
+    fetch(`${BACKEND_URL}/proposaReject/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ state: "rejected" }), 
+    })
+    .then(response => {
+        if (!response.ok) throw new Error("Failed to reject thesis");
+
+        // Update local state to show rejected status
+        setTheses(prevTheses =>
+            prevTheses.map(thesis =>
+                thesis.id === id ? { ...thesis, state: "rejected" } : thesis
+            )
+        );
+    })
+    .catch(error => console.error("Error rejecting thesis:", error));
+
+    // Trigger an email notification for rejection
+    SendEmail('reject'); 
+    
+    // Delay to allow UI to update before navigation
+    await new Promise(resolve => setTimeout(resolve, 300));
+
+    navigate('/prof');
+}
+
+// Student accepts a thesis proposal, sends acceptance data, and updates UI
+async function handleAcceptStudent(thesisId, e) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    try {
+        const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+        const studentId = userInfo.id;
+
+        if (!studentId) {
+            console.error("Student ID not found");
+            return;
+        }
+
+        // Data object for accepted application
+        const acceptedApplicationData = {
+            id_thesis: thesisData?.id,
+            faculty: thesisData?.faculty,
+            title: thesisData?.title,
+            id_prof: thesisData?.prof_id,
+            prof_name: thesisData?.prof_name,
+            prof_email: 'propose',
+            stud_id: thesisData?.stud_id,
+            stud_email: thesisData?.stud_email,
+            stud_name: thesisData?.stud_name,
+            stud_program: thesisData?.study_program,
+            date: new Date().toISOString().split('T')[0],
+            origin: 'propose'
+        };
+
+        // POST accepted application to backend
+        const acceptResponse = await fetch(`${BACKEND_URL}/acceptedApplications`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(acceptedApplicationData)
+        });
+
+        if (!acceptResponse.ok) {
+            throw new Error("Failed to accept application");
+        }
+
+        console.log("Application accepted successfully:", acceptedApplicationData);
+
+        // Navigate back to professor page and update proposal state
+        navigate('/prof');
+        handlePropouse_Accepted(thesisId);
+
+    } catch (error) {
+        console.error("Error in handleAcceptStudent:", error);
+    }
+}
+
+// Withdraw a student's application by deleting it in backend and navigating away
+async function handleWithdrawApplication(id, e) {
+    e.preventDefault();
+    e.stopPropagation();
+
     fetch(`${BACKEND_URL}/withdrawApplication/${id}`, { 
         method: "DELETE",
         headers: { "Content-Type": "application/json" }
@@ -208,11 +268,16 @@ const SEND_URL = 'http://localhost:5002';
         console.log("Thesis withdrawn successfully.");
     })
     .catch(error => console.error("Error withdrawing thesis:", error));
+
+    // Small delay before navigation
+    await new Promise(resolve => setTimeout(resolve, 350));
+
     navigate('/prof');
-    };
+};
 
 
     async function SendEmail(answer) {
+       
         const subject = answer === 'accepted'  
             ? 'Congratulations! Your Propose has been accepted'  
             : 'We are sorry! Your Propose was not accepted';  
@@ -267,6 +332,70 @@ const SEND_URL = 'http://localhost:5002';
     }
     
 
+    const sendMessage = () => {
+
+        
+
+        if (!message.trim()) return;
+    
+        let payload = {};
+    
+        if (type === "professor" || type === 1) {
+            
+            payload = {
+                message: message,
+                id_prof: userInfo_info?.id,  
+                id_stud: thesisData?.stud_id, 
+                sender: 'prof',  
+                location: 'Propose',
+            };
+        } else {
+            
+            payload = {
+                message: message,
+                id_prof: thesisData?.prof_id, 
+                id_stud: thesisData?.stud_id,  
+                sender: 'stud', 
+                location: 'Propose',
+            };
+        }
+        
+       
+       
+
+       
+    
+        fetch(`${BACKEND_URL}/send_message_select`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+        })
+        .then((res) => res.json())
+        .then((data) => {
+            console.log("Mesaj trimis cu succes:", data);
+    
+            if (data && data.message) {
+                const newMessage = {
+                    id: data.id,
+                    id_stud: data.id_stud,
+                    id_prof: data.id_prof,
+                    mesaje: data.message,
+                    created_at: new Date().toISOString(),
+                    sender: payload.sender,  
+                };
+    
+                setMessages((prevMessages) => [...prevMessages, newMessage]);
+    
+                
+                setMessage("");
+                
+            }
+        })
+        .catch((err) => console.error("Eroare la trimiterea mesajului:", err));
+    };
+    
+    
+    
    function formatDate(isoDateString) {
     const date = new Date(isoDateString);
     if (date.getTime() === 0) {
@@ -340,7 +469,39 @@ const SEND_URL = 'http://localhost:5002';
                     <p style={{ color: "#333" }}>Study year: {studyYear || 'null'}</p>
                     <p style={{ color: "#333" }}>Profesor Name: {thesisData?.prof_name || 'null'}</p>
                     <p style={{ color: "#333" }}>Answer: {thesisData?.state || 'null'}</p>
-                </form>
+
+                   
+                    
+                    <div className="mesaj_lista">
+                        {messages && messages.length > 0 ? (
+                            messages.map((msg, index) => (
+                                <div key={msg.id} className={`mesaj ${msg.sender === "prof" ? "right" : "left"}`}>
+                                    <p style={{color:'black'}}>{msg.message}</p>
+                                    <p>
+                                   
+                                        <strong>{msg.sender === "stud" ? "student" : "profesor"}</strong> - {new Date(msg.date).toLocaleString()}
+                                    </p>
+                                </div>
+                            ))
+                        ) : (
+                            <p>No messages yet</p>
+                        )}
+                        <div ref={messagesEndRef} />
+                         <div className="mesaj_input">
+                        
+                        <input 
+                            type="text" 
+                            className="mesaj_place" 
+                            value={message} 
+                             onChange={(e) => setMessage(e.target.value)} 
+                        />
+                        <SendIcon className="send_btn" onClick={sendMessage} />
+                    </div>
+                    
+                 </div>
+                
+                    </form>
+               
             </div>
         </div>
     );

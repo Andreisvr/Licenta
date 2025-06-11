@@ -1,23 +1,25 @@
-
 import React, { createContext, useEffect, useState } from 'react';
 
+// Create a Context for the app's global state
 export const AppContext = createContext();
 
 export const AppProvider = ({ children }) => {
-    const [name, setName] = useState('');
-    const [email, setEmail] = useState('');
-    const [decodedToken, setDecodedToken] = useState(null);
-    const [logined, setLogined] = useState(false);
-    const [type, setType] = useState('');
-    const [userInfo, setUserInfo] = useState(null); 
-    const [program, setProgram] = useState(''); 
-    const [faculty, setFaculty] = useState(''); 
-    const [thesis_id , setIdThesis] = useState('');
-    const [admin , setAdmin] = useState('');
-   
-    const [conf , setConfirm_info] = useState('');
-    const [stud_id , setStud_id] = useState('');
+    // State variables to store user information and app status
+    const [name, setName] = useState('');               // User's name
+    const [email, setEmail] = useState('');             // User's email
+    const [decodedToken, setDecodedToken] = useState(null); // Decoded token (e.g., from JWT)
+    const [logined, setLogined] = useState(false);      // Login status boolean
+    const [type, setType] = useState('');               // User type (e.g., professor/student)
+    const [userInfo, setUserInfo] = useState(null);     // Additional user info object
+    const [program, setProgram] = useState('');         // User's study program
+    const [faculty, setFaculty] = useState('');         // User's faculty
+    const [thesis_id , setIdThesis] = useState('');     // Selected thesis ID
+    const [admin , setAdmin] = useState('');             // Admin status or ID
+    
+    const [conf , setConfirm_info] = useState('');       // Confirmation info state
+    const [stud_id , setStud_id] = useState('');         // Student ID
 
+    // Load stored user data from localStorage when component mounts
     useEffect(() => {
         const storedName = localStorage.getItem('userName');
         const storedEmail = localStorage.getItem('userEmail');
@@ -27,6 +29,7 @@ export const AppProvider = ({ children }) => {
         const storedProgram = localStorage.getItem('userProgram'); 
         const storedFaculty = localStorage.getItem('userFaculty'); 
         
+        // If user is logged in, restore state from localStorage
         if (storedLogined) {
             setName(storedName);
             setEmail(storedEmail);
@@ -40,28 +43,31 @@ export const AppProvider = ({ children }) => {
             }
         }
     }, []);
+
+    // Handler to update thesis ID state and store it locally
     const handleThesisId=(thesis_id)=>{
         setIdThesis(thesis_id);
         localStorage.setItem('thesis_id', thesis_id); 
-        
     }
+
+    // Handler to update admin state and store it locally
     const handleAdmin=(admin)=>{
         setIdThesis(admin);
         localStorage.setItem('admin', admin);    
     }
 
+    // Handler to update student ID state and store it locally
     const handleStud_id=(stud_id)=>{
         setStud_id(stud_id); 
         localStorage.setItem('stud_id', stud_id); 
-     
     }
 
+    // Handler to update confirmation info state
     const handleConfirm=(conf)=>{
         setConfirm_info(conf); 
-       
-     
     }
 
+    // Handler for login action: updates state and localStorage with user data
     const handleLogin = (userName, userEmail, userType, userProgram, userFaculty) => {
         setName(userName);
         setEmail(userEmail);
@@ -78,6 +84,7 @@ export const AppProvider = ({ children }) => {
         localStorage.setItem('userFaculty', userFaculty); 
     };
 
+    // Handler for logout action: clears all user-related state and localStorage
     const handleLogout = () => {
         setName('');
         setEmail('');
@@ -97,6 +104,7 @@ export const AppProvider = ({ children }) => {
         localStorage.removeItem('userFaculty');
     };
 
+    // Provide state and handlers to children components through context
     return (
         <AppContext.Provider value={{ 
             name, setName, 
@@ -118,5 +126,3 @@ export const AppProvider = ({ children }) => {
         </AppContext.Provider>
     );
 };
-
-

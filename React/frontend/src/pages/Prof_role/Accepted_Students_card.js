@@ -1,6 +1,10 @@
 
 import React, { useContext, useEffect, useState } from "react";
 
+import { useNavigate } from "react-router";
+import BACKEND_URL from "../../server_link";
+
+
 export default function Accepted({ 
     thesisName, 
     faculty, 
@@ -14,15 +18,14 @@ export default function Accepted({
    
     id, 
  }) {
-  // const BACKEND_URL = 'https://backend-08v3.onrender.com';
-//  const SEND_URL = 'https://sender-emails.onrender.com';
-const BACKEND_URL = 'http://localhost:8081';
-const SEND_URL = 'http://localhost:5002';
+
+      const navigate = useNavigate(); 
+ 
 
     const [allAplies, setAllAplies] = useState([]);
     const [theses, setTheses] = useState([]); 
    
-    function handleAplication_delet(id) {
+    async function handleAplication_delet(id) {
        
         console.log(id);
         fetch(`${BACKEND_URL}/accept/${id}`, { 
@@ -35,7 +38,9 @@ const SEND_URL = 'http://localhost:5002';
         })
         .catch(error => console.error("Error withdrawing thesis:", error));
        
-        window.location.reload();
+        await new Promise((resolve) => setTimeout(resolve, 350));
+
+        navigate("/prof");
         
     }
 

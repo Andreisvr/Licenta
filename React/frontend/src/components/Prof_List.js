@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, MenuItem, Button, Fade } from '@mui/material';
+import BACKEND_URL from '../server_link';
 
 export default function ProfessorList({ faculty, onSelect }) {
     const [professors, setProfessors] = useState([]);
@@ -8,9 +9,7 @@ export default function ProfessorList({ faculty, onSelect }) {
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
 
- // const BACKEND_URL = 'https://backend-08v3.onrender.com';
-    const BACKEND_URL = 'http://localhost:8081';
-
+ 
     useEffect(() => {
         if (faculty) {
             setLoading(true); 

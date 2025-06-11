@@ -6,7 +6,7 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import IconButton from '@mui/material/IconButton'; 
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import "../page_css/My_thesis_page.css";
-
+import BACKEND_URL from "../server_link";
 
 export default function ProfesorChatPage() {
 
@@ -21,10 +21,7 @@ export default function ProfesorChatPage() {
     const [stud,setStud] = useState('');
     const [isInfoVisible, setIsInfoVisible] = useState(true);
 
-  // const BACKEND_URL = 'https://backend-08v3.onrender.com';
-//  const SEND_URL = 'https://sender-emails.onrender.com';
-const BACKEND_URL = 'http://localhost:8081';
-const SEND_URL = 'http://localhost:5002';
+ 
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -130,7 +127,8 @@ const SEND_URL = 'http://localhost:5002';
     const getShortDescription = (desc) => (desc ? `${desc.substring(0, 35)}${desc.length > 100 ? "..." : ""}` : "");
  
     function go_back(){
-    navigate("/prof")
+   
+        navigate("/prof")
     localStorage.removeItem('thesis_id');
 
     localStorage.removeItem('stud_id');
@@ -138,84 +136,91 @@ const SEND_URL = 'http://localhost:5002';
    }
 
 
-   const toggleInfoVisibility = () => {
-    setIsInfoVisible(!isInfoVisible);
-};
+   const toggleInfoVisibility = (e) => {
 
- return (
-        <div className="body_chat_student">
-            <button className="back_button" onClick={go_back}>
+    e.preventDefault();
+    setIsInfoVisible(!isInfoVisible);
+    };
+
+
+return (
+        
+    <div className="body_thesisinfo">
+          <button className="back_button" onClick={go_back}>
                 <ArrowBackIcon />
             </button>
-            <div className="chat_st">
-                <div className="mesaje_lista">
-                    {messages && messages.length > 0 ? (
-                        messages.map((msg) => (
-                            <div key={msg.id} className={`mesaj ${msg.sender === "prof" ? "right" : "left"}`}>
-                                <p>{msg.mesaje}</p>
-                                <p>
-                                    <strong>{msg.sender === "prof" ? "you" : "student"}</strong> - {new Date(msg.created_at).toLocaleString()}
-                                </p>
-                            </div>
-                        ))
-                    ) : (
-                        <p>No messages yet</p>
-                    )}
-                    <div ref={messagesEndRef} />
+                <div className="form-container">
+                    <form className="left-form">
+                    <div className="info_mesaje">
+                    <p className="text_info"><strong>Name:</strong> {stud?.name || ''}</p>
+                  
+                    <p className="text_info"><strong>, Year:</strong> {stud?.study_year || ''}</p>
                 </div>
-
-                <div className="info_mesaje">
-                    <p style={{ color: "#333" }}><strong>Name:</strong> {stud?.name || ''}</p>
-                    <p style={{ color: "#333" }}><strong> Program:</strong> {getShortDescription(stud?.ProgramStudy) || ''}</p>
-                    <p style={{ color: "#333" }}><strong> Year:</strong> {stud?.study_year || ''}</p>
-                </div>
-
-                <div className="mesaje_input">
-                    <input 
-                        type="text" 
-                        className="mesaj_place" 
-                        value={message} 
-                        onChange={(e) => setMessage(e.target.value)} 
-                    />
-                    <SendIcon className="send_btn" onClick={sendMessage} />
-                </div>
-            </div>
-
-            <div className="info">
-               
-                <button className="dropdown-button" onClick={toggleInfoVisibility}>
-                    {isInfoVisible ? "Hide Information" : "Show Information"}
-                </button>
-
-                {isInfoVisible && (
-                    <div className="information">
-                        <p><strong>Student Name:</strong> {userInfo?.name}</p>
-                        <p>Email: 
-                            <a href={`mailto:${userInfo?.email}`} className="email-link">
-                                {userInfo?.email}
-                            </a>
-                        </p>
-                        <p><strong>Title:</strong> {thesis?.title}</p>
-                        <p><strong>Description:</strong> {thesis?.description}</p>
-                    </div>
-                )}
-
+                        <div className="mesaje_lista">
+                        {messages && messages.length > 0 ? (
+                            messages.map((msg, index) => (
+                                <div key={msg.id} className={`mesaj ${msg.sender === "prof" ? "right" : "left"}`}>
+                                    <p>{msg.mesaje}</p>
+                                    <p>
+                                        <strong>{msg.sender === "stud" ? "you" : "profesor"}</strong> - {new Date(msg.created_at).toLocaleString()}
+                                    </p>
+                                </div>
+                            ))
+                        ) : (
+                            <p>No messages yet</p>
+                        )}
+                        <div ref={messagesEndRef} />
                 
-                {!isInfoVisible && (
-                    <div className="additional-buttons">
-                        <IconButton  className="calendar-icon"
-                            component="a" 
-                            href="https://calendar.google.com/calendar/u/0/r" 
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                        >
-                            <CalendarTodayIcon className="calendar-icon" />
-                        </IconButton>
-
-                        {/* <button className="gmail-toggle-button">On Gmail/Off Gmail</button> */}
+                    
+                </div>
+                <div className="mesaje_input">
+                        <input 
+                            type="text" 
+                            className="mesaj_place" 
+                            value={message} 
+                            onChange={(e) => setMessage(e.target.value)} 
+                        />
+                        <SendIcon className="send_btn" onClick={sendMessage} />
                     </div>
-                )}
-            </div>
+                    </form>
+                    
+                    <form className="right-form">
+          
+            <button className="dropdown-button" onClick={toggleInfoVisibility}>
+                {isInfoVisible ? "Hide Information" : "Show Information"}
+            </button>
+
+            {isInfoVisible && (
+                 <div  className="information">
+                 <p  style={{ color: "#333" }} ><strong>Student Name:</strong> {userInfo?.name}</p>
+                 <p  style={{ color: "#333" }} >Email: 
+                     <a href={`mailto:${userInfo?.email}`} className="email-link">
+                         {userInfo?.email}
+                     </a>
+                 </p>
+                 <p  style={{ color: "#333" }} ><strong>Title:</strong> {thesis?.title}</p>
+                 <p  style={{ color: "#333" }} ><strong>Description:</strong> {thesis?.description}</p>
+             </div>
+            )}
+
+            
+            {!isInfoVisible && (
+                <div  style={{ color: "#333" }} className="additional-buttons">
+                    <IconButton  className="calendar-icon"
+                        component="a" 
+                        href="https://calendar.google.com/calendar/u/0/r" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                    >
+                        <CalendarTodayIcon className="calendar-icon" />
+                    </IconButton>
+
+                  
+                </div>
+            )}
+                
+            </form>
         </div>
-    );
+    </div>
+);
 }

@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router';
 import "../../page_css/addthesis_form.css";
 import { AppContext } from '../../components/AppContext';
 import ProfessorList from '../../components/Prof_List';
+import BACKEND_URL from '../../server_link';
 
 export default function MyPropouseAdd() {
     const { logined, email, name} = useContext(AppContext);
@@ -11,10 +12,6 @@ export default function MyPropouseAdd() {
 
     const userInfo = localStorage.getItem('userInfo');
     const user_info = JSON.parse(userInfo);
-  // const BACKEND_URL = 'https://backend-08v3.onrender.com';
-//  const SEND_URL = 'https://sender-emails.onrender.com';
-const BACKEND_URL = 'http://localhost:8081';
-const SEND_URL = 'http://localhost:5002';
 
     const [formData, setFormData] = useState({
         title: '',

@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-
+import SystemUpdateAltIcon from '@mui/icons-material/SystemUpdateAlt';
 import "../../page_css/prof_cab.css";
 import AddThesis from "./thesis_card.js";
 import { AppContext } from "../../components/AppContext.js";
@@ -15,34 +15,36 @@ import MyPropouses from "../student-role/MyPropouse.js";
 import Propouses from "./propuses_card_prof.js";
 import MenuIcon from "@mui/icons-material/Menu";
 
-// const BACKEND_URL = 'https://backend-08v3.onrender.com';
-const BACKEND_URL = 'http://localhost:8081';
-const SEND_URL = 'http://localhost:5002';
-
-
+import BACKEND_URL from "../../server_link.js";
 export default function Cabinet() {
-    const { name,email, logined, type } = useContext(AppContext);
+    // Get user context values: name, email, login status, and user type
+    const { name, email, logined, type } = useContext(AppContext);
     const navigate = useNavigate();
-    const [theses, setTheses] = useState([]);
-    const [allTheses, setAllTheses] = useState([]);
-    const [allApplications, setAllApplications] = useState([]);
-    
+
+    // State to hold different lists of theses and applications
+    const [theses, setTheses] = useState([]);               // Currently displayed theses
+    const [allTheses, setAllTheses] = useState([]);         // All theses fetched from backend
+    const [allApplications, setAllApplications] = useState([]); // All applications fetched
+
+    // View type state to control what theses/applications to display ("ALL", "Applied", etc.)
+    // Defaults to stored value in localStorage or "ALL"
     const [viewType, setViewType] = useState(localStorage.getItem("CardView") || "ALL");
 
+    // List of accepted responses (applications accepted by professor)
     const [acceptedResponses, setAcceptedResponses] = useState([]);
-   
-       
-    //listele de date pentru cards 
-    const[AppliedList,setAppliedList] = useState([]);
-    const[MyThesisList,setMyThesisList] = useState([]);
-    const[AcceptedList,setAccepdedList] = useState([]);
-    const[MyAppliedList,setMyAppliedList] = useState([]);
-    const[MyResponsedList,setMyResponsedList] = useState([]);
-    const [MyConfirmedthesis,setMyConfirmed] = useState([]);
-    const[MyPropouse,setMyPropouses]= useState([]);
-    const[PropousesList,setPropouses]= useState([]);
-    // const[Confirmed,setConfirmed]= useState([]);
-   
+
+    // Various lists used to categorize theses and applications for different views
+    const [AppliedList, setAppliedList] = useState([]);
+    const [MyThesisList, setMyThesisList] = useState([]);
+    const [AcceptedList, setAccepdedList] = useState([]);
+    const [MyAppliedList, setMyAppliedList] = useState([]);
+    const [MyResponsedList, setMyResponsedList] = useState([]);
+    const [MyConfirmedthesis, setMyConfirmed] = useState([]);
+    const [MyPropouse, setMyPropouses] = useState([]);
+    const [PropousesList, setPropouses] = useState([]);
+    // const[Confirmed,setConfirmed]= useState([]); // commented out unused state
+
+    // States for search filters
     const [searchTitle, setSearchTitle] = useState("");
     const [searchStartDate, setSearchStartDate] = useState("");
     const [searchEndDate, setSearchEndDate] = useState("");
@@ -50,156 +52,152 @@ export default function Cabinet() {
     const [selectedFaculty, setSelectedFaculty] = useState("");
     const [selectedProgram, setSelectedProgram] = useState("");
 
+    // User-related states
+    const [id, setId] = useState('');                // user ID
+    const [is_confirmed, setConfirmed] = useState('');  // thesis confirmed status
+    const [showLeftContainer, setShowLeftContainer] = useState(false); // toggle left container visibility
+    const [isVerified, setVerified] = useState('');    // user verification status
 
-    const [id,setId] = useState('');
-    const [is_confirmed,setConfirmed] = useState('');
-    const [showLeftContainer, setShowLeftContainer] = useState(false); 
-    const [isVerified,setVerified] = useState('');
-
+    // Function to toggle visibility of the left container in UI
     const toggleLeftContainer = () => {
       setShowLeftContainer(!showLeftContainer);
     };
 
-
+    // When a thesis card is clicked, save the selected thesis data to localStorage
     const handleClickThesis = (thesis) => {
         localStorage.setItem('selectedThesis', JSON.stringify(thesis));
-        
     };
-    
+
+    // Whenever viewType changes, save the new viewType to localStorage (persists user preference)
     useEffect(() => {
         localStorage.setItem("CardView", viewType);  
-      
-       
-
     }, [viewType]);
 
-  
     useEffect(() => {
-        fetch(`${BACKEND_URL}/prof`, {
-            method: "GET",
-            headers: { "Content-Type": "application/json" },
-        })
-        .then((response) => response.json())
-        .then((data) => {
-            setTheses(data);
-
-           
-            setAllTheses(data);
-            
-           
-                setViewType("ALL");  
-           
-
-        })
-        .catch((error) => console.error("Error fetching theses:", error));
-
-        if (logined) {
+        // verify if userul is logined or entered
+        if (logined || isVerified) { 
+            // Fetch all theses
             fetch(`${BACKEND_URL}/prof`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email }),
-            })
-            .then((response) => response.json())
-            .then((userInfo) => {
-                localStorage.setItem('userInfo', JSON.stringify(userInfo));
-                setId(userInfo.id);
-                setConfirmed(userInfo.thesis_confirmed);
-                setVerified(userInfo.entered);
-                //console.log('user info', userInfo);
-            })
-            .catch((error) => console.error("Error fetching user info:", error));
-
-            fetch(`${BACKEND_URL}/applies`, {
                 method: "GET",
                 headers: { "Content-Type": "application/json" },
             })
             .then((response) => response.json())
             .then((data) => {
-                setAllApplications(data);
-               
-              
-                
-            })
-            .catch((error) => console.error("Error fetching applications:", error));
-        }
+                setTheses(data);
+                setAllTheses(data);
+                setViewType("ALL");
+                // console.log(data);
     
-    }, [logined, email]);
-
-
-   
-
+                
+                fetch(`${BACKEND_URL}/prof`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email }),
+                })
+                .then((response) => response.json())
+                .then((userInfo) => {
+                    localStorage.setItem('userInfo', JSON.stringify(userInfo));
+                    setId(userInfo.id);
+                    setConfirmed(userInfo.thesis_confirmed);
+                    setVerified(userInfo.entered);
+    
+                    // filter theses for user faculty 
+                    const filteredTheses = data.filter((thesis) => {
+                        return thesis.faculty === userInfo.faculty || thesis.faculty === userInfo.Faculty;
+                    });
+                    setAllTheses(filteredTheses)
+                    setTheses(filteredTheses);
+                    setViewType("ALL");
+                })
+                .catch((error) => console.error("Error fetching user info:", error));
+    
+                // Fetch all applications
+                fetch(`${BACKEND_URL}/applies`, {
+                    method: "GET",
+                    headers: { "Content-Type": "application/json" },
+                })
+                .then((response) => response.json())
+                .then((data) => {
+                    setAllApplications(data);
+                })
+                .catch((error) => console.error("Error fetching applications:", error));
+    
+            })
+            .catch((error) => console.error("Error fetching theses:", error));
+        } else {
+            // Dacă nu e logat și entered nu e true, nu facem nimic
+             console.log("not logined or already valid, whithout fetch.");
+        }
+    }, [logined, email, isVerified]);
+    
+    // Navigation handler: go to form for adding new thesis or proposal
     const handleClickAdd = () => navigate('/add_form');
 
+    // Show all theses (reset filter)
     const handleAllClick_All = () => {
         setTheses(allTheses);
         setViewType("ALL");
     };
 
+    // Show theses the logged-in student has applied to
     const handleSeeApplies = () => {
-
         const userInfo = JSON.parse(localStorage.getItem('userInfo'));
         const studentId = userInfo?.id;
 
         if (!userInfo) {
             console.error("Student ID not found, userInfo is missing");
-            alert("Not logined")
+            alert("Not logined");
             return;
         }
+
+        // Fetch theses that the student applied to
         fetch(`${BACKEND_URL}/show_My_applies/${studentId}`, {
             method: "GET",
             headers: { "Content-Type": "application/json" },
         })
-            .then((response) => {
-                if (!response.ok) {
-                    throw new Error("Error fetching theses");
-                }
-                return response.json();
-            })
-            .then((data) => {
-          
-                setTheses(data);
-                setAppliedList(data);
-                setViewType("MyApplies");
-                console.log('MyAplied List ',AppliedList);
-        
-            })
-            .catch((error) => console.error("Error fetching theses:", error));
-       
-        console.log('MyAplied List ',AppliedList);
-        
-       
+        .then((response) => {
+            if (!response.ok) throw new Error("Error fetching theses");
+            return response.json();
+        })
+        .then((data) => {
+            setTheses(data);        // display applied theses
+            setAppliedList(data);   // store in applied list
+            setViewType("MyApplies"); // update view type accordingly
+            console.log('MyApplied List ', AppliedList);
+        })
+        .catch((error) => console.error("Error fetching theses:", error));
+
+        console.log('MyApplied List ', AppliedList);
     };
 
-
-
+    // Show theses that belong to the logged-in professor
     const handleShowMyThesis = () => {
         const userInfo = JSON.parse(localStorage.getItem('userInfo'));
         const profId = userInfo?.id;
-    
+
         if (!profId) {
             console.error("User ID not found in localStorage.");
             return;
         }
-    
+
+        // Fetch theses created by the professor
         fetch(`${BACKEND_URL}/show_My_thesis/${profId}`, {
             method: "GET",
             headers: { "Content-Type": "application/json" },
         })
-            .then((response) => {
-                if (!response.ok) {
-                    throw new Error("Error fetching theses");
-                }
-                return response.json();
-            })
-            .then((data) => {
-                setMyThesisList(data); 
-                setViewType("MyThesis"); 
-                console.log("My thesis list:", data);
-            })
-            .catch((error) => console.error("Error fetching theses:", error));
+        .then((response) => {
+            if (!response.ok) throw new Error("Error fetching theses");
+            return response.json();
+        })
+        .then((data) => {
+            setMyThesisList(data);  // set professor's theses list
+            setViewType("MyThesis"); // update view
+            console.log("My thesis list:", data);
+        })
+        .catch((error) => console.error("Error fetching theses:", error));
     };
-    
 
+    // Show applications from students that belong to the logged-in professor
     const handleShowApplied = () => {
         const userInfo = JSON.parse(localStorage.getItem('userInfo'));
         const profId = userInfo?.id;
@@ -209,45 +207,46 @@ export default function Cabinet() {
             return;
         }
 
+        // Filter applications to those addressed to the professor
         setTheses(allApplications.filter(application => application.id_prof === profId));
         setMyAppliedList(allApplications.filter(application => application.id_prof === profId));
-        console.log('aplies from students ',MyAppliedList);
-       
-        setViewType("Applied");
+        // console.log('applies from students ', MyAppliedList);
+
+        setViewType("Applied");  // update view type
     };
 
+    // Show responses (accepted applications) for the logged-in student
     const handleSeeResponses = () => {
-       
-       
         const userInfo = localStorage.getItem('userInfo');
-        
+
         if (!userInfo) {
             console.error("Student ID not found, userInfo is missing");
-            alert("Not logined")
+            alert("Not logined");
             return;
         }
+
         const parsedUserInfo = JSON.parse(userInfo);
 
         if (!parsedUserInfo || !parsedUserInfo.id) {
             console.error("Student ID not found in userInfo");
-            //alert('Not logined');
             return;
         }
+
         setViewType("response");
 
-    
-        const studentId = parsedUserInfo.id; 
-       
+        const studentId = parsedUserInfo.id;
+
+        // Fetch accepted responses for student
         fetch(`${BACKEND_URL}/Responses/${studentId}`, {
             method: "GET",
             headers: { "Content-Type": "application/json" },
         })
         .then(response => response.json())
         .then(data => {
-            setAcceptedResponses(data);
-            setMyResponsedList(data);
-           console.log('responses',MyResponsedList);
-            setTheses(data);  
+            setAcceptedResponses(data);  // store accepted responses
+            setMyResponsedList(data);    // also set to MyResponsedList
+            // console.log('responses', MyResponsedList);
+            setTheses(data);             // display them
         })
         .catch(error => console.error("Error fetching accepted applications:", error));
     };
@@ -277,164 +276,217 @@ export default function Cabinet() {
 //     }
 
 
+// Fetch and display the list of accepted theses for the current user (professor/student)
+const handleShowAccepted = () => {
 
-    const handleShowAccepted = () => {
-
-       
-        if (!id ) {
-            console.error("Student ID not found in userInfo");
-            alert('Not logined');
-            return;
-        }
-        setViewType("Accept");
+    // Check if the user ID is available, else show error and alert
+    if (!id ) {
+        console.error("Student ID not found in userInfo");
+        alert('Not logined');
+        return;
+    }
     
-       
-       
-       const Profid= id;
-        fetch(`${BACKEND_URL}/Accepted/${Profid}`, {
-            method: "GET",
-            headers: { "Content-Type": "application/json" },
-        })
-        .then(response => response.json())
-        .then(data => {
-            setAcceptedResponses(data);
-            setAccepdedList(data);
-            //console.log('acceptedList',AcceptedList);
-            setTheses(data);  
-        })
-        .catch(error => console.error("Error fetching accepted applications:", error));
-    };
+    // Set the current view type to "Accept" to show accepted theses
+    setViewType("Accept");
 
-   async function handleMyPropouse()
-        {
-           
-            const userInfo = localStorage.getItem('userInfo');
-        
-            if (!userInfo) {
-                console.error("Student ID not found, userInfo is missing");
-                alert("Not logined")
-                return;
-            }
+    const Profid= id;
+    // Fetch accepted theses data from backend using the professor's ID
+    fetch(`${BACKEND_URL}/Accepted/${Profid}`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Store the accepted theses data in state variables
+        setAcceptedResponses(data);
+        setAccepdedList(data);
+        //console.log('acceptedList',AcceptedList);
+        setTheses(data);  
+    })
+    .catch(error => console.error("Error fetching accepted applications:", error));
+};
 
-           
-            try {
-                const response = await fetch(`${BACKEND_URL}/getProposals/${id}`);
-                if (!response.ok) {
-                    throw new Error('Failed to fetch proposals');
-                }
+// Async function to fetch and display the user's own thesis proposals
+async function handleMyPropouse() {
     
-                const data = await response.json();
-                setMyPropouses(data);
-                
-            } catch (error) {
-                console.error('Error fetching proposals:', error);
-            }
-        
-        console.log('lista my propouse',MyPropouse)
+    // Retrieve user information from local storage
+    const userInfo = localStorage.getItem('userInfo');
 
-        setViewType("MyPropouse");
-        
+    // Check if user is logged in
+    if (!userInfo) {
+        console.error("Student ID not found, userInfo is missing");
+        alert("Not logined")
+        return;
     }
 
-
-    function handleMyPropouseAdd(){
-
-            navigate('/MyPropouseAdd');
-
+    try {
+        // Fetch proposals from backend using the current user ID
+        const response = await fetch(`${BACKEND_URL}/getProposals/${id}`);
+        if (!response.ok) {
+            throw new Error('Failed to fetch proposals');
         }
 
-    const handleSelection = (faculty, program) => {
-        setSelectedFaculty(faculty);
-        setSelectedProgram(program);
-    };
-    
+        // Parse the JSON data and update state
+        const data = await response.json();
+        setMyPropouses(data);
+        
+    } catch (error) {
+        console.error('Error fetching proposals:', error);
+    }
 
-    const handleSearch = () => {
-        const filteredTheses = allTheses.filter((thesis) => {
-            return (
-                (!searchTitle || thesis.title.toLowerCase().includes(searchTitle.toLowerCase())) &&
-                (!searchStartDate || new Date(thesis.start_date) >= new Date(searchStartDate)) &&
-                (!searchEndDate || new Date(thesis.end_date) <= new Date(searchEndDate)) &&
-                (!searchProfessor || thesis.prof_name.toLowerCase().includes(searchProfessor.toLowerCase())) &&
-                (!selectedFaculty || thesis.faculty === selectedFaculty) &&
-                (!selectedProgram || thesis.study_program === selectedProgram)
-            );
+    // Log the proposals list to console for debugging
+    // console.log('lista my propouse',MyPropouse)
+
+    // Set the view type to display proposals
+    setViewType("MyPropouse");
+}
+
+// Navigate to the page where user can add a new proposal
+function handleMyPropouseAdd(){
+    navigate('/MyPropouseAdd');
+}
+
+// Search theses based on filters: title, dates, professor, faculty, and program
+const handleSearch = () => {
+    const filteredTheses = allTheses.filter((thesis) => {
+        return (
+            (!searchTitle || thesis.title.toLowerCase().includes(searchTitle.toLowerCase())) &&
+            (!searchStartDate || new Date(thesis.start_date) >= new Date(searchStartDate)) &&
+            (!searchEndDate || new Date(thesis.end_date) <= new Date(searchEndDate)) &&
+            (!searchProfessor || thesis.prof_name.toLowerCase().includes(searchProfessor.toLowerCase())) &&
+            (!selectedFaculty || thesis.faculty === selectedFaculty) &&
+            (!selectedProgram || thesis.study_program === selectedProgram)
+        );
+    });
+    // Set the view to show all filtered theses
+    setViewType('ALL');
+    setTheses(filteredTheses);
+};
+
+// Reset the page by reloading and resetting view and theses list
+function handleReset() {
+    window.location.reload();
+    setViewType('ALL');
+    setTheses(theses); 
+}
+
+// Async function to fetch and display proposals made by the current user (professor)
+async function handleShowPropouses() {
+    if (!id) {
+        console.error("Student ID not found in userInfo");
+        alert("Not logined");
+        return;
+    }
+
+    try {
+        // Fetch proposals from backend filtered by user name
+        const response = await fetch(`${BACKEND_URL}/propoused/${name}`, {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
         });
-        setViewType('ALL');
-        setTheses(filteredTheses);
-    };
-    
-    function handleReset() {
-       
-       window.location.reload();
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        // Parse and set proposals data to state
+        const data = await response.json(); 
+        setPropouses(data); 
+        // console.log("propused", data); 
         
-        setViewType('ALL');
-        setTheses(theses); 
+    } catch (error) {
+        console.error("Error fetching accepted applications:", error);
+    }
+    // Change view to show proposals
+    setViewType("Propoused");
+}
+
+// Export given data to CSV file with specified filename
+function exportToCSV(data, filename) {
+    if (!data || !data.length) {
+        // Data list is empty, log info and exit
+        // console.log('lista goala');
+        return;
+    } else {
+        // Data is available (optional debug)
+        // console.log(filename);
     }
 
+    const csvRows = [];
 
-    async function handleShowPropouses() {
-        if (!id) {
-            console.error("Student ID not found in userInfo");
-            alert("Not logined");
-            return;
-        }
-    
-        try {
-            const response = await fetch(`${BACKEND_URL}/propoused/${name}`, {
-                method: "GET",
-                headers: { "Content-Type": "application/json" },
-            });
-    
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+    // Extract headers from object keys and add as CSV header row
+    const headers = Object.keys(data[0]);
+    csvRows.push(headers.join(','));
+
+    // Process each row of data and escape quotes for CSV format
+    for (const row of data) {
+        const values = headers.map(header => {
+            let val = row[header];
+            if (typeof val === 'string') {
+                val = val.replace(/"/g, '""'); 
             }
-    
-            const data = await response.json(); 
-            setPropouses(data); 
-            console.log("propused", data); 
-            
-        } catch (error) {
-            console.error("Error fetching accepted applications:", error);
-        }
-        setViewType("Propoused");
-    }
-    
-
-    async function handleShowConfirmed() {
-
-        if (!id ) {
-            console.error("{Professor} ID not found in userInfo");
-            alert('Not logined');
-            return;
-        }
-      
-        setViewType("MyChose");
-       
-        fetch(`${BACKEND_URL}/confirmed?id_prof=${id}`, {
-            method: "GET",
-            headers: { "Content-Type": "application/json" },
-        })
-        .then(response => response.json())
-        .then(data => {
-            // setConfirmed(data);
-            
-            
-            setMyConfirmed(data);
-            console.log('my thesis', data); 
-        })
-        .catch(error => console.error("Error fetching accepted applications:", error));
-        
-        
-    }
-    function handelGoToChat()
-    {
-        navigate('/Student_chat');
+            return `"${val}"`;
+        });
+        csvRows.push(values.join(','));
     }
 
+    // Join all rows into CSV string
+    const csvContent = csvRows.join('\n');
 
+    // Create a Blob for CSV data and generate a downloadable link
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
 
-    const getShortDescription = (desc) => (desc ? `${desc.substring(0, 100)}${desc.length > 100 ? "..." : ""}` : "");
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", `${filename}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+// Export multiple lists to CSV files for download
+async function handleExportInfo() {
+    exportToCSV(MyAppliedList, "applied_list");
+    exportToCSV(PropousesList, "propouse_list");
+    exportToCSV(AcceptedList, "accepted_list");
+    exportToCSV(MyConfirmedthesis, "confirmed_list"); 
+}
+
+// Fetch and display theses confirmed by the current professor/user
+async function handleShowConfirmed() {
+
+    // Check if user ID is present, else alert and stop
+    if (!id ) {
+        console.error("{Professor} ID not found in userInfo");
+        alert('Not logined');
+        return;
+    }
+  
+    // Set view type to show chosen/confirmed theses
+    setViewType("MyChose");
+   
+    // Fetch confirmed theses from backend using professor ID
+    fetch(`${BACKEND_URL}/confirmed?id_prof=${id}`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Update state with confirmed theses data
+        // setConfirmed(data);
+        setMyConfirmed(data);
+        // console.log('my thesis', data); 
+    })
+    .catch(error => console.error("Error fetching accepted applications:", error));
+}
+
+// Navigate to student chat page
+function handelGoToChat() {
+    navigate('/Student_chat');
+}
+
+// Utility function to get a shortened version of description (max 100 chars)
+const getShortDescription = (desc) => (desc ? `${desc.substring(0, 100)}${desc.length > 100 ? "..." : ""}` : "");
 
     return (
         <div className="body_prof">
@@ -478,7 +530,7 @@ export default function Cabinet() {
                     />
             
         <button className="search_button" onClick={handleSearch}>Caută</button>
-        <button className="search_button" onClick={handleReset}>Rest</button>
+        <button className="search_button" onClick={handleReset}>Reset</button>
 
     </div>
         <div className={`right_container ${showLeftContainer ? "default" : "full-width"}`}>
@@ -486,13 +538,13 @@ export default function Cabinet() {
         <div className="button-group">
                         {type === "professor" ? (
                             <>
-                                <button onClick={handleAllClick_All}>ALL</button>
-                                <button onClick={handleShowMyThesis}>MyTheses</button>
-                                <button onClick={handleShowApplied}>Applied</button>
-                                <button onClick={handleShowPropouses}>Proposed</button>
-                                <button onClick={handleShowAccepted}>Accepted</button>
-                                <button onClick={handleShowConfirmed}>Confirmed</button>
-                            </>
+                                    <button onClick={handleAllClick_All}>All</button>
+                                    <button onClick={handleShowMyThesis}>MyTheses</button>
+                                    <button onClick={handleShowApplied}>Applied</button>
+                                    <button onClick={handleShowPropouses}>Proposed</button>
+                                    <button onClick={handleShowAccepted}>Accepted</button>
+                                    <button onClick={handleShowConfirmed}>Confirmed</button>
+                                                                </>
                         ) : (
                             <>
                                 {is_confirmed === 1 ? (
@@ -502,10 +554,11 @@ export default function Cabinet() {
                                     </>
                                 ) : (
                                     <>
-                                        <button onClick={handleAllClick_All}>ALL</button>
-                                        <button onClick={handleMyPropouse}>MyPropose</button>
-                                        <button onClick={handleSeeApplies}>MyApplies</button>
-                                        <button onClick={handleSeeResponses}>Responsed</button>
+                                       <button onClick={handleAllClick_All}>All</button>
+                                        <button onClick={handleMyPropouse}>MyProposals</button>
+                                        <button onClick={handleSeeApplies}>MyApplications</button>
+                                        <button onClick={handleSeeResponses}>Responses</button>
+
                                     </>
                                 )}
                             </>
@@ -513,7 +566,7 @@ export default function Cabinet() {
                     </div>
 
                 </div>
-               
+              
                 <div className={`bottom_container ${showLeftContainer ? "default" : "full-width"}`}>
                 {
   viewType === "ALL" && theses.length > 0 ? (
@@ -569,6 +622,7 @@ export default function Cabinet() {
         stud_name={aply.stud_name}
         prof_email={aply.prof_email}
         professor_name={aply.prof_name}
+        professor_id={aply.id_prof}
         viewType={viewType}
         id={aply.id}
       />
@@ -585,6 +639,7 @@ export default function Cabinet() {
         stud_email={aply.stud_email}
         stud_name={aply.stud_name}
         professor_name={aply.prof_name}
+        stud_id={aply.id_stud}
         viewType={viewType}
         study_year={aply.study_year}
         id={aply.id}
@@ -644,7 +699,7 @@ export default function Cabinet() {
         key={application.id}
         thesisName={application.title}
         professor_name={application.prof_name}
-        professor_id={application.professor_id}
+        professor_id={application.prof_id}
        
         applied_data={application.date} 
         description={application.description}
@@ -681,9 +736,14 @@ export default function Cabinet() {
 
 
     {type === "professor" && isVerified == 1 && (
+        <>
+        <div className='export_info'>
+            <SystemUpdateAltIcon onClick={handleExportInfo} className="export_button"/>
+        </div>
         <div className="add-button-container">
             <AddCircleOutlineIcon onClick={handleClickAdd} className="add_button" />
         </div>
+        </>
     )}
     {viewType === "MyPropouse" && (
         <div className="add-button-container">

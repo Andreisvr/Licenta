@@ -1,8 +1,10 @@
 import React, { useContext, useEffect, useState } from "react";
 
 
-import "../../page_css/addthesis.css";
+import { useNavigate } from "react-router";
 
+import "../../page_css/addthesis.css";
+import BACKEND_URL from "../../server_link";
 import { AppContext } from "../../components/AppContext";
 
 export default function AddThesis({ 
@@ -22,11 +24,7 @@ export default function AddThesis({
 }) { 
     
     
-          // const BACKEND_URL = 'https://backend-08v3.onrender.com';
-//  const SEND_URL = 'https://sender-emails.onrender.com';
-const BACKEND_URL = 'http://localhost:8081';
-const SEND_URL = 'http://localhost:5002';
-
+ const navigate = useNavigate(); 
     const { name, email, logined, type } = useContext(AppContext);
 
     const [allAplies, setAllAplies] = useState([]);
@@ -53,7 +51,8 @@ const SEND_URL = 'http://localhost:5002';
         })
         .catch(error => console.error("Error withdrawing thesis:", error));
       
-        window.location.reload();
+      //  window.location.reload();
+      navigate("/prof");
     }
 
     function handleAplication_delet(id) {
@@ -69,7 +68,8 @@ const SEND_URL = 'http://localhost:5002';
         })
         .catch(error => console.error("Error withdrawing thesis:", error));
        
-        window.location.reload();
+       // window.location.reload();
+       navigate("/prof");
     }
 
     async function handleAcceptStudent(thesisId) {

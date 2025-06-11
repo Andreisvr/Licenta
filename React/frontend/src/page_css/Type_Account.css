@@ -25,19 +25,17 @@
     text-align: center;
     padding: 2vw;
 }
-.profesor:hover{
-    color: blue;
-    transform: scale(1.1);
-}
 
-.student:hover{
+
+.profesor:hover,
+.student:hover {
     color: blue;
     transform: scale(1.1);
 }
 
 img {
-    width: 40vh; 
-    height: auto; 
+    width: 25vw; 
+    height: auto;
 }
 
 p {
@@ -52,4 +50,58 @@ p {
 
 .student {
     background-color: rgb(255, 255, 255);
+}
+
+.text_choose {
+    font-size: 2vw;
+    margin-top: 5%;
+    text-align: center;
+    color: rgb(5, 5, 5);
+}
+
+
+
+@media (max-width: 1024px) {
+    .types {
+        align-items: center;
+        gap: 2%;
+    }
+    .text_choose {
+        margin-top: 10%;
+    }
+    .profesor, .student {
+        width: 40%; 
+    }
+}
+
+
+@media (max-width: 768px) {
+    .types {
+        flex-direction: column; 
+        align-items: center;
+        gap: 20px;
+    }
+    .text_choose {
+        margin-top: 7%;
+        font-size: 3vw;
+    }
+    .profesor, .student {
+        width: 60%; 
+    }
+}
+
+
+@media (max-width: 480px) {
+    .profesor, .student {
+        width: 85%;
+        height: auto;
+        margin: 0%;
+    }
+    .text_choose {
+        margin-top: 13%;
+        font-size: 3vw;
+    }
+    img {
+        width: 50vw; 
+    }
 }

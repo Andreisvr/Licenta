@@ -5,10 +5,10 @@ import UpBar from './components/up_bar';
 import Register from './pages/Cards/Register.js';
 import Type_account from './pages/Type_Acccount_chose';
 import ThesisPropose from './pages/ThesisPropouse';
-import RegFormProf from './unused/Regist_Form_Prof.js';
+
 import ThesisInfo from './pages/Cards/ThesisInfoForm.js';
 import Cabinet from './pages/Cards/MainPage.js';
-import RegisterStud from './unused/Register_Form_Stud.js';
+
 import ThesisProposalForm from './pages/Cards/add_thesis_form.js';
 import RegFormStudent from './pages/student-role/register_student';
 import MyPropouseAdd from './pages/student-role/MyPropouseAdd';
@@ -39,8 +39,7 @@ function App() {
                 <Route path="/restore_pass" element={<RestorePass />} />
                 <Route path="/reg" element={<Register />} />
                 <Route path="/type" element={<Type_account />} />
-                <Route path="/reg_form" element={<RegFormProf />} />
-                <Route path="/reg_form_stud" element={<RegisterStud/>} />
+               
                 <Route path="/thesis" element={<ThesisPropose />} />
                 <Route path="/thesisinfo" element={<ThesisInfo />} />
                 <Route path="/prof" element={<Cabinet/>} />

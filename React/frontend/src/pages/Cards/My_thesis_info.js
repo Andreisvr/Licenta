@@ -1,20 +1,23 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router";
-
+import BACKEND_URL from "../../server_link";
 import "../../page_css/My_thesis_info.css";
+import ArrowBackIcon from '@mui/icons-material/ArrowBack'; 
 
 import { AppContext } from "../../components/AppContext";
 
 export default function ThesisModify() {
   
+  // State to hold thesis data fetched from the backend
   const [thesisData, setThesisData] = useState(null);
+
+  // Access the thesis ID from AppContext
   const { thesis_id } = useContext(AppContext); 
+
+  // Hook to programmatically navigate between routes
   const navigate = useNavigate();
- // const BACKEND_URL = 'https://backend-08v3.onrender.com';
- const BACKEND_URL = 'http://localhost:8081';
- const SEND_URL = 'http://localhost:5002';
-
-
+ 
+  // useEffect to fetch thesis data when component mounts or when thesis_id changes
   useEffect(() => {
     console.log('Fetching thesis data for ID:', thesis_id);
     const fetchData = async () => {
@@ -22,11 +25,15 @@ export default function ThesisModify() {
             try {
                 const response = await fetch(`${BACKEND_URL}/thesis/${thesis_id}`);
                 
+                // Check if the response is not successful
                 if (!response.ok) {
                     throw new Error('Failed to fetch thesis data');
                 }
+
+                // Parse the JSON response
                 const data = await response.json();
                
+                // Update state with the fetched data
                 setThesisData(data[0]);
 
             } catch (error) {
@@ -38,34 +45,39 @@ export default function ThesisModify() {
     fetchData();
   }, [thesis_id]);
 
-
-  
+  // Handle changes to input fields and update thesis data state
   const handleChange = (e) => {
     const { name, value } = e.target;
     setThesisData((prevData) => {
         const updatedData = {
             ...prevData,
-            [name]: name === "limit" ? parseInt(value, 10) || 0 : value,
+            [name]: name === "limit" ? parseInt(value, 10) || 0 : value, // Ensure limit is a number
         };
-         
         return updatedData;
     });
-};
+  };
+
+  // Handle form submission and send updated data to the backend
   const handleApply = (e) => {
         e.preventDefault();  
+
+        // Prepare the data with formatted dates before sending
         const formattedData = {
           ...thesisData,
           start_date: thesisData.start_date ? formatDate(thesisData.start_date) : null,
           end_date: thesisData.end_date ? formatDate(thesisData.end_date) : null,
       };
+
         console.log('data modfiy',formattedData);
-    fetch(`${BACKEND_URL}/update_thesis/${thesis_id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formattedData),
-      })
+
+        // Send PATCH request to update thesis
+        fetch(`${BACKEND_URL}/update_thesis/${thesis_id}`, {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(formattedData),
+        })
         .then((response) => {
           if (response.ok) {
             console.log("Data updated successfully");
@@ -75,26 +87,38 @@ export default function ThesisModify() {
         })
         .catch((error) => console.error("Error:", error));
 
+        // Navigate back to professor dashboard after update
         navigate('/prof');
-        
   };
 
+  // Navigate back without applying changes
+  const handleBack = () => {
+    navigate("/prof");
+  };
+
+  // Display loading message while data is being fetched
   if (!thesisData) {
     return <div>Loading thesis information...</div>;
   }
 
-  
+  // Format date string to 'yyyy-mm-dd' format for input fields
   const formatDate = (dateString) => {
     if (!dateString) return ""; 
     const date = new Date(dateString);
     if (isNaN(date.getTime())) return ""; 
     return date.toISOString().split("T")[0]; 
   };
- 
+
+
+  
   
   return (
     <div className="th_info_body">
+    
       <form className="left_form">
+      <button type="button" className="back-button" onClick={handleBack}>
+                            <ArrowBackIcon />
+                        </button>
         <label className="label_modify">
           Title:
           <input className="input_modify"
